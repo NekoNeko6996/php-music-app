@@ -1,5 +1,5 @@
 function uploadMusic(event) {
-  event.preventDefault();
+  // event.preventDefault();
   const formData = $("#uploadMusic-form").serialize();
 
   $.ajax({
@@ -8,6 +8,7 @@ function uploadMusic(event) {
     data: formData,
     success: (response) => {
       console.log(JSON.parse(response));
+      window.location.reload();
     },
     error: (status, error) => {
       console.error(status, error);

@@ -1,8 +1,7 @@
 const audio = new Audio();
 var audioStatus = true;
 var interact = false;
-var onloadData;
-var currentPlaylist;
+var onloadData, DataResponseSortByTag, currentPlaylist;
 var currentID = 0;
 
 // ---------------------------------------------- //
@@ -77,13 +76,19 @@ function renderPlaylist(playlist, index) {
 function clickToListen(id, playlists) {
   audio.src = playlists[id][2];
   currentID = id;
-  currentPlaylist = playlists;
+  currentPlaylist = [...playlists];
   renderPlaylist(playlists, id);
   audio.oncanplay = () => {
+    // kiểm tra user đã nhấn vào button play lần nào hay chưa
     audioControl(interact);
+
+    //
     const sec = Math.round(audio.duration % 60);
     const minutes = Math.round(audio.duration / 60);
-    $("#music-time-p").text(`${numpadS(minutes)}:${numpadS(sec)}`);
+
+    //
+    $("#music-time-max").text(`${numpadS(minutes)}:${numpadS(sec)}`);
+    $("#music-time-current").text(`00:00`);
     $("#range-duration").attr("max", Math.round(audio.duration)); //gán max
 
     $("#play-music-info").html(`
@@ -110,6 +115,16 @@ audio.onended = () => {
   }
 };
 
+
+function sortByTagRenderItem(array, nameArray) {
+  var musicByTagComponent = "";
+  array.forEach((row, index) => {
+    musicByTagComponent += loadMusicItemByTag(row[4], row[1], row[3], index, nameArray);
+  });
+  $(".category-show-item").html(musicByTagComponent);
+}
+
+
 // onload
 $("document").ready(() => {
   $.ajax({
@@ -128,17 +143,21 @@ $("document").ready(() => {
       console.log(onloadData);
       var newMusicComponent = (top3MusicComponent = "");
 
+      // --------------------------------------------------------------------------- //
+
       onloadData.newMusic.forEach((row, index) => {
         newMusicComponent += `
           <div class="music-item-box" onclick="clickToListen(${index}, onloadData.newMusic)">
             <img src="${checkImg(row[4])}" alt="no-img"> 
             <div class="info">
               <p class="music-name">${row[1]}</p>
-              <p class="music-author">${row[3]}</p>
+              <p class="music-author">${row[3] || "Unknown"}</p>
               <p class="time-upload">${dateUploadCalculator(row[5])}</p>
             </div>
           </div>`;
       });
+
+      // --------------------------------------------------------------------------- //
 
       onloadData.top3Music.forEach((row, index) => {
         top3MusicComponent += `
@@ -148,7 +167,7 @@ $("document").ready(() => {
             <img src="${checkImg(row[4])}" alt="no-img" />
             <div class="info">
               <p class="music-name">${row[1]}</p>
-              <p class="music-author">${row[3]}</p>
+              <p class="music-author">${row[3] || "Unknown"}</p>
               <p class="time-upload">${dateUploadCalculator(row[5])}</p>
             </div>
             <div class="top-info-box">
@@ -158,6 +177,10 @@ $("document").ready(() => {
           </div>
         `;
       });
+
+      // --------------------------------------------------------------------------- //
+      sortByTagRenderItem(onloadData.musicByTag, "onloadData.musicByTag");
+      // --------------------------------------------------------------------------- //
 
       $(".top-1-show").html(
         `<img src="${
@@ -193,9 +216,35 @@ function onDurationChange(value) {
 }
 
 audio.addEventListener("timeupdate", () => {
-  const sec = Math.round((audio.duration - audio.currentTime) % 60);
-  const minutes = Math.round((audio.duration - audio.currentTime) / 60);
+  const sec = Math.round(audio.currentTime % 60);
+  const minutes = Math.round(audio.currentTime / 60);
 
-  $("#music-time-p").text(`${numpadS(minutes)}:${numpadS(sec)}`);
+  if (!isNaN(numpadS(minutes)) && !isNaN(numpadS(sec))) {
+    $("#music-time-current").text(`${numpadS(minutes)}:${numpadS(sec)}`);
+  }
+
   $("#range-duration").val(audio.currentTime);
 });
+
+// ----------------------------------------- //
+function sortByTag(tag) {
+  if (tag) {
+    $.ajax({
+      url: "server/server.php",
+      type: "POST",
+      data: {
+        requestCode: 2,
+        data: tag,
+      },
+      success: (response) => {
+        DataResponseSortByTag = JSON.parse(response.replace("<!-- Server -->", ""));
+        if(DataResponseSortByTag) {
+          sortByTagRenderItem(DataResponseSortByTag, "DataResponseSortByTag");
+        }
+      },
+      error: (status, error) => {
+        console.error(status, error);
+      },
+    });
+  }
+}

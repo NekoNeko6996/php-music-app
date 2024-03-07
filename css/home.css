@@ -12,13 +12,13 @@ body {
   display: flex;
   flex-direction: row;
   justify-content: center;
-  align-items: center;
   overflow: hidden;
 }
 
 .mid-body {
   width: 70%;
-  height: 100vh;
+  height: calc(100vh - 90px);
+  position: relative;
 
   background: rgb(35, 27, 46);
   background: linear-gradient(
@@ -26,14 +26,7 @@ body {
     rgba(35, 27, 46, 1) 35%,
     rgba(58, 44, 80, 1) 83%
   );
-  overflow: auto;
-  overflow: -moz-scrollbars-none;
-  -ms-overflow-style: none;
-}
-
-.mid-body::-webkit-scrollbar {
-  width: 0 !important;
-  display: none;
+  overflow-y: scroll;
 }
 
 .mid-nav {
@@ -86,11 +79,6 @@ body {
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: center;
-}
-
-footer {
-  height: 200px;
-  width: 100%;
 }
 /* ------------------------- */
 .music-item-box {
@@ -242,7 +230,7 @@ input[type="range"]::-webkit-slider-thumb {
   clip-path: polygon(0 0, 0 0, 0 0);
 }
 
-#music-time-p {
+.music-time-p {
   color: var(--text-color);
   font-size: 16px;
   font-weight: bold;
@@ -416,6 +404,7 @@ input[type="range"]::-webkit-slider-thumb {
   display: flex;
   flex-direction: column;
   color: white;
+  padding-bottom: 10px;
 }
 .playlists-title {
   color: white;
@@ -482,8 +471,21 @@ input[type="range"]::-webkit-slider-thumb {
 
 #playlist-container {
   width: 100%;
-}
+  overflow-y: scroll;
 
+}
+::-webkit-scrollbar {
+  width: 5px;
+}
+::-webkit-scrollbar-track {
+  background-color: #170f23;
+
+}
+::-webkit-scrollbar-thumb {
+  background-color: #a84fc4;
+  border-radius: 2px;
+  cursor: grab;
+}
 /* ------------------------------------------------------- */
 .category-box {
   height: 500px;
@@ -514,6 +516,9 @@ input[type="range"]::-webkit-slider-thumb {
   width: 100%;
   margin-top: 10px;
   position: relative;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
 }
 
 .category-item-box {
@@ -523,6 +528,7 @@ input[type="range"]::-webkit-slider-thumb {
   padding-bottom: 10px;
   background-color: #170f23;
   position: relative;
+  margin: 4px 4px 20px 4px;
 }
 .category-item-box > img {
   width: 100%;
@@ -554,13 +560,13 @@ input[type="range"]::-webkit-slider-thumb {
   justify-content: center;
   position: absolute;
 
-  background-color: rgb(0, 0, 0);
+  background-color: rgba(0, 0, 0, 0.699);
   opacity: 0;
   z-index: 4;
   transition: .5s;
 }
 .category-item-box:hover > .play-svg {
-  opacity: .5;
+  opacity: .9;
 }
 .play-svg > svg {
   margin: 5px;
