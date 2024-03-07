@@ -13,7 +13,10 @@ function loadItemShowUser(userArray) {
       <td class="user-table-td">${row[0]}</td>
       <td class="user-table-td">${row[1]}</td>
       <td class="user-table-td">${row[2]}</td>
-      <td class="user-table-td"><button class="user-option-btn">BLOCK USER</button><button class="user-option-btn">DELETE USER</button></td>
+      <td class="user-table-td">
+        <button class="user-option-btn">BLOCK USER</button>
+        <button class="user-option-btn">DELETE USER</button>
+      </td>
     </tr>`;
   });
   $("#user-display-table").html(htmlComponent);
