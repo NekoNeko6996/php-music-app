@@ -59,10 +59,30 @@
 
       <div class="category-box">
         <nav>
-          <div class="category-tag" onclick="sortByTag('vietnam')">VietNam</div>
-          <div class="category-tag" onclick="sortByTag('foreign')">Foreign</div>
-          <div class="category-tag" onclick="sortByTag('gamethemesong')">Game Music Theme</div>
-          <div class="category-tag" onclick="sortByTag('random')">Random</div>
+          <div
+            class="category-tag"
+            onclick="sortByTag('vietnam'); selectTag(event)"
+          >
+            VietNam
+          </div>
+          <div
+            class="category-tag"
+            onclick="sortByTag('foreign'); selectTag(event)"
+          >
+            Foreign
+          </div>
+          <div
+            class="category-tag"
+            onclick="sortByTag('gamethemesong'); selectTag(event)"
+          >
+            Game Music Theme
+          </div>
+          <div
+            class="category-tag"
+            onclick="sortByTag('random'); selectTag(event)"
+          >
+            Random
+          </div>
         </nav>
         <section class="category-show-item">
           <!-- tag item show here -->

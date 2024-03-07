@@ -511,6 +511,9 @@ input[type="range"]::-webkit-slider-thumb {
   color: white;
   margin-right: 10px;
 }
+.tag-selected {
+  background-color: #724391;
+}
 
 .category-show-item {
   width: 100%;

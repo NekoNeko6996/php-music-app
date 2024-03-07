@@ -115,15 +115,19 @@ audio.onended = () => {
   }
 };
 
-
 function sortByTagRenderItem(array, nameArray) {
   var musicByTagComponent = "";
   array.forEach((row, index) => {
-    musicByTagComponent += loadMusicItemByTag(row[4], row[1], row[3], index, nameArray);
+    musicByTagComponent += loadMusicItemByTag(
+      row[4],
+      row[1],
+      row[3],
+      index,
+      nameArray
+    );
   });
   $(".category-show-item").html(musicByTagComponent);
 }
-
 
 // onload
 $("document").ready(() => {
@@ -211,7 +215,6 @@ function audioVolume(value) {
 }
 
 function onDurationChange(value) {
-  console.log(value);
   audio.currentTime = value;
 }
 
@@ -237,8 +240,10 @@ function sortByTag(tag) {
         data: tag,
       },
       success: (response) => {
-        DataResponseSortByTag = JSON.parse(response.replace("<!-- Server -->", ""));
-        if(DataResponseSortByTag) {
+        DataResponseSortByTag = JSON.parse(
+          response.replace("<!-- Server -->", "")
+        );
+        if (DataResponseSortByTag) {
           sortByTagRenderItem(DataResponseSortByTag, "DataResponseSortByTag");
         }
       },
@@ -247,4 +252,12 @@ function sortByTag(tag) {
       },
     });
   }
+}
+
+// ------------------------------------------ //
+function selectTag(event) {
+  document.querySelectorAll(".category-tag").forEach((element) => {
+    element.classList.remove("tag-selected");
+  });
+  event.target.classList.add("tag-selected");
 }
