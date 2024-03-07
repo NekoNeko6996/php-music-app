@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="css/adminpage.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="js/adminPage.js" defer></script>
+  </head>
+
+
+  <body>
+    <div class="music-edit-container">
+      <div class="add-new-music">
+        <form action="" id="uploadMusic-form" method="post" onsubmit="uploadMusic(event)">
+          <h2>Upload Music</h2>
+          <label for="name-music-input">Name Music:</label>
+          <input type="text" name="name-music" id="name-music-input" required/>
+          <label for="path-music-input">Path:</label>
+          <input type="text" name="path-music" id="path-music-input" required/>
+          <label for="author-music-input">Author:</label>
+          <input type="text" name="author-music" id="author-music-input" />
+          <label for="img-path-music-input">Image Path:</label>
+          <input type="text" name="img-path-music" id="img-path-music-input" />
+          <label for="gif-path-music-input">Gif Path(option):</label>
+          <input type="text" name="gif-path-music" id="gif-path-music-input" />
+          <input type="submit" value="UpLoad Music" id="submit-music-btn" />
+        </form>
+      </div>
+      <div class="music-list-box">
+        
+      </div>
+    </div>
+    <div class="user-display">
+
+    </div>
+  </body>
+</html>

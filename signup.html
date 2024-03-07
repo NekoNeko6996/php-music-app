@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="js/signup.js" defer></script>
+    <link rel="stylesheet" href="css/signup.css" />
+    <title>sign up</title>
+  </head>
+  <body>
+    <form action="" id="sign-up-form" method="post" onsubmit="signUp(event)">
+      <h2>Sign Up</h2>
+      <label for="sign-up-email">Email</label>
+      <input type="email" name="sign-up-email" id="sign-up-email" required />
+      <label for="path-music-input">Password</label>
+      <input
+        type="password"
+        name="sign-up-password"
+        id="sign-up-password"
+        required
+        autocomplete
+      />
+      <label for="sign-up-repeat-password">Repeat Password</label>
+      <input
+        type="password"
+        name="sign-up-repeat-password"
+        id="sign-up-repeat-password"
+        autocomplete
+      />
+      <input type="submit" value="Sign Up" id="submit-sign-up" />
+    </form>
+
+    <script>
+      function signUp(event) {
+        event.preventDefault();
+
+        const signUpData = $("#sign-up-form").serialize();
+
+        $.ajax({
+          url: "server/login.php",
+          type: "POST",
+          data: signUpData,
+          success: (response) => {
+            console.log(response);
+          },
+          error: (status, error) => {
+            console.error(status, error);
+          },
+        });
+      }
+    </script>
+  </body>
+</html>
