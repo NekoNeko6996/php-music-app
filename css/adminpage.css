@@ -1,60 +1,124 @@
 * {
-    padding: 0;
-    margin: 0;
-    box-sizing: border-box;
-    display: flex;
-    justify-content: center;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
 }
 
 body {
-    width: 100vw;
-    flex-direction: column;
-    align-items: center;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
+h2 {
+    width: 100%;
+    text-align: center;
+}
+
+.admin-page-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  border: 1px solid #858585;
+  background-color: white;
+  z-index: 10;
+}
+
+.music-edit-container {
+  position: relative;
+  width: 70%;
+  margin: 70px 10px 10px 10px;
+  display: flex;
+  flex-direction: row;
+  position: relative;
+}
 
 .add-new-music {
-    border: 1px solid red;
-    padding: 20px 20px 0 20px;
-    width: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid rgb(119, 119, 119);
+  padding: 20px 50px 0 50px;
 }
 
 input {
-    height: 40px;
-    width: 400px;
+  height: 40px;
+  width: 400px;
 }
 label {
-    font-size: 20px;
-    align-self: flex-start;
-    margin-top: 20px;
+  font-size: 20px;
+  align-self: flex-start;
+  margin-top: 20px;
 }
-form{
-    display: flex;
-    flex-direction: column;
-    position: relative;
+form {
+  display: flex;
+  flex-direction: column;
+  position: relative;
 }
 #submit-music-btn {
-    margin: 20px 0 20px 0;
+  margin: 20px 0 20px 0;
 }
 
-/* ------------------------------------------- */
-.music-edit-container {
-    position: relative;
-    width: 70%;
-    margin: 10px;
+/* ------------------------------------------ */
+.user-display {
+  width: 70%;
+  border: 1px solid rgb(112, 112, 112);
+}
+
+table {
+  width: 100%;
+}
+
+td {
     padding: 10px;
 }
 
-.music-list-box {
-    height: 100%;
-    width: 50%;
-
-    background-color: cadetblue;
+.user-table-td,
+.user-table-th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
 }
 
-.user-display {
-    height: 500px;
-    width: 70%;
+.user-table-tr:nth-child(even) {
+  background-color: #dddddd;
+}
 
-    background-color: cornflowerblue;
+.user-item-show {
+  width: 100%;
+  height: 60px;
+  background-color: aqua;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0 10px 0 10px;
+}
+.user-id-p {
+  margin-right: 10%;
+}
+.user-option-btn {
+  padding: 5px 10px 5px 10px;
+  margin-right: 10px;
+}
+
+.update-input {
+  width: 100%;
+}
+
+/* ------------------------------------------- */
+.music-update-box {
+  margin-left: 20px;
+  border: 1px solid rgb(119, 119, 119);
+  flex-grow: 1;
+  padding-top: 20px;
+}
+.update-music-btn {
+    padding: 10px 15px 10px 15px;
+    float: right;
 }
