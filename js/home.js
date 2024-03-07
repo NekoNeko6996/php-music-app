@@ -63,7 +63,7 @@ function renderPlaylist(playlist, index) {
         />
         <div>
           <p class="playlist-music-name">${row[1]}</p>
-          <p>${row[3]}</p>
+          <p>${row[3] || "Unknown"}</p>
         </div>
         </div>
       `;
