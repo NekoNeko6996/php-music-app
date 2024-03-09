@@ -1,0 +1,119 @@
+// -------------------------- music wave ---------------------------- //
+const array = [];
+const array_row = [];
+
+//model của columns
+const model = "normal"; //or 'smooth'
+//số cột
+const columns = 25;
+//số ô màu
+const rows = 10;
+const index = 0.8; //thay dổi độ nhạy của sóng
+//màu
+const color = [
+  "#00FFFF",
+  "#00FFCC",
+  "#00FF99",
+  "#00FF66",
+  "#00FF33",
+  "#00FF00",
+  "#00FF00",
+  "#FFCC66",
+  "#FFCC33",
+  "#FFCC00",
+  "#FF9933",
+  "#FF9900",
+  "#FF6633",
+  "#FF6600",
+  "#993300",
+  "#993333",
+  "#993333",
+  "#FF3333",
+  "#FF3300",
+  "#FF0000",
+];
+var source, dataArray, audioCtx, analyser, bufferLength;
+var status_ = false;
+
+function musicWave(interact, audioElement) {
+  if (interact && audioElement) {
+    // khởi tạo 1 lần duy nhất
+    if (!status_) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      source = audioCtx.createMediaElementSource(audioElement);
+      analyser = audioCtx.createAnalyser();
+      source.connect(analyser);
+      analyser.connect(audioCtx.destination);
+
+      analyser.fftSize = 2048;
+      analyser.smoothingTimeConstant = 0.75;
+
+      bufferLength = analyser.frequencyBinCount;
+      dataArray = new Uint8Array(bufferLength);
+
+      function initialization() {
+        for (let i = 0; i < columns; i++) array.push("");
+        for (let j = 0; j < rows; j++) array_row.push("");
+      }
+      initialization();
+      status_ = true;
+    }
+
+    function updateVisualizer() {
+      requestAnimationFrame(updateVisualizer);
+      if (audioElement.play) {
+        analyser.getByteFrequencyData(dataArray);
+        const average = [];
+        for (let i = 0; i < columns; i++) {
+          average[i] = dataArray[i * Math.floor(800 / columns)];
+        }
+
+        for (let i = 0; i < columns; i++) {
+          const element = document.querySelector(`[data-index="${i + 2000}"]`);
+          if (element) {
+            element.style.height = `${Math.floor(
+              (average[i] % 100) * index
+            )}px`;
+          }
+        }
+      }
+    }
+
+    function draw() {
+      // Add cột vào container
+      const html_columns = array
+        .map((data, index) => {
+          return `<div class="grid-item-Wave" data-index="${
+            index + 2000
+          }"></div>`;
+        })
+        .join("");
+      $("#WaveContainer").html(html_columns);
+
+      if (model != "smooth") {
+        const html_rows = array_row
+          .map((data, index) => {
+            return `<div class="grid-item-row-Wave" data-index="${
+              index + 1000
+            }" style="bottom: ${index * 10}px; background-color: ${
+              color[index]
+            };"></div>`;
+          })
+          .join("");
+
+        for (let i = 0; i < columns; i++) {
+          $(`[data-index="${i + 2000}"]`).html(html_rows);
+        }
+
+        $(".grid-item-Wave").css("grid-template-rows", `repeat(${rows}, 19px)`);
+      }
+
+      $("#WaveContainer").css(
+        "grid-template-columns",
+        `repeat(${columns}, 13px)`
+      );
+    }
+    draw();
+    updateVisualizer();
+  }
+}

@@ -1,7 +1,12 @@
 const audio = new Audio();
 var audioStatus = true;
 var interact = false;
-var onloadData, DataResponseSortByTag, currentPlaylist;
+var onloadData,
+  DataResponseSortByTag,
+  currentPlaylist,
+  libraryIDList = [];
+var previousPlayLists,
+  mixStatus = false;
 var currentID = 0;
 
 // ---------------------------------------------- //
@@ -29,6 +34,7 @@ function audioControl(action) {
         `<path d="M8 5V19M16 5V19" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`
       );
       interact = true;
+      musicWave(interact, audio, 20);
       break;
     case false:
       audio.pause();
@@ -77,6 +83,7 @@ function clickToListen(id, playlists) {
   audio.src = playlists[id][2];
   currentID = id;
   currentPlaylist = [...playlists];
+  console.log(playlists);
   renderPlaylist(playlists, id);
   audio.oncanplay = () => {
     // kiểm tra user đã nhấn vào button play lần nào hay chưa
@@ -97,8 +104,12 @@ function clickToListen(id, playlists) {
             <p id="on-play-music-name">${playlists[id][1]}</p>
             <p>${playlists[id][3]}</p>
         </div>
-        <div id="love-box-btn">
-            <svg width="100%" height="100%" viewBox="0 0 24 24" fill="${"white"}" xmlns="http://www.w3.org/2000/svg">
+        <div id="love-box-btn" onclick="addLibraryClick(${playlists[id][0]})">
+            <svg width="100%" height="100%" viewBox="0 0 24 24" fill="${
+              libraryIDList.indexOf(playlists[id][0]) == -1
+                ? "white"
+                : "#FF00CC"
+            }">
                 <path fill-rule="evenodd" clip-rule="evenodd" d="M12 6.00019C10.2006 3.90317 7.19377 3.2551 4.93923 5.17534C2.68468 7.09558 2.36727 10.3061 4.13778 12.5772C5.60984 14.4654 10.0648 18.4479 11.5249 19.7369C11.6882 19.8811 11.7699 19.9532 11.8652 19.9815C11.9483 20.0062 12.0393 20.0062 12.1225 19.9815C12.2178 19.9532 12.2994 19.8811 12.4628 19.7369C13.9229 18.4479 18.3778 14.4654 19.8499 12.5772C21.6204 10.3061 21.3417 7.07538 19.0484 5.17534C16.7551 3.2753 13.7994 3.90317 12 6.00019Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
         </div>
@@ -123,7 +134,9 @@ function sortByTagRenderItem(array, nameArray) {
       row[1],
       row[3],
       index,
-      nameArray
+      nameArray,
+      libraryIDList.indexOf(row[0]) == -1 ? "none" : "#ba63d4",
+      row[0]
     );
   });
   $(".category-show-item").html(musicByTagComponent);
@@ -136,7 +149,7 @@ $("document").ready(() => {
     type: "POST",
     data: {
       requestCode: 1,
-      data: "",
+      userEmail,
     },
     success: (response) => {
       if (response == 0) {
@@ -144,6 +157,7 @@ $("document").ready(() => {
         return;
       }
       onloadData = JSON.parse(response.replace("<!-- Server -->", ""));
+      libraryIDList = onloadData.library.map((row) => row[0].toString());
       console.log(onloadData);
       var newMusicComponent = (top3MusicComponent = "");
 
@@ -229,8 +243,12 @@ audio.addEventListener("timeupdate", () => {
   $("#range-duration").val(audio.currentTime);
 });
 
-// ----------------------------------------- //
-function sortByTag(tag) {
+// ------------------------------------------ //
+function selectTag(event, tag) {
+  document.querySelectorAll(".category-tag").forEach((element) => {
+    element.classList.remove("tag-selected");
+  });
+  event.target.classList.add("tag-selected");
   if (tag) {
     $.ajax({
       url: "server/server.php",
@@ -238,6 +256,7 @@ function sortByTag(tag) {
       data: {
         requestCode: 2,
         data: tag,
+        userEmail,
       },
       success: (response) => {
         DataResponseSortByTag = JSON.parse(
@@ -253,11 +272,62 @@ function sortByTag(tag) {
     });
   }
 }
+// ------------------------------------------------------------ //
+function musicSkip(action) {
+  if (action) {
+    if (currentPlaylist[currentID + 1]) {
+      clickToListen(currentID + 1, currentPlaylist);
+    }
+  } else {
+    if (currentPlaylist[currentID - 1]) {
+      clickToListen(currentID - 1, currentPlaylist);
+    }
+  }
+}
 
-// ------------------------------------------ //
-function selectTag(event) {
-  document.querySelectorAll(".category-tag").forEach((element) => {
-    element.classList.remove("tag-selected");
-  });
-  event.target.classList.add("tag-selected");
+function musicLoop() {
+  if (audio.loop) {
+    audio.loop = false;
+    $(".ci-primary").attr("fill", "white");
+  } else {
+    audio.loop = true;
+    $(".ci-primary").attr("fill", "#a84fc4");
+  }
+}
+
+function audioMix() {
+  if (!mixStatus) {
+    if (!currentPlaylist) currentPlaylist = [...onloadData.playlists];
+    previousPlayLists = [...currentPlaylist];
+
+    for (var i = currentPlaylist.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var temp = currentPlaylist[i];
+      currentPlaylist[i] = currentPlaylist[j];
+      currentPlaylist[j] = temp;
+    }
+    $(".mix-arrow").attr("fill", "#a84fc4");
+
+    mixStatus = true;
+  } else {
+    $(".mix-arrow").attr("fill", "white");
+    currentPlaylist = [...previousPlayLists];
+    mixStatus = false;
+  }
+  clickToListen(0, currentPlaylist);
+}
+
+// ------------------------------------------------------------ //
+function userAvatarClick() {
+  if ($(".nav-user-option").attr("id") == "nav-userAvatar-close") {
+    $(".nav-user-option").attr("id", "nav-userAvatar-open");
+    $(".user-nav-box").attr("id", "user-nav-box-open");
+  } else {
+    $(".nav-user-option").attr("id", "nav-userAvatar-close");
+    $(".user-nav-box").attr("id", "");
+  }
+}
+// ------------------------------------------------------------- //
+function logoutF() {
+  window.location.href = "server/logout.php";
 }

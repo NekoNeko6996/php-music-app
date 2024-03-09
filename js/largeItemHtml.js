@@ -1,5 +1,5 @@
 // music item
-function loadMusicItemByTag(imgUrl, musicName, author, index, nameArray) {
+function loadMusicItemByTag(imgUrl, musicName, author, index, nameArray, color, musicID) {
   return `
     <div class="category-item-box">
     <div class="play-svg" onclick="clickToListen(${index}, ${nameArray})">
@@ -7,7 +7,8 @@ function loadMusicItemByTag(imgUrl, musicName, author, index, nameArray) {
         width="30px"
         height="30px"
         viewBox="0 0 24 24"
-        fill="none"
+        fill="${color}"
+        onclick="addLibraryClick(${musicID})"
       >
         <path
           fill-rule="evenodd"

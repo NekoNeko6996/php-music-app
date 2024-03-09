@@ -1,0 +1,26 @@
+#WaveContainer {
+  height: 201px;
+  width: 100%;
+  display: grid;
+  grid-column-gap: 0px;
+  position: absolute;
+  left: 0;  
+  bottom: 90px;
+}
+.grid-item-Wave {
+  width: 10px;
+  border: 1px solid black;
+  position: relative;
+  margin-top: auto;
+  transition: 0.06s;
+  overflow: hidden;
+  display: grid;
+  grid-row-gap: 0px;
+}
+
+.grid-item-row-Wave {
+  height: 10px;
+  width: 100%;
+  border-top: 1px solid black;
+  position: absolute;
+}

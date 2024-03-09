@@ -37,6 +37,6 @@ form{
     flex-direction: column;
     position: relative;
 }
-#submit-sign-up {
+.submit-login-signup {
     margin: 20px 0 20px 0;
 }

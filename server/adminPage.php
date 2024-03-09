@@ -14,7 +14,6 @@ if (!$connect) {
 
 $insertQuery = "INSERT INTO music_source_path (musicName, musicPath, author, imgPath, gifPath) VALUES (?, ?, ?, ?, ?)";
 
-
 function AD_onloadQuery($DB)
 {
     $result["userList"] = mysqli_fetch_all(mysqli_query($DB, "SELECT user.id, user.email, permission.permissionName FROM user INNER JOIN permission ON user.permissionID = permission.permissionID"));
@@ -33,6 +32,18 @@ function getMusicById($DB, $id)
         die("[SQL ERROR] query error" . mysqli_error($DB));
     }
     return $result;
+}
+
+function updateMusic($DB, $data)    
+{   
+    $updateQuery = "UPDATE music_source_path SET musicName = ?, musicPath = ?, author = ?, imgPath = ?, gifPath = ?, tag = ? WHERE id = ?";
+    $stmt = mysqli_prepare($DB, $updateQuery);
+    mysqli_stmt_bind_param($stmt, "ssssssi", $data["musicName"], $data["musicPath"], $data["musicAuthor"], $data["imgPath"], $data["update-gif-path"], $data["update-music-tag"], $data["musicId"]);
+    $updateResult = mysqli_stmt_execute($stmt);
+    if (!$updateResult) {
+        die("[SQL ERROR] update error" . mysqli_error($DB));
+    }
+    return $updateResult;
 }
 
 
@@ -66,6 +77,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if (isset($_POST['musicID'])) {
                 echo json_encode(getMusicById($connect, $_POST["musicID"]));
             }
+            break;
+        case 4:
+            parse_str($_POST["formData"], $formData);
+
+            if (isset($formData["musicId"]) && isset($formData["musicName"])) {
+                echo json_encode(updateMusic($connect, $formData));
+            } else
+                echo "null";
+
             break;
         default:
             break;

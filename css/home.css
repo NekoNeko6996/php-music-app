@@ -136,11 +136,10 @@ body {
 .play-zone {
   position: fixed;
 
+  background-color: #170f23;
   height: 90px;
   width: 100%;
   bottom: 0;
-
-  background-color: #170f23;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -177,6 +176,7 @@ body {
   align-items: center;
   padding: 0 5px 0 5px;
   color: var(--text-color);
+  z-index: 4;
 }
 
 #play-music-info > img {
@@ -213,6 +213,7 @@ body {
   align-items: center;
   width: 100%;
   padding: 0 0 5px 0;
+  z-index: 4;
 }
 
 #range-duration {
@@ -364,9 +365,9 @@ input[type="range"]::-webkit-slider-thumb {
   align-items: center;
   height: 100%;
   width: 300px;
-  background-color: #170f23;
   position: absolute;
   right: 0;
+  z-index: 4;
 }
 .music-volume-control > svg {
   margin-left: 20px;
@@ -472,14 +473,12 @@ input[type="range"]::-webkit-slider-thumb {
 #playlist-container {
   width: 100%;
   overflow-y: scroll;
-
 }
 ::-webkit-scrollbar {
   width: 5px;
 }
 ::-webkit-scrollbar-track {
   background-color: #170f23;
-
 }
 ::-webkit-scrollbar-thumb {
   background-color: #a84fc4;
@@ -566,12 +565,86 @@ input[type="range"]::-webkit-slider-thumb {
   background-color: rgba(0, 0, 0, 0.699);
   opacity: 0;
   z-index: 4;
-  transition: .5s;
+  transition: 0.5s;
 }
 .category-item-box:hover > .play-svg {
-  opacity: .9;
+  opacity: 0.9;
 }
 .play-svg > svg {
   margin: 5px;
   cursor: pointer;
+}
+
+/* --------------------------------------------- */
+.user-nav-box {
+  height: 70%;
+
+  color: white;
+
+  position: absolute;
+  right: 10px;
+  top: 15%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 2px solid #a84fc4;
+  border-radius: 30px;
+  padding-left: 10px;
+  cursor: pointer;
+  overflow: hidden;
+}
+#user-nav-box-open {
+  overflow: visible;
+}
+
+.user-nav-box > span {
+  height: 100%;
+  width: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+.user-nav-box > div {
+  text-align: right;
+  width: 100%;
+  border: 1px solid white;
+  margin: 15px 10px 0 0;
+  border-radius: 10px;
+  background-color: #66467c;
+}
+.user-nav-box > div > p {
+  padding: 10px;
+  border-radius: 10px;
+  font-weight: bold;
+}
+.user-nav-box > div > p:hover {
+  background-color: #542b70;
+}
+
+#nav-userAvatar-close {
+  opacity: 0;
+}
+
+#nav-userAvatar-open {
+  animation-fill-mode: forwards;
+  animation: navAvatarAnimation 0.3s linear;
+}
+
+@keyframes navAvatarAnimation {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.user-avatar {
+  height: 100%;
+  aspect-ratio: 1/1;
+  border-radius: 50%;
+  float: right;
+  margin-left: 10px;
 }

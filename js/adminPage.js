@@ -1,3 +1,19 @@
+// function api(requestCode, data, callback) {
+
+//   $.ajax({
+//     url: "server/adminPage.php",
+//     type: "POST",
+//     data: {
+//       requestCode,
+//       [data.name]: data
+//     },
+//     success: (response) => callback(response),
+//     error: (status, error) => {
+//       console.error(status, error);
+//     },
+//   });
+// }
+
 function loadItemShowUser(userArray) {
   var htmlComponent = `
     <tr class="user-table-tr">
@@ -22,6 +38,7 @@ function loadItemShowUser(userArray) {
   $("#user-display-table").html(htmlComponent);
 }
 
+// onload
 $("document").ready(() => {
   $.ajax({
     url: "server/adminPage.php",
@@ -42,7 +59,9 @@ $("document").ready(() => {
   });
 });
 
-function loadMusicData() {
+// load music to update
+function loadMusicData(event) {
+  event.preventDefault()
   const musicID = $("#update-music-id").val();
   if (musicID >= 1) {
     $.ajax({
@@ -72,6 +91,7 @@ function loadMusicData() {
   } else console.log("[ERROR] musicID must be greater than 0");
 }
 
+// upload music
 function uploadMusic(event) {
   // event.preventDefault();
   const formData = $("#uploadMusic-form").serialize();
@@ -86,6 +106,27 @@ function uploadMusic(event) {
     success: (response) => {
       console.log(JSON.parse(response));
       window.location.reload();
+    },
+    error: (status, error) => {
+      console.error(status, error);
+    },
+  });
+}
+
+// update music
+function updateMusicRequest(event) {
+  event.preventDefault();
+  const formData = $("#update-music-form-data").serialize();
+  console.log("this",formData);
+  $.ajax({
+    url: "server/adminPage.php",
+    type: "POST",
+    data: {
+      requestCode: 4,
+      formData,
+    },
+    success: (response) => {
+      console.log(response);
     },
     error: (status, error) => {
       console.error(status, error);
