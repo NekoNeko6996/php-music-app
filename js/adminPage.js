@@ -93,7 +93,7 @@ function loadMusicData(event) {
 
 // upload music
 function uploadMusic(event) {
-  // event.preventDefault();
+  event.preventDefault();
   const formData = $("#uploadMusic-form").serialize();
 
   $.ajax({
@@ -104,7 +104,7 @@ function uploadMusic(event) {
       formData,
     },
     success: (response) => {
-      console.log(JSON.parse(response));
+      console.log(JSON.parse(response.replace("<!-- SERVER -->", "")));
       window.location.reload();
     },
     error: (status, error) => {

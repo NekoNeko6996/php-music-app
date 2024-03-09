@@ -63,7 +63,7 @@ if (isset($_SESSION["user"]) && isset($_SESSION["username"])) {
 
     <div class="mid-banner"></div>
     <h3 class="new-music-title" style="color: var(--text-color)">
-      Mới Phát Hành
+      New Release
     </h3>
     <div class="new-music-box"></div>
 

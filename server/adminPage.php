@@ -51,12 +51,13 @@ function updateMusic($DB, $data)
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     switch ($_POST["requestCode"]) {
         case 2:
-            if (isset($_POST["name-music"]) && isset($_POST["path-music"])) {
-                $nameMusic = $_POST["name-music"];
-                $pathMusic = $_POST["path-music"];
-                $author = $_POST["author-music"];
-                $imgPath = $_POST["img-path-music"];
-                $gifPath = $_POST["gif-path-music"];
+            parse_str($_POST["formData"], $formData);
+            if (isset($formData["name-music"]) && isset($formData["path-music"])) {
+                $nameMusic = $formData["name-music"];
+                $pathMusic = $formData["path-music"];
+                $author = $formData["author-music"];
+                $imgPath = $formData["img-path-music"];
+                $gifPath = $formData["gif-path-music"];
 
                 $stmt = mysqli_prepare($connect, $insertQuery);
                 mysqli_stmt_bind_param($stmt, "sssss", $nameMusic, $pathMusic, $author, $imgPath, $gifPath);

@@ -11,26 +11,15 @@ const rows = 10;
 const index = 0.8; //thay dổi độ nhạy của sóng
 //màu
 const color = [
-  "#00FFFF",
-  "#00FFCC",
-  "#00FF99",
-  "#00FF66",
-  "#00FF33",
-  "#00FF00",
-  "#00FF00",
-  "#FFCC66",
-  "#FFCC33",
-  "#FFCC00",
-  "#FF9933",
-  "#FF9900",
-  "#FF6633",
-  "#FF6600",
-  "#993300",
-  "#993333",
-  "#993333",
-  "#FF3333",
-  "#FF3300",
-  "#FF0000",
+  "#5e2566",
+  "#6e2b77",
+  "#863691",
+  "#963da1",
+  "#ba4dc9",
+  "#dd60ee",
+  "#df79ec",
+  "#e990f5",
+  "#e8acf0",
 ];
 var source, dataArray, audioCtx, analyser, bufferLength;
 var status_ = false;

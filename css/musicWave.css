@@ -4,7 +4,7 @@
   display: grid;
   grid-column-gap: 0px;
   position: absolute;
-  left: 0;  
+  left: 0;
   bottom: 90px;
 }
 .grid-item-Wave {
@@ -16,6 +16,8 @@
   overflow: hidden;
   display: grid;
   grid-row-gap: 0px;
+  box-shadow: 0 0 1px #cc79e6d3;
+  background-color: #e8acf0;
 }
 
 .grid-item-row-Wave {
