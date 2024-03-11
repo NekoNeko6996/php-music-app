@@ -14,54 +14,63 @@
 //   });
 // }
 
-function loadItemShowUser(userArray) {
-  var htmlComponent = `
-    <tr class="user-table-tr">
-      <th class="user-table-th">USER ID</th>
-      <th class="user-table-th">USER EMAIL</th>
-      <th class="user-table-th">USER PERMISSION</th>
-      <th class="user-table-th">USER OPTION</th>
-    </tr>
-  `;
-  userArray.forEach((row, index) => {
-    htmlComponent += `
-    <tr class="user-table-tr">
-      <td class="user-table-td">${row[0]}</td>
-      <td class="user-table-td">${row[1]}</td>
-      <td class="user-table-td">${row[2]}</td>
-      <td class="user-table-td">
-        <button class="user-option-btn">BLOCK USER</button>
-        <button class="user-option-btn">DELETE USER</button>
-      </td>
-    </tr>`;
-  });
-  $("#user-display-table").html(htmlComponent);
-}
+if ($("#user-display-table") != null) {
+  function loadItemShowUser(userArray) {
+    var htmlComponent = `
+      <tr class="user-table-tr">
+        <th class="user-table-th">USER ID</th>
+        <th class="user-table-th">USER EMAIL</th>
+        <th class="user-table-th">USER NAME</th>
+        <th class="user-table-th">USER PERMISSION</th>
+        <th class="user-table-th">USER OPTION</th>
+      </tr>
+    `;
+    userArray.forEach((row, index) => {
+      htmlComponent += `
+      <tr class="user-table-tr">
+        <td class="user-table-td">${row[0]}</td>
+        <td class="user-table-td">${row[1]}</td>
+        <td class="user-table-td">${row[2]}</td>
+        <td class="user-table-td">${row[3]}</td>
+        <td class="user-table-td">
+          ${
+            row[3] != "root"
+              ? `<button class="user-option-btn">BLOCK USER</button>
+                <button class="user-option-btn">DELETE USER</button>`
+              : ""
+          }
+        </td>
+      </tr>`;
+    });
+    $("#user-display-table").html(htmlComponent);
+  }
 
-// onload
-$("document").ready(() => {
-  $.ajax({
-    url: "server/adminPage.php",
-    type: "POST",
-    data: {
-      requestCode: 1,
-      data: "",
-    },
-    success: (response) => {
-      const onloadDataResponse = JSON.parse(
-        response.replace("<!-- SERVER -->", "")
-      );
-      loadItemShowUser(onloadDataResponse.userList);
-    },
-    error: (status, error) => {
-      console.error(status, error);
-    },
+  // onload
+  $("document").ready(() => {
+    $.ajax({
+      url: "server/adminPage.php",
+      type: "POST",
+      data: {
+        requestCode: 1,
+        data: "",
+      },
+      success: (response) => {
+        const onloadDataResponse = JSON.parse(
+          response.replace("<!-- SERVER -->", "")
+        );
+        console.log(onloadDataResponse)
+        loadItemShowUser(onloadDataResponse.userList);
+      },
+      error: (status, error) => {
+        console.error(status, error);
+      },
+    });
   });
-});
+}
 
 // load music to update
 function loadMusicData(event) {
-  event.preventDefault()
+  event.preventDefault();
   const musicID = $("#update-music-id").val();
   if (musicID >= 1) {
     $.ajax({
@@ -117,7 +126,7 @@ function uploadMusic(event) {
 function updateMusicRequest(event) {
   event.preventDefault();
   const formData = $("#update-music-form-data").serialize();
-  console.log("this",formData);
+  console.log("this", formData);
   $.ajax({
     url: "server/adminPage.php",
     type: "POST",

@@ -3,7 +3,7 @@ const array = [];
 const array_row = [];
 
 //model của columns
-const model = "normal"; //or 'smooth'
+const model = "normal"; // normal or 'smooth'
 //số cột
 const columns = 25;
 //số ô màu
@@ -99,7 +99,7 @@ function musicWave(interact, audioElement) {
 
       $("#WaveContainer").css(
         "grid-template-columns",
-        `repeat(${columns}, 13px)`
+        `repeat(${columns}, 12px)`
       );
     }
     draw();

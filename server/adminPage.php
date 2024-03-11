@@ -16,7 +16,7 @@ $insertQuery = "INSERT INTO music_source_path (musicName, musicPath, author, img
 
 function AD_onloadQuery($DB)
 {
-    $result["userList"] = mysqli_fetch_all(mysqli_query($DB, "SELECT user.id, user.email, permission.permissionName FROM user INNER JOIN permission ON user.permissionID = permission.permissionID"));
+    $result["userList"] = mysqli_fetch_all(mysqli_query($DB, "SELECT user.id, user.email, user.username, permission.permissionName FROM user INNER JOIN permission ON user.permissionID = permission.permissionID"));
     $result["musicList"] = mysqli_fetch_all(mysqli_query($DB, "SELECT * FROM music_source_path LIMIT 10"));
 
     if (!isset($result["userList"]) || !isset($result["musicList"])) {

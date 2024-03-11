@@ -18,7 +18,7 @@
 session_start();
 if (isset($_SESSION["user"]) && isset($_SESSION["username"])) {
   $user = $_SESSION["user"];
-
+  $permission = $_SESSION["permissionID"];
 } else {
   header("Location: login.php");
   exit();
@@ -57,6 +57,10 @@ if (isset($_SESSION["user"]) && isset($_SESSION["username"])) {
         </span>
         <div class="nav-user-option" id="nav-userAvatar-close">
           <p onclick="logoutF()">Logout</p>
+          <?php 
+            if(isset($permission) && $permission != 3) 
+            echo '<p onclick="window.location.href =\'admin.php\'">Admin Page</p>';
+          ?>
         </div>
       </div>
     </nav>

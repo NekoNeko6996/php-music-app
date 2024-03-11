@@ -36,7 +36,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = check($_POST["login-password"]);
     $email = check($_POST["login-email"]);
 
-    $findUser = mysqli_fetch_all(mysqli_query($connect, "SELECT userName, hash FROM user WHERE email = '$email'")) or die("[SQL] find user error". mysqli_error($connect));
+    $findUser = mysqli_fetch_all(mysqli_query($connect, "SELECT userName, hash, permissionID FROM user WHERE email = '$email'")) or die("[SQL] find user error". mysqli_error($connect));
 
     $hashPassword = $findUser[0][1];
     if ($hashPassword) {
@@ -44,7 +44,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       if ($checkHash) {
         $_SESSION["user"] = $_POST["login-email"];
         $_SESSION["username"] = $findUser[0][0];
-        echo "login success";
+        $_SESSION["permissionID"] = $findUser[0][2];
       } else {
         echo "login false";
       }
@@ -55,20 +55,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   }
 }
 
-
 if (isset($_SESSION["user"])) {
   header("Location: home.php");
 }
 ?>
 
 <body>
-  <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) ?>" id="login-form" method="post">
-    <h2>Login</h2>
+  <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) ?>" id="login-form" class="sign-up-form" method="post">
+    <h2 class="login-text">Login</h2>
     <label for="login-email">Email</label>
     <input type="email" name="login-email" id="login-email" required />
     <label for="path-music-input">Password</label>
     <input type="password" name="login-password" id="login-password" required autocomplete />
     <input type="submit" value="Sign Up" class="submit-login-signup" />
+    <p>Don't have an account?, <a href="signup.php">register now.</a></p>
   </form>
 </body>
 </html>

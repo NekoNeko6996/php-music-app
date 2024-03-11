@@ -59,8 +59,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <!-- Client -->
 
 <body>
-  <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) ?>" id="sign-up-form" method="post">
-    <h2>Sign Up</h2>
+  <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) ?>" id="sign-up-form" class="sign-up-form" method="post">
+    <h2 class="login-text">Sign Up</h2>
     <label for="sign-up-email">Email</label>
     <input type="email" name="sign-up-email" id="sign-up-email" required />
     <label for="sign-up-username">Username</label>
@@ -69,7 +69,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <input type="password" name="sign-up-password" id="sign-up-password" required autocomplete />
     <label for="sign-up-repeat-password">Repeat Password</label>
     <input type="password" name="sign-up-repeat-password" id="sign-up-repeat-password" autocomplete />
-    <input type="submit" value="Sign Up" id="submit-sign-up" />
+    <input type="submit" value="Sign Up" id="submit-sign-up" class="submit-login-signup" />
+    <p>Have an account?, <a href="login.php">login now.</a></p>
   </form>
 </body>
 

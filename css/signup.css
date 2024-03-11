@@ -12,15 +12,17 @@ body {
 
 .sign-up-form {
     border: 1px solid red;
-    padding: 20px 20px 0 20px;
-    width: 50%;
+    padding: 20px;
     display: flex;
     flex-direction: column;
     justify-content: center;
+    margin-top: 50px;
+    border-radius: 10px;
 }
 
-h2 {
+.login-text {
     text-align: center;
+    margin: 10px 5px 5px 5px;
 }
 
 input {
@@ -39,4 +41,5 @@ form{
 }
 .submit-login-signup {
     margin: 20px 0 20px 0;
+    width: 100%;
 }
