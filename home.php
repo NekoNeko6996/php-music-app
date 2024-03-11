@@ -18,10 +18,11 @@
 session_start();
 if (isset($_SESSION["user"]) && isset($_SESSION["username"])) {
   $user = $_SESSION["user"];
+  $username = $_SESSION["username"];
   $permission = $_SESSION["permissionID"];
 } else {
-  header("Location: login.php");
-  exit();
+  $username = "Guest";
+  $permission = -1;
 }
 ?>
 
@@ -34,31 +35,40 @@ if (isset($_SESSION["user"]) && isset($_SESSION["username"])) {
   </aside>
   <section class="mid-body">
     <nav class="mid-nav">
-      <form action="">
-        <input type="text" name="search-music" id="search-music-input" placeholder="Search..." />
-        <button type="submit" id="search-btn-nav">
-          <svg width="35px" height="35px" viewBox="0 0 24 24" fill="none">
-            <path
-              d="M17.5556 3C19.4579 3 21 4.54213 21 6.44444V17.5556C21 19.4579 19.4579 21 17.5556 21H6.44444C4.54213 21 3 19.4579 3 17.5556V6.44444C3 4.54213 4.54213 3 6.44444 3H17.5556Z"
-              stroke="white" stroke-width="2" />
-            <path fill-rule="evenodd" clip-rule="evenodd"
-              d="M11.5067 7.01392C9.02527 7.01392 7.01367 9.02551 7.01367 11.5069C7.01367 13.9884 9.02527 16 11.5067 16C12.3853 16 13.205 15.7478 13.8973 15.3119L15.1658 16.5803C15.5563 16.9709 16.1895 16.9709 16.58 16.5803C16.9705 16.1898 16.9705 15.5566 16.58 15.1661L15.3116 13.8977C15.7475 13.2053 15.9997 12.3856 15.9997 11.5069C15.9997 9.02551 13.9881 7.01392 11.5067 7.01392ZM9.01367 11.5069C9.01367 10.1301 10.1298 9.01392 11.5067 9.01392C12.8836 9.01392 13.9997 10.1301 13.9997 11.5069C13.9997 12.8838 12.8836 14 11.5067 14C10.1298 14 9.01367 12.8838 9.01367 11.5069Z"
-              fill="white" />
-          </svg>
-        </button>
-      </form>
+      <div class="search-container">
+        <form action="">
+          <input type="text" name="search-music" id="search-music-input" placeholder="Search..."
+            oninput="searchMusic(event.target.value)" />
+          <button type="submit" id="search-btn-nav">
+            <svg width="35px" height="35px" viewBox="0 0 24 24" fill="none">
+              <path
+                d="M17.5556 3C19.4579 3 21 4.54213 21 6.44444V17.5556C21 19.4579 19.4579 21 17.5556 21H6.44444C4.54213 21 3 19.4579 3 17.5556V6.44444C3 4.54213 4.54213 3 6.44444 3H17.5556Z"
+                stroke="white" stroke-width="2" />
+              <path fill-rule="evenodd" clip-rule="evenodd"
+                d="M11.5067 7.01392C9.02527 7.01392 7.01367 9.02551 7.01367 11.5069C7.01367 13.9884 9.02527 16 11.5067 16C12.3853 16 13.205 15.7478 13.8973 15.3119L15.1658 16.5803C15.5563 16.9709 16.1895 16.9709 16.58 16.5803C16.9705 16.1898 16.9705 15.5566 16.58 15.1661L15.3116 13.8977C15.7475 13.2053 15.9997 12.3856 15.9997 11.5069C15.9997 9.02551 13.9881 7.01392 11.5067 7.01392ZM9.01367 11.5069C9.01367 10.1301 10.1298 9.01392 11.5067 9.01392C12.8836 9.01392 13.9997 10.1301 13.9997 11.5069C13.9997 12.8838 12.8836 14 11.5067 14C10.1298 14 9.01367 12.8838 9.01367 11.5069Z"
+                fill="white" />
+            </svg>
+          </button>
+        </form>
+        <div class="search-result-box">
+          <!-- search result here -->
+        </div>
+      </div>
       <div class="user-nav-box">
         <span onclick="userAvatarClick(event.target)">
           <p>
             <?php
-            echo $_SESSION["username"] ?>
+            echo $username ?>
           </p>
           <img src="music/img/default.jpg" alt="no-img" class="user-avatar">
         </span>
         <div class="nav-user-option" id="nav-userAvatar-close">
-          <p onclick="logoutF()">Logout</p>
-          <?php 
-            if(isset($permission) && $permission != 3) 
+          <?php if ($permission != -1)
+            echo '<p onclick="logoutF()">Logout</p>';
+          else
+            echo '<p onclick="window.location.href=\'login.php\'">Login</p>' ?>
+            <?php
+          if (isset($permission) && $permission != 3 && $permission != -1)
             echo '<p onclick="window.location.href =\'admin.php\'">Admin Page</p>';
           ?>
         </div>
@@ -143,7 +153,7 @@ if (isset($_SESSION["user"]) && isset($_SESSION["username"])) {
         </svg>
       </button>
       <button class="audio-control-btn" onclick="musicLoop()">
-        <svg width="100%" height="100%" viewBox="0 0 552 552" fill="white" id="audioLoop-svg-active"
+        <svg width="100%" height="100%" viewBox="0 0 556 556" fill="white" id="audioLoop-svg-active"
           class="audioLoop-svg">
           <path
             d="M415.313,358.7c36.453-36.452,55.906-85.231,54.779-137.353-1.112-51.375-21.964-99.908-58.715-136.66L388.75,107.314A166.816,166.816,0,0,1,438.1,222.039c.937,43.313-15.191,83.81-45.463,114.083l-48.617,49.051.044-89.165-32-.016L311.992,440H456.063V408H366.449Z"
@@ -175,21 +185,23 @@ if (isset($_SESSION["user"]) && isset($_SESSION["username"])) {
   <script>
     const userEmail = "<?php echo isset($_SESSION['user']) ? $_SESSION['user'] : '' ?>";
     function addLibraryClick(musicID) {
-      $.ajax({
-        url: "server/server.php",
-        type: "POST",
-        data: {
-          requestCode: 3,
-          musicID,
-          userEmail
-        },
-        success: (response) => {
-          console.log(response);
-        },
-        error: (status, error) => {
-          console.error(status, error);
-        },
-      })
+      if (userEmail != '') {
+        $.ajax({
+          url: "server/server.php",
+          type: "POST",
+          data: {
+            requestCode: 3,
+            musicID,
+            userEmail
+          },
+          success: (response) => {
+            console.log(response);
+          },
+          error: (status, error) => {
+            console.error(status, error);
+          },
+        })
+      } else window.location.href = "login.php";
     }
   </script>
 </body>

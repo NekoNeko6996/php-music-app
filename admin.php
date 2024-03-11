@@ -13,9 +13,9 @@
 
 <?php
 session_start();
-if (isset($_SESSION["user"]) && isset($_SESSION["permissionID"]) && $_SESSION["permissionID"] != 3) {
+if (isset($_SESSION["user"]) && isset($_SESSION["permissionID"]) && $_SESSION["permissionID"] != 3 && $_SESSION["permissionID"] != -1) {
   $permission = $_SESSION["permissionID"];
-} else {
+} else {  
   header("Location: home.php");
   exit();
 }

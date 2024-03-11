@@ -331,3 +331,42 @@ function userAvatarClick() {
 function logoutF() {
   window.location.href = "server/logout.php";
 }
+
+// ------------------------------------------------------------- //
+function searchMusic(searchString) {
+  $.ajax({
+    url: "server/server.php",
+    type: "POST",
+    data: {
+      requestCode: 4,
+      searchString,
+    },
+    success: (response) => {
+      const searchMusicResult = JSON.parse(
+        response.replace("<!-- Server -->", "")
+      );
+      var searchHtmlElement = "";
+      if (searchMusicResult) {
+        searchMusicResult.forEach((row, index) => {
+          searchHtmlElement += `
+            <div class="playlist-item" onclick="" style="${
+              index == searchMusicResult.length - 1 ? "margin-bottom: 20px" : ""
+            }">
+              <img src="${checkImg(
+                row[4]
+              )}" alt="no-img" class="playlists-img" />
+              <div>
+                <p class="playlist-music-name">${row[1]}</p>
+                <p>${row[3]}</p>
+              </div>  
+            </div>
+          `;
+        });
+        $(".search-result-box").html(searchHtmlElement);
+      }
+    },
+    error: (status, error) => {
+      console.error(status, error);
+    },
+  });
+}

@@ -27,8 +27,10 @@ function sortByTag($tag, $DB, $email)
         $sqlSortTag = "SELECT * FROM music_source_path ORDER BY RAND() LIMIT 30";
     else if ($tag == "library") {
         $userID = findIDUSer($email, $DB);
-        if ($userID) {
+        if (!empty($userID)) {
             $sqlSortTag = "SELECT * FROM music_source_path WHERE id IN (SELECT musicID FROM library WHERE userID = '$userID')";
+        } else {
+            $sqlSortTag = "SELECT * FROM music_source_path WHERE id IN (SELECT musicID FROM library WHERE userID = -1)";
         }
     } else
         $sqlSortTag = "SELECT * FROM music_source_path WHERE tag LIKE '%$tag%' LIMIT 30";
@@ -79,6 +81,18 @@ function sqlAddLibrary($musicID, $email, $DB)
     return false;
 }
 
+function searchMusic($searchString, $DB)
+{
+    if(!empty($searchString)) {
+        $string = "$searchString%";
+        $searchQuery = "SELECT * FROM music_source_path WHERE musicName LIKE ? LIMIT 10";
+        $stmt = mysqli_prepare($DB, $searchQuery);
+        mysqli_stmt_bind_param($stmt, "s", $string);
+        mysqli_stmt_execute($stmt) or die(mysqli_error($DB));
+        return mysqli_fetch_all(mysqli_stmt_get_result($stmt));
+    }
+    return [];
+}
 
 // ---------------- //
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -94,6 +108,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             case 3:
                 if (isset($_POST["musicID"]) && isset($_POST["userEmail"])) {
                     $response = sqlAddLibrary($_POST["musicID"], $_POST["userEmail"], $DB);
+                }
+                break;
+            case 4:
+                if (isset($_POST["searchString"])) {
+                    $response = searchMusic($_POST["searchString"], $DB);
                 }
                 break;
             default:
