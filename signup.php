@@ -36,31 +36,54 @@ $stmt = mysqli_prepare($connect, $createUserSql);
 
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  if (isset($_POST["sign-up-email"]) && isset($_POST["sign-up-password"]) && isset($_POST["sign-up-repeat-password"])) {
+  if (isset($_POST["sign-up-email"]) && isset($_POST["sign-up-password"]) && isset($_POST["sign-up-repeat-password"]) && isset($_POST["sign-up-username"])) {
+    $repeatPassword = check($_POST["sign-up-repeat-password"]);
     $password = check($_POST["sign-up-password"]);
     $email = check($_POST["sign-up-email"]);
     $username = check($_POST["sign-up-username"]);
 
-    $findUser = mysqli_query($connect, "SELECT id FROM user WHERE email = '$email'") or die("[SQL ERROR] find user ERROR" . mysqli_error($connect));
+    if ($repeatPassword == $password) {
+      $findUser = mysqli_query($connect, "SELECT id FROM user WHERE email = '$email'") or die("[SQL ERROR] find user ERROR" . mysqli_error($connect));
 
-    if (mysqli_num_rows($findUser) == 0) {
-      $hash = password_hash($password, PASSWORD_DEFAULT);
-      $permission = 3;
+      if (mysqli_num_rows($findUser) == 0) {
+        $hash = password_hash($password, PASSWORD_DEFAULT);
+        $permission = 3;
 
-      $createUserParam = mysqli_stmt_bind_param($stmt, "sssi", $email, $username, $hash, $permission);
-      echo mysqli_stmt_execute($stmt);
+        $createUserParam = mysqli_stmt_bind_param($stmt, "sssi", $email, $username, $hash, $permission);
+        $exeResult = mysqli_stmt_execute($stmt);
+        if ($exeResult == 1) {
+          session_start();
+          $_SESSION["user"] = $email;
+          $_SESSION["username"] = $username;
+          $_SESSION["permissionID"] = $permission;
+
+          header("Location: home.php");
+          exit();
+        }
+      } else {
+        echo '<div class="login-error-display">Email already exists!</div>';
+      }
     } else {
-      echo "USER is exits";
+      echo '<div class="login-error-display">Password and re-enter password do not match!</div>';
     }
   }
+}
+
+if (isset($_SESSION["user"]) && isset($_SESSION["permissionID"])) {
+  header("Location: home.php");
 }
 ?>
 
 <!-- Client -->
 
 <body>
-  <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) ?>" id="sign-up-form" class="sign-up-form" method="post">
-    <h2 class="login-text">Sign Up</h2>
+  <nav>
+    <a href="login.php">Login</a>
+    <a href="home.php">Home</a>
+  </nav>
+  <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) ?>" id="sign-up-form" class="sign-up-form"
+    method="post">
+    <h1 class="login-text">Sign Up</h1>
     <label for="sign-up-email">Email</label>
     <input type="email" name="sign-up-email" id="sign-up-email" required />
     <label for="sign-up-username">Username</label>
@@ -68,7 +91,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <label for="path-music-input">Password</label>
     <input type="password" name="sign-up-password" id="sign-up-password" required autocomplete />
     <label for="sign-up-repeat-password">Repeat Password</label>
-    <input type="password" name="sign-up-repeat-password" id="sign-up-repeat-password" autocomplete />
+    <input type="password" name="sign-up-repeat-password" id="sign-up-repeat-password" required autocomplete />
     <input type="submit" value="Sign Up" id="submit-sign-up" class="submit-login-signup" />
     <p>Have an account?, <a href="login.php">login now.</a></p>
   </form>

@@ -36,7 +36,7 @@ if ($("#user-display-table") != null) {
           ${
             row[3] != "root"
               ? `<button class="user-option-btn">BLOCK USER</button>
-                <button class="user-option-btn">DELETE USER</button>`
+                <button class="user-option-btn" onclick="deleteUser(${row[0]})">DELETE USER</button>`
               : ""
           }
         </td>
@@ -58,7 +58,7 @@ if ($("#user-display-table") != null) {
         const onloadDataResponse = JSON.parse(
           response.replace("<!-- SERVER -->", "")
         );
-        console.log(onloadDataResponse)
+        console.log(onloadDataResponse);
         loadItemShowUser(onloadDataResponse.userList);
       },
       error: (status, error) => {
@@ -141,4 +141,25 @@ function updateMusicRequest(event) {
       console.error(status, error);
     },
   });
+}
+
+// -------------------------------------------------------- //
+function deleteUser(userID) {
+  if (userID) {
+    $.ajax({
+      url: "server/adminPage.php",
+      type: "POST",
+      data: {
+        requestCode: 5,
+        userID,
+      },
+      success: (response) => {
+        console.log(response);
+        window.location.reload();
+      },
+      error: (status, error) => {
+        console.error(status, error);
+      },
+    });
+  }
 }

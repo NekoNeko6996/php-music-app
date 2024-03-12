@@ -15,15 +15,18 @@
 session_start();
 if (isset($_SESSION["user"]) && isset($_SESSION["permissionID"]) && $_SESSION["permissionID"] != 3 && $_SESSION["permissionID"] != -1) {
   $permission = $_SESSION["permissionID"];
-} else {  
+} else {
   header("Location: home.php");
   exit();
 }
+
+
 ?>
 
-
 <body>
-  <nav class="admin-page-nav"></nav>
+  <nav class="admin-page-nav">
+    <a href="home.php">Home</a>
+  </nav>
   <div class="music-edit-container">
     <div class="add-new-music">
       <form action="" id="uploadMusic-form" method="post" onsubmit="uploadMusic(event)">

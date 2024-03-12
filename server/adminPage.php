@@ -34,8 +34,8 @@ function getMusicById($DB, $id)
     return $result;
 }
 
-function updateMusic($DB, $data)    
-{   
+function updateMusic($DB, $data)
+{
     $updateQuery = "UPDATE music_source_path SET musicName = ?, musicPath = ?, author = ?, imgPath = ?, gifPath = ?, tag = ? WHERE id = ?";
     $stmt = mysqli_prepare($DB, $updateQuery);
     mysqli_stmt_bind_param($stmt, "ssssssi", $data["musicName"], $data["musicPath"], $data["musicAuthor"], $data["imgPath"], $data["update-gif-path"], $data["update-music-tag"], $data["musicId"]);
@@ -44,6 +44,25 @@ function updateMusic($DB, $data)
         die("[SQL ERROR] update error" . mysqli_error($DB));
     }
     return $updateResult;
+}
+
+function deleteUser($DB, $userID)
+{
+    if (!empty($userID)) {
+        $stmtCHECK = mysqli_prepare($DB, "SELECT permissionID FROM user WHERE id = ?");
+        mysqli_stmt_bind_param($stmtCHECK, "i", $userID);
+        mysqli_stmt_execute($stmtCHECK);
+        $CheckResult = mysqli_stmt_get_result($stmtCHECK);
+        $CheckResult = mysqli_fetch_all($CheckResult);
+        if (isset($CheckResult[0][0]) && $CheckResult[0][0] != 1) {
+            $stmtDELETE = mysqli_prepare($DB, "DELETE FROM user WHERE id = ?");
+            mysqli_stmt_bind_param($stmtDELETE, "i", $userID);
+            $result = mysqli_stmt_execute($stmtDELETE);
+            return ["status" => $result];
+        } else {
+            return ["status" => -1];
+        }
+    }
 }
 
 
@@ -87,6 +106,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             } else
                 echo "null";
 
+            break;
+        case 5:
+            if (isset($_POST["userID"])) {
+                echo json_encode(deleteUser($connect, $_POST["userID"]));
+            }
             break;
         default:
             break;

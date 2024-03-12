@@ -10,6 +10,14 @@ if (!$DB) {
     die('[sql] Error connect' . mysqli_connect_error());
 }
 
+function check($string)
+{
+  $string = trim($string);
+  $string = stripcslashes($string);
+  $string = htmlspecialchars($string);
+
+  return $string;
+}
 
 // query
 function findIDUSer($email, $DB)
@@ -83,7 +91,7 @@ function sqlAddLibrary($musicID, $email, $DB)
 
 function searchMusic($searchString, $DB)
 {
-    if(!empty($searchString)) {
+    if (!empty($searchString)) {
         $string = "$searchString%";
         $searchQuery = "SELECT * FROM music_source_path WHERE musicName LIKE ? LIMIT 10";
         $stmt = mysqli_prepare($DB, $searchQuery);
@@ -112,7 +120,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 break;
             case 4:
                 if (isset($_POST["searchString"])) {
-                    $response = searchMusic($_POST["searchString"], $DB);
+                    $response = searchMusic(check($_POST["searchString"]), $DB);
                 }
                 break;
             default:
@@ -123,6 +131,5 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         echo 0;
     }
 }
-
 
 ?>

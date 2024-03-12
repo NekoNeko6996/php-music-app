@@ -66,7 +66,7 @@ if (isset($_SESSION["user"]) && isset($_SESSION["username"])) {
           <?php if ($permission != -1)
             echo '<p onclick="logoutF()">Logout</p>';
           else
-            echo '<p onclick="window.location.href=\'login.php\'">Login</p>' ?>
+            echo '<p onclick="window.location.href=\'login.php\'">Login</p><p onclick="window.location.href=\'signup.php\'">Sign Up</p>' ?>
             <?php
           if (isset($permission) && $permission != 3 && $permission != -1)
             echo '<p onclick="window.location.href =\'admin.php\'">Admin Page</p>';

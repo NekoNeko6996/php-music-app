@@ -8,7 +8,7 @@ const model = "normal"; // normal or 'smooth'
 const columns = 25;
 //số ô màu
 const rows = 10;
-const index = 0.8; //thay dổi độ nhạy của sóng
+const index = 1; //thay dổi độ nhạy của sóng
 //màu
 const color = [
   "#5e2566",
@@ -55,6 +55,9 @@ function musicWave(interact, audioElement) {
         const average = [];
         for (let i = 0; i < columns; i++) {
           average[i] = dataArray[i * Math.floor(800 / columns)];
+          if (average[i - 1]) {
+            average[i] = (average[i] * 1.5 + average[i - 1] * 0.5) / 2;
+          }
         }
 
         for (let i = 0; i < columns; i++) {

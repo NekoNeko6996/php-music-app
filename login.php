@@ -30,45 +30,55 @@ function check($string)
 
   return $string;
 }
+
 session_start();
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
   if (isset($_POST["login-email"]) && isset($_POST["login-password"])) {
     $password = check($_POST["login-password"]);
     $email = check($_POST["login-email"]);
 
-    $findUser = mysqli_fetch_all(mysqli_query($connect, "SELECT userName, hash, permissionID FROM user WHERE email = '$email'")) or die("[SQL] find user error". mysqli_error($connect));
+    $result = mysqli_query($connect, "SELECT userName, hash, permissionID FROM user WHERE email = '$email'") or die(mysqli_error($connect));
 
-    $hashPassword = $findUser[0][1];
-    if ($hashPassword) {
-      $checkHash = password_verify($password, $hashPassword);
-      if ($checkHash) {
-        $_SESSION["user"] = $_POST["login-email"];
-        $_SESSION["username"] = $findUser[0][0];
-        $_SESSION["permissionID"] = $findUser[0][2];
-      } else {
-        echo "login false";
-      }
-    } else {
-      echo "email not found";
-    }
+    if (mysqli_num_rows($result) > 0) {
+      $findUser = mysqli_fetch_all($result);
 
+      $hashPassword = $findUser[0][1];
+      if ($hashPassword) {
+        $checkHash = password_verify($password, $hashPassword);
+        if ($checkHash) {
+          $_SESSION["user"] = $_POST["login-email"];
+          $_SESSION["username"] = $findUser[0][0];
+          $_SESSION["permissionID"] = $findUser[0][2];
+        } else {
+          echo '<div class="login-error-display">Email or password is incorrect!</div>';
+        }
+      } else
+        echo '<div class="login-error-display">Login Error</div>';
+    } else
+      echo '<div class="login-error-display">Email not found!</div>';
   }
 }
 
-if (isset($_SESSION["user"])) {
+if (isset($_SESSION["user"]) && isset($_SESSION["permissionID"])) {
   header("Location: home.php");
 }
 ?>
 
 <body>
-  <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) ?>" id="login-form" class="sign-up-form" method="post">
-    <h2 class="login-text">Login</h2>
+  <nav>
+    <a href="signup.php">Sign Up</a>
+    <a href="home.php">Home</a>
+  </nav>
+  <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) ?>" id="login-form" class="sign-up-form"
+    method="post">
+    <h1 class="login-text">Welcome Back</h1>
     <label for="login-email">Email</label>
     <input type="email" name="login-email" id="login-email" required />
     <label for="path-music-input">Password</label>
     <input type="password" name="login-password" id="login-password" required autocomplete />
-    <input type="submit" value="Sign Up" class="submit-login-signup" />
+    <input type="submit" value="Login" class="submit-login-signup" />
     <p>Don't have an account?, <a href="signup.php">register now.</a></p>
   </form>
 </body>
+
 </html>
