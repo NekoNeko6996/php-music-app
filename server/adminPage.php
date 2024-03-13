@@ -45,8 +45,6 @@ function updateMusic($DB, $data)
     }
     return $updateResult;
 }
-
-function userAction($DB, $userID, $action)
 function userAction($DB, $userID, $action)
 {
     if (!empty($userID)) {
@@ -122,12 +120,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             break;
         case 5:
             if (isset($_POST["userID"])) {
-                echo json_encode(userAction($connect, $_POST["userID"], "block"));
-            }
-            break;
-        case 6:
-            if (isset($_POST["userID"])) {
-                echo json_encode(userAction($connect, $_POST["userID"], "delete"));
                 echo json_encode(userAction($connect, $_POST["userID"], "block"));
             }
             break;
