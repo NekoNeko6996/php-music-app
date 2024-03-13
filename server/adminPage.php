@@ -46,18 +46,32 @@ function updateMusic($DB, $data)
     return $updateResult;
 }
 
-function deleteUser($DB, $userID)
+function userAction($DB, $userID, $action)
 {
     if (!empty($userID)) {
-        $stmtCHECK = mysqli_prepare($DB, "SELECT permissionID FROM user WHERE id = ?");
+        $stmtCHECK = mysqli_prepare($DB, "SELECT permissionID, block FROM user WHERE id = ?");
         mysqli_stmt_bind_param($stmtCHECK, "i", $userID);
         mysqli_stmt_execute($stmtCHECK);
         $CheckResult = mysqli_stmt_get_result($stmtCHECK);
         $CheckResult = mysqli_fetch_all($CheckResult);
-        if (isset($CheckResult[0][0]) && $CheckResult[0][0] != 1) {
-            $stmtDELETE = mysqli_prepare($DB, "DELETE FROM user WHERE id = ?");
-            mysqli_stmt_bind_param($stmtDELETE, "i", $userID);
-            $result = mysqli_stmt_execute($stmtDELETE);
+        if (isset($CheckResult[0][0])) {
+            $permission = $CheckResult[0][0];
+            $blockStatus = $CheckResult[0][1];
+        } else {
+            return ["status" => -1];
+        }
+        if ($permission != 1) {
+            if ($action == "delete") {
+                $stmtAction = mysqli_prepare($DB, "DELETE FROM user WHERE id = ?");
+            } else {
+                if ($blockStatus == 0)
+                    $stmtAction = mysqli_prepare($DB, "UPDATE FROM user SET block = 1 WHERE id = ?");
+                else
+                    $stmtAction = mysqli_prepare($DB, "UPDATE FROM user SET block = 0 WHERE id = ?");
+            }
+
+            mysqli_stmt_bind_param($stmtAction, "i", $userID);
+            $result = mysqli_stmt_execute($stmtAction);
             return ["status" => $result];
         } else {
             return ["status" => -1];
@@ -109,7 +123,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             break;
         case 5:
             if (isset($_POST["userID"])) {
-                echo json_encode(deleteUser($connect, $_POST["userID"]));
+                echo json_encode(userAction($connect, $_POST["userID"], "block"));
+            }
+            break;
+        case 6:
+            if (isset($_POST["userID"])) {
+                echo json_encode(userAction($connect, $_POST["userID"], "delete"));
             }
             break;
         default:

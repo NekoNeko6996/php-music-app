@@ -33,12 +33,12 @@ if ($("#user-display-table") != null) {
         <td class="user-table-td">${row[2]}</td>
         <td class="user-table-td">${row[3]}</td>
         <td class="user-table-td">
-          ${
-            row[3] != "root"
-              ? `<button class="user-option-btn">BLOCK USER</button>
-                <button class="user-option-btn" onclick="deleteUser(${row[0]})">DELETE USER</button>`
-              : ""
-          }
+        ${
+          row[3] != "root"
+            ? `<button type="button" class="user-option-btn" onclick="userAction('${row[0]}', '5')">BLOCK USER</button>
+               <button type="button" class="user-option-btn" onclick="userAction('${row[0]}', '6')">DELETE USER</button>`
+            : ""
+        }
         </td>
       </tr>`;
     });
@@ -144,13 +144,14 @@ function updateMusicRequest(event) {
 }
 
 // -------------------------------------------------------- //
-function deleteUser(userID) {
+function userAction(userID, code) {
+  console.log(code);
   if (userID) {
     $.ajax({
       url: "server/adminPage.php",
       type: "POST",
       data: {
-        requestCode: 5,
+        requestCode: code,
         userID,
       },
       success: (response) => {
