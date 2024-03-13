@@ -151,6 +151,7 @@ function userAction(userID, code) {
       type: "POST",
       data: {
         requestCode: code,
+        requestCode: code,
         userID,
       },
       success: (response) => {

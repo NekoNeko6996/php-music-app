@@ -47,8 +47,10 @@ function updateMusic($DB, $data)
 }
 
 function userAction($DB, $userID, $action)
+function userAction($DB, $userID, $action)
 {
     if (!empty($userID)) {
+        $stmtCHECK = mysqli_prepare($DB, "SELECT permissionID, block FROM user WHERE id = ?");
         $stmtCHECK = mysqli_prepare($DB, "SELECT permissionID, block FROM user WHERE id = ?");
         mysqli_stmt_bind_param($stmtCHECK, "i", $userID);
         mysqli_stmt_execute($stmtCHECK);
@@ -120,6 +122,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             break;
         case 5:
             if (isset($_POST["userID"])) {
+                echo json_encode(userAction($connect, $_POST["userID"], "block"));
+            }
+            break;
+        case 6:
+            if (isset($_POST["userID"])) {
+                echo json_encode(userAction($connect, $_POST["userID"], "delete"));
                 echo json_encode(userAction($connect, $_POST["userID"], "block"));
             }
             break;
