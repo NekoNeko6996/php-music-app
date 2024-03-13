@@ -16,7 +16,7 @@ $insertQuery = "INSERT INTO music_source_path (musicName, musicPath, author, img
 
 function AD_onloadQuery($DB)
 {
-    $result["userList"] = mysqli_fetch_all(mysqli_query($DB, "SELECT user.id, user.email, user.username, permission.permissionName FROM user INNER JOIN permission ON user.permissionID = permission.permissionID"));
+    $result["userList"] = mysqli_fetch_all(mysqli_query($DB, "SELECT user.id, user.email, user.username, permission.permissionName, user.block FROM user INNER JOIN permission ON user.permissionID = permission.permissionID"));
     $result["musicList"] = mysqli_fetch_all(mysqli_query($DB, "SELECT * FROM music_source_path LIMIT 10"));
 
     if (!isset($result["userList"]) || !isset($result["musicList"])) {
@@ -46,22 +46,33 @@ function updateMusic($DB, $data)
     return $updateResult;
 }
 
-function deleteUser($DB, $userID)
+function userAction($DB, $userID, $action)
 {
     if (!empty($userID)) {
-        $stmtCHECK = mysqli_prepare($DB, "SELECT permissionID FROM user WHERE id = ?");
+        $stmtCHECK = mysqli_prepare($DB, "SELECT permissionID, block FROM user WHERE id = ?");
         mysqli_stmt_bind_param($stmtCHECK, "i", $userID);
         mysqli_stmt_execute($stmtCHECK);
         $CheckResult = mysqli_stmt_get_result($stmtCHECK);
         $CheckResult = mysqli_fetch_all($CheckResult);
-        if (isset($CheckResult[0][0]) && $CheckResult[0][0] != 1) {
-            $stmtDELETE = mysqli_prepare($DB, "DELETE FROM user WHERE id = ?");
-            mysqli_stmt_bind_param($stmtDELETE, "i", $userID);
-            $result = mysqli_stmt_execute($stmtDELETE);
-            return ["status" => $result];
-        } else {
+        if (isset($CheckResult[0])) {
+            $permissionID = $CheckResult[0][0];
+            $blockStatus = $CheckResult[0][1];
+            if ($permissionID != 1) {
+                if ($action == "block") {
+                    $stmtAction = "UPDATE user SET block = !{$blockStatus} WHERE id = ?";
+                } else {
+                    $stmtAction = "DELETE FROM user WHERE id = ?";
+                }
+
+                $stmtAction = mysqli_prepare($DB, $stmtAction);
+                mysqli_stmt_bind_param($stmtAction, "i", $userID);
+                $result = mysqli_stmt_execute($stmtAction);
+                return ["status" => $result];
+            } else {
+                return ["status" => -1];
+            }
+        } else
             return ["status" => -1];
-        }
     }
 }
 
@@ -109,7 +120,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             break;
         case 5:
             if (isset($_POST["userID"])) {
-                echo json_encode(deleteUser($connect, $_POST["userID"]));
+                echo json_encode(userAction($connect, $_POST["userID"], "block"));
+            }
+            break;
+        case 6:
+            if (isset($_POST["userID"])) {
+                echo json_encode(userAction($connect, $_POST["userID"], "delete"));
             }
             break;
         default:

@@ -37,23 +37,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = check($_POST["login-password"]);
     $email = check($_POST["login-email"]);
 
-    $result = mysqli_query($connect, "SELECT userName, hash, permissionID FROM user WHERE email = '$email'") or die(mysqli_error($connect));
-
+    $result = mysqli_query($connect, "SELECT userName, hash, permissionID, block FROM user WHERE email = '$email'") or die(mysqli_error($connect));
     if (mysqli_num_rows($result) > 0) {
       $findUser = mysqli_fetch_all($result);
 
       $hashPassword = $findUser[0][1];
-      if ($hashPassword) {
+      $username = $findUser[0][0];
+      $permissionID = $findUser[0][2];
+      $blockStatus = $findUser[0][3];
+
+      if ($blockStatus != 1) {
         $checkHash = password_verify($password, $hashPassword);
         if ($checkHash) {
-          $_SESSION["user"] = $_POST["login-email"];
-          $_SESSION["username"] = $findUser[0][0];
-          $_SESSION["permissionID"] = $findUser[0][2];
+          $_SESSION["user"] = $email;
+          $_SESSION["username"] = $username;
+          $_SESSION["permissionID"] = $permissionID;
         } else {
           echo '<div class="login-error-display">Email or password is incorrect!</div>';
         }
       } else
-        echo '<div class="login-error-display">Login Error</div>';
+        echo '<div class="login-error-display">The user has been blocked by the administrator</div>';
     } else
       echo '<div class="login-error-display">Email not found!</div>';
   }
