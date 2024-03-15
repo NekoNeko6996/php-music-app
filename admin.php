@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="css/adminPage.css" />
+  <link rel="stylesheet" href="css/admin.css" />
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="js/adminPage.js" defer></script>
   <title>ADMIN DASHBOARD</title>
@@ -41,7 +41,7 @@ if (isset($_SESSION["user"]) && isset($_SESSION["permissionID"]) && $_SESSION["p
         <input type="text" name="img-path-music" id="img-path-music-input" />
         <label for="gif-path-music-input">Gif Path(option):</label>
         <input type="text" name="gif-path-music" id="gif-path-music-input" />
-        <input type="submit" value="UpLoad Music" id="submit-music-btn" />
+        <input type="submit" value="UpLoad Music" id="submit-music-btn" class="normal-btn" />
       </form>
     </div>
     <div class="music-update-box">
@@ -49,12 +49,15 @@ if (isset($_SESSION["user"]) && isset($_SESSION["permissionID"]) && $_SESSION["p
       <form action="" method="POST" id="update-music-form-data">
         <table>
           <tr>
+            <td><label for="update-music-id">Input ID</label></td>
+            <td></td>
+          </tr>
+          <tr>
             <td>
-              <label for="update-music-id">Input ID</label>
               <input type="number" name="musicId" id="update-music-id" class="update-input" />
             </td>
             <td>
-              <button class="update-music-btn" onclick="loadMusicData(event)">
+              <button class="normal-btn f-left no-margin" onclick="loadMusicData(event)">
                 Search Music
               </button>
             </td>
@@ -92,9 +95,10 @@ if (isset($_SESSION["user"]) && isset($_SESSION["permissionID"]) && $_SESSION["p
           <tr>
             <td></td>
             <td>
-              <button class="update-music-btn" onclick="updateMusicRequest(event)">
+              <button class="normal-btn" onclick="updateMusicRequest(event)">
                 Update Music
               </button>
+              <button class="normal-btn delete-btn">Delete Music</button>
             </td>
           </tr>
         </table>
@@ -103,9 +107,15 @@ if (isset($_SESSION["user"]) && isset($_SESSION["permissionID"]) && $_SESSION["p
   </div>
 
   <?php if ($permission == 1) {
-    echo "<div class='user-display'>
-      <table id='user-display-table'></table>
-    </div>";
+    echo " 
+  <div class='user-display'>
+    <form method='post' onsubmit='searchUser(event)'>
+      <input type='email' name='search-user-input' id='search-user-input' placeholder='input email...'>
+      <button type='button' class='normal-btn' onclick='searchUser()'>Search User</button>
+      <button type='button' class='normal-btn' onclick='reload()'>Reload</button>
+    </form>
+    <table id='user-display-table'></table>
+  </div>";
   } ?>
 </body>
 

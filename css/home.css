@@ -74,23 +74,57 @@ body {
   border-bottom: 1px solid rgb(113, 48, 156);
   color: white;
   padding-left: 5px;
-
 }
 
 .search-result-box {
   position: absolute;
   width: 450px;
-  background-color: #170f23;  
+  background-color: #170f23;
   top: 60px;
 }
 
 /* ----------------------------------- */
 .mid-banner {
   width: 100%;
-  height: 300px;
 
   background-color: #231b2e;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 10px 0 20px 20px;
 }
+
+.album-box {
+  width: 250px;
+  overflow: hidden;
+  margin-right: 20px;
+}
+.album-box > img {
+  width: 100%;
+  aspect-ratio: 1/1;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.album-box > p {
+  margin: 10px;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.603);
+}
+.album-box > .album-name {
+  font-size: 18px;
+  font-weight: bold;
+  color: white;
+}
+
+.albums-title {
+  font-size: 22px;
+  color: white;
+  font-weight: bold;
+  background-color: #231b2e;
+  padding: 20px 0 10px 20px;
+}
+
+/* ------------------------- */
 .new-music-box {
   width: 100%;
   padding: 20px 10px 20px 10px;
@@ -99,7 +133,6 @@ body {
   flex-wrap: wrap;
   justify-content: center;
 }
-/* ------------------------- */
 .music-item-box {
   height: 100px;
   width: 400px;
@@ -228,7 +261,7 @@ body {
 }
 
 .play-zone-btn-box {
-  display: flex;  
+  display: flex;
   width: calc(77% - 300px);
   flex-direction: row;
   justify-content: center;

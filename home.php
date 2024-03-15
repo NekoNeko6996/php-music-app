@@ -26,7 +26,6 @@ if (isset($_SESSION["user"]) && isset($_SESSION["username"])) {
 }
 ?>
 
-
 <!-- Client -->
 
 <body>
@@ -74,8 +73,24 @@ if (isset($_SESSION["user"]) && isset($_SESSION["username"])) {
         </div>
       </div>
     </nav>
+    <h3 class="albums-title">
+      Albums
+    </h3>
+    <div class="mid-banner">
+      <!-- album container -->
+      <div class="album-box">
+        <img src="music/img/DaCapo.jpg" alt="no-img">
+        <p class="album-name">Htrol Remix</p>
+        <p>Htrol</p>
+      </div>
 
-    <div class="mid-banner"></div>
+      <div class="album-box">
+        <img src="music/img/DaCapo.jpg" alt="no-img">
+        <p class="album-name">Htrol Remix</p>
+        <p>Htrol</p>
+      </div>
+    </div>
+
     <h3 class="new-music-title" style="color: var(--text-color)">
       New Release
     </h3>

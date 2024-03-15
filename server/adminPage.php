@@ -14,9 +14,27 @@ if (!$connect) {
 
 $insertQuery = "INSERT INTO music_source_path (musicName, musicPath, author, imgPath, gifPath) VALUES (?, ?, ?, ?, ?)";
 
+function findUser($DB, $email)
+{
+    if (!empty($email))
+        $sql = "SELECT user.id, user.email, user.username, permission.permissionName, user.block FROM user INNER JOIN permission ON user.permissionID = permission.permissionID WHERE email = ?";
+    else
+        $sql = "SELECT user.id, user.email, user.username, permission.permissionName, user.block FROM user INNER JOIN permission ON user.permissionID = permission.permissionID";
+
+    $stmt = mysqli_prepare($DB, $sql);
+    if (!empty($email))
+        mysqli_stmt_bind_param($stmt, "s", $email);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    if (mysqli_num_rows($result)) {
+        return mysqli_fetch_all($result);
+    }
+    return [];
+}
+
 function AD_onloadQuery($DB)
 {
-    $result["userList"] = mysqli_fetch_all(mysqli_query($DB, "SELECT user.id, user.email, user.username, permission.permissionName, user.block FROM user INNER JOIN permission ON user.permissionID = permission.permissionID"));
+    $result["userList"] = findUser($DB, "");
     $result["musicList"] = mysqli_fetch_all(mysqli_query($DB, "SELECT * FROM music_source_path LIMIT 10"));
 
     if (!isset($result["userList"]) || !isset($result["musicList"])) {
@@ -126,6 +144,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         case 6:
             if (isset($_POST["userID"])) {
                 echo json_encode(userAction($connect, $_POST["userID"], "delete"));
+            }
+            break;
+        case 7:
+            if (isset($_POST["email"])) {
+                echo json_encode(findUser($connect, $_POST["email"]));
             }
             break;
         default:

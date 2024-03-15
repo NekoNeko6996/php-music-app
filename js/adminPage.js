@@ -32,11 +32,15 @@ if ($("#user-display-table") != null) {
         <td class="user-table-td">${row[1]}</td>
         <td class="user-table-td">${row[2]}</td>
         <td class="user-table-td">${row[3]}</td>
-        <td class="user-table-td">
+        <td class="user-table-td flex-right">
           ${
             row[3] != "root"
-              ? `<button type="button" class="user-option-btn" onclick="userAction(${row[0]}, 5)">${row[4] == 1? "UNBLOCK USER": "BLOCK USER"}</button>
-                <button type="button" class="user-option-btn" onclick="userAction(${row[0]}, 6)">DELETE USER</button>`
+              ? `<button type="button" class="user-option-btn block-btn" onclick="userAction(${
+                  row[0]
+                }, 5)">${row[4] == 1 ? "UNBLOCK USER" : "BLOCK USER"}</button>
+                <button type="button" class="user-option-btn delete-btn" onclick="userAction(${
+                  row[0]
+                }, 6)">DELETE USER</button>`
               : ""
           }
         </td>
@@ -163,4 +167,32 @@ function userAction(userID, code) {
       },
     });
   }
+}
+
+// ---------------------------------------------------- //
+function searchUser(event) {
+  if (event) event.preventDefault();
+  const email = $("#search-user-input").val();
+
+  $.ajax({
+    url: "server/adminPage.php",
+    type: "POST",
+    data: {
+      requestCode: 7,
+      email,
+    },
+    success: (response) => {
+      const result = JSON.parse(response.replace("<!-- SERVER -->", ""));
+      loadItemShowUser(result);
+    },
+    error: (status, error) => {
+      console.error(status, error);
+    },
+  });
+  console.log(email);
+}
+
+// -----------------------------------------------------//
+function reload() {
+  window.location.reload();
 }
