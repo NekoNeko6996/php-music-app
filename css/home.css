@@ -20,12 +20,14 @@ body {
   height: calc(100vh - 90px);
   position: relative;
 
-  background: rgb(35, 27, 46);
+  background-color: #231b2e;
+
+  /* background: rgb(35, 27, 46);
   background: linear-gradient(
     308deg,
     rgba(35, 27, 46, 1) 35%,
     rgba(58, 44, 80, 1) 83%
-  );
+  ); */
   overflow-y: scroll;
 }
 
@@ -37,6 +39,19 @@ body {
   top: 0;
   left: 0;
   z-index: 10;
+}
+
+.prev-body-btn {
+  position: absolute;
+  left: 10px;
+  background-color: #170f23;
+  border: none;
+  top: 17px;
+  z-index: 5;
+  cursor: pointer;
+}
+.prev-body-btn:hover {
+  scale: 1.1;
 }
 
 .search-container {
@@ -82,6 +97,11 @@ body {
   background-color: #170f23;
   top: 60px;
 }
+
+.body-web-show {
+  width: 100%;
+}
+
 
 /* ----------------------------------- */
 .mid-banner {
@@ -698,5 +718,5 @@ input[type="range"]::-webkit-slider-thumb {
   aspect-ratio: 1/1;
   border-radius: 50%;
   float: right;
-  margin-left: 10px;
+  margin-left: 15px;
 }

@@ -54,6 +54,7 @@ function onloadQuery($DB, $email)
     $result['top3Music'] = mysqli_query($DB, 'SELECT * FROM music_source_path ORDER BY listens DESC LIMIT 3');
     $result['playlists'] = mysqli_query($DB, 'SELECT * FROM music_source_path ORDER BY RAND() LIMIT 10');
     $result['musicByTag'] = mysqli_query($DB, 'SELECT * FROM music_source_path LIMIT 30');
+    $result['albumsLoad'] = mysqli_query($DB, 'SELECT * FROM albums');
 
     if (!$result["newMusic"] || !$result["top3Music"]) {
         die('[query] Error' . mysqli_connect_error());
@@ -63,6 +64,7 @@ function onloadQuery($DB, $email)
     $result["top3Music"] = mysqli_fetch_all($result["top3Music"]);
     $result["playlists"] = mysqli_fetch_all($result["playlists"]);
     $result["musicByTag"] = mysqli_fetch_all($result["musicByTag"]);
+    $result["albumsLoad"] = mysqli_fetch_all($result["albumsLoad"]);
     $result["library"] = sortByTag("library", $DB, $email);
 
     if (empty($result["newMusic"]) || empty($result["top3Music"]) || empty($result["playlists"]))
@@ -102,6 +104,18 @@ function searchMusic($searchString, $DB)
     return [];
 }
 
+function loadAlbumsList($albumID, $DB) {
+    if (!empty($albumID)) {
+        $sql = "SELECT * FROM music_source_path WHERE id in (SELECT musicID FROM albums_music_list WHERE albumID = ?)";
+        $stmt = mysqli_prepare($DB, $sql);
+        mysqli_stmt_bind_param($stmt,"i", $albumID);
+        mysqli_execute($stmt);
+        $result = mysqli_fetch_all(mysqli_stmt_get_result($stmt));
+        return $result;
+    }
+    return [];
+}
+
 // ---------------- //
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $response = [];
@@ -121,6 +135,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             case 4:
                 if (isset($_POST["searchString"])) {
                     $response = searchMusic(check($_POST["searchString"]), $DB);
+                }
+                break;
+            case 5:
+                if (isset($_POST["albumID"])) {
+                    $response = loadAlbumsList(check($_POST["albumID"]), $DB);
                 }
                 break;
             default:

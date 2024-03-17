@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="css/home.css" />
   <link rel="stylesheet" href="css/musicWave.css">
+  <link rel="stylesheet" href="css/albumsPage.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="js/largeItemHtml.js"></script>
   <script src="js/musicWave.js" defer></script>
@@ -16,7 +17,7 @@
 
 <?php
 session_start();
-if (isset($_SESSION["user"]) && isset($_SESSION["username"])) {
+if (isset ($_SESSION["user"]) && isset ($_SESSION["username"])) {
   $user = $_SESSION["user"];
   $username = $_SESSION["username"];
   $permission = $_SESSION["permissionID"];
@@ -34,6 +35,16 @@ if (isset($_SESSION["user"]) && isset($_SESSION["username"])) {
   </aside>
   <section class="mid-body">
     <nav class="mid-nav">
+      <!-- prev btn -->
+      <button type="button" onclick="toPrevBody()" class="prev-body-btn">
+        <svg width="27px" height="24px" viewBox="0 0 1024 1024">
+          <path fill="white" d="M224 480h640a32 32 0 1 1 0 64H224a32 32 0 0 1 0-64z" />
+          <path fill="white"
+            d="m237.248 512 265.408 265.344a32 32 0 0 1-45.312 45.312l-288-288a32 32 0 0 1 0-45.312l288-288a32 32 0 1 1 45.312 45.312L237.248 512z" />
+        </svg>
+      </button>
+
+      <!-- search input -->
       <div class="search-container">
         <form action="">
           <input type="text" name="search-music" id="search-music-input" placeholder="Search..."
@@ -67,62 +78,20 @@ if (isset($_SESSION["user"]) && isset($_SESSION["username"])) {
           else
             echo '<p onclick="window.location.href=\'login.php\'">Login</p><p onclick="window.location.href=\'signup.php\'">Sign Up</p>' ?>
             <?php
-          if (isset($permission) && $permission != 3 && $permission != -1)
+          if (isset ($permission) && $permission != 3 && $permission != -1)
             echo '<p onclick="window.location.href =\'admin.php\'">Admin Page</p>';
           ?>
         </div>
       </div>
     </nav>
-    <h3 class="albums-title">
-      Albums
-    </h3>
-    <div class="mid-banner">
-      <!-- album container -->
-      <div class="album-box">
-        <img src="music/img/DaCapo.jpg" alt="no-img">
-        <p class="album-name">Htrol Remix</p>
-        <p>Htrol</p>
-      </div>
 
-      <div class="album-box">
-        <img src="music/img/DaCapo.jpg" alt="no-img">
-        <p class="album-name">Htrol Remix</p>
-        <p>Htrol</p>
-      </div>
-    </div>
+    <!-- --------------- body ------------------- -->
+    <span class="body-web-show">
 
-    <h3 class="new-music-title" style="color: var(--text-color)">
-      New Release
-    </h3>
-    <div class="new-music-box"></div>
+    </span>
 
-    <div class="top-music-box">
-      <div class="top-table"></div>
-      <div class="top-1-show"></div>
-    </div>
+    <!-- ---------------------------------------- -->
 
-    <div class="category-box">
-      <nav>
-        <div class="category-tag" onclick="selectTag(event, 'vietnam')">
-          VietNam
-        </div>
-        <div class="category-tag" onclick="selectTag(event, 'foreign')">
-          Foreign
-        </div>
-        <div class="category-tag" onclick="selectTag(event, 'gamethemesong')">
-          Game Music Theme
-        </div>
-        <div class="category-tag" onclick="selectTag(event, 'random')">
-          Random
-        </div>
-        <div class="category-tag" onclick="selectTag(event, 'library')">
-          Your Library
-        </div>
-      </nav>
-      <section class="category-show-item">
-        <!-- tag item show here -->
-      </section>
-    </div>
     <footer></footer>
   </section>
   <aside class="aside-right">
@@ -198,7 +167,7 @@ if (isset($_SESSION["user"]) && isset($_SESSION["username"])) {
   </div>
 
   <script>
-    const userEmail = "<?php echo isset($_SESSION['user']) ? $_SESSION['user'] : '' ?>";
+    const userEmail = "<?php echo isset ($_SESSION['user']) ? $_SESSION['user'] : '' ?>";
     function addLibraryClick(musicID) {
       if (userEmail != '') {
         $.ajax({

@@ -1,0 +1,87 @@
+<body>
+  <section class="albums-session">
+    <div class="albums-info-container">
+      <img
+        src="music/img/moon-halo-honkai.jpg"
+        alt="no-img"
+        id="album-img-info"
+      />
+      <p id="album-name-p">Moon Halo Honkai Impact 3rd</p>
+      <p id="album-author-p">MiHoYo - Honkai Impact 3rd</p>
+      <button class="album-play-btn">Play</button>
+      <span> </span>
+    </div>
+    <div class="albums-show-items-container">
+      <span class="fl-row-space-between albums-list-title">
+        <p>Music</p>
+        <p>Duration</p>
+      </span>
+
+      <div id="al-child-contain">
+        <!-- albums list show here -->
+      </div>
+    </div>
+  </section>
+
+  <script>
+    function secToMinutes(sec) {
+      return `${Math.round(sec / 60)
+        .toString()
+        .padStart(2, "0")}:${Math.round(sec % 60)
+        .toString()
+        .padStart(2, "0")}`;
+    }
+
+    function renderInfoAlbum(info) {
+      $("#album-img-info").attr("src", info[4]);
+      $("#album-name-p").text(info[1]);
+      $("#album-author-p").text(info[2]);
+    }
+
+    function loadAlbumItems(list) {
+      var htmlComponent = "";
+
+      list.forEach((row, index) => {
+        htmlComponent += `
+          <div class="al-sh-items-box">
+            <img src="${checkImg(row[4])}" alt="no-img" />
+            <span>
+              <span class="item-info-name">
+                <p>${row[1]}</p>
+                <p>${row[3]}</p>
+              </span>
+
+              <p>${secToMinutes(row[9])}</p>
+            </span>
+          </div>
+        `;
+      });
+      $("#al-child-contain").html(htmlComponent);
+    }
+
+    $("document").ready(() => {
+      $.ajax({
+        url: "server/server.php",
+        type: "POST",
+        data: {
+          requestCode: 5,
+          albumID,
+        },
+        success: (response) => {
+          if (response) {
+            const musicAlbumsList = JSON.parse(
+              response.replace("<!-- Server -->", "")
+            );
+            loadAlbumItems(musicAlbumsList);
+            if (onloadData.albumsLoad[albumID - 1]) {
+              renderInfoAlbum(onloadData.albumsLoad[albumID - 1]);
+            }
+          }
+        },
+        error: (status, error) => {
+          console.error(status, error);
+        },
+      });
+    });
+  </script>
+</body>

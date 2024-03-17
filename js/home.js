@@ -10,22 +10,6 @@ var previousPlayLists,
 var currentID = 0;
 
 // ---------------------------------------------- //
-function dateUploadCalculator(date) {
-  const result = Math.floor(
-    (new Date() - new Date(date)) / (1000 * 60 * 60 * 24)
-  );
-  if (result == 0) return "Today";
-  if (result == 1) return "Yesterday";
-  return `${result} Days Before`;
-}
-
-function thousandConvert(number) {
-  if (number < 1000) return number;
-  if (number > 999) {
-    return `${(number / 1000).toFixed(1)}k`;
-  }
-}
-
 function audioControl(action) {
   switch (action) {
     case true:
@@ -126,20 +110,54 @@ audio.onended = () => {
   }
 };
 
-function sortByTagRenderItem(array, nameArray) {
-  var musicByTagComponent = "";
-  array.forEach((row, index) => {
-    musicByTagComponent += loadMusicItemByTag(
-      row[4],
-      row[1],
-      row[3],
-      index,
-      nameArray,
-      libraryIDList.indexOf(row[0]) == -1 ? "none" : "#ba63d4",
-      row[0]
-    );
-  });
-  $(".category-show-item").html(musicByTagComponent);
+
+// ----------------------------- load body ------------------------------- //
+var prevLocationArray = [];
+var albumID = null;
+
+function toPrevBody() {
+  if(prevLocationArray[prevLocationArray.length - 2]) {
+    loadBodyComponent(prevLocationArray[prevLocationArray.length - 2])
+    prevLocationArray.pop();
+    console.log("to")
+  }
+  console.log(prevLocationArray)
+}
+
+function toAlbumsPage(alID) {
+  albumID = alID;
+  loadBodyComponent("components/home_albums_component.html");
+}
+
+
+function loadBodyComponent(page) {
+  $.ajax({
+    url: page,
+    type: "GET",
+    dataType: "html",
+    success: (response) => {
+      $(".body-web-show").html(response);
+      prevLocationArray.push(page);
+    }
+  })
+}
+
+
+// --------------------------------------------------------------- //
+function renderAlbums(albumsList) {
+  if ($(".mid-banner")) {
+    var albumsHtmlComponent = "";
+    albumsList.forEach((row, index) => {
+      albumsHtmlComponent += `
+      <div class="album-box" onclick="toAlbumsPage(${row[0]})">
+        <img src="${row[4]}" alt="no-img">
+        <p class="album-name">${row[1]}</p>
+        <p>${row[2]}</p>
+      </div>
+      `;
+    });
+    $(".mid-banner").html(albumsHtmlComponent);
+  }
 }
 
 // onload
@@ -159,58 +177,11 @@ $("document").ready(() => {
       onloadData = JSON.parse(response.replace("<!-- Server -->", ""));
       libraryIDList = onloadData.library.map((row) => row[0].toString());
       console.log(onloadData);
-      var newMusicComponent = (top3MusicComponent = "");
 
-      // --------------------------------------------------------------------------- //
+      // load body //
+      loadBodyComponent("components/home_normal_component.html");
 
-      onloadData.newMusic.forEach((row, index) => {
-        newMusicComponent += `
-          <div class="music-item-box" onclick="clickToListen(${index}, onloadData.newMusic)">
-            <img src="${checkImg(row[4])}" alt="no-img"> 
-            <div class="info">
-              <p class="music-name">${row[1]}</p>
-              <p class="music-author">${row[3] || "Unknown"}</p>
-              <p class="time-upload">${dateUploadCalculator(row[5])}</p>
-            </div>
-          </div>`;
-      });
 
-      // --------------------------------------------------------------------------- //
-
-      onloadData.top3Music.forEach((row, index) => {
-        top3MusicComponent += `
-          <div class='top-music-item ${
-            index == 0 ? "scale" : ""
-          }' onclick="clickToListen(${index}, onloadData.top3Music)">
-            <img src="${checkImg(row[4])}" alt="no-img" />
-            <div class="info">
-              <p class="music-name">${row[1]}</p>
-              <p class="music-author">${row[3] || "Unknown"}</p>
-              <p class="time-upload">${dateUploadCalculator(row[5])}</p>
-            </div>
-            <div class="top-info-box">
-              <p class="top-text">TOP ${index + 1}</p>
-              <p>LISTENS ${thousandConvert(row[6])}</p>
-            </div>
-          </div>
-        `;
-      });
-
-      // --------------------------------------------------------------------------- //
-      sortByTagRenderItem(onloadData.musicByTag, "onloadData.musicByTag");
-      // --------------------------------------------------------------------------- //
-
-      $(".top-1-show").html(
-        `<img src="${
-          // onloadData.top3Music[0][7]
-          //   ? onloadData.top3Music[0][7]
-          //   : checkImg(onloadData.top3Music[0][4])
-
-          checkImg(onloadData.top3Music[0][4])
-        }" alt="no-img">`
-      );
-      $(".top-table").html(top3MusicComponent);
-      $(".new-music-box").html(newMusicComponent);
       currentPlaylist = onloadData.playlists;
       clickToListen(currentID, currentPlaylist);
     },
@@ -242,36 +213,6 @@ audio.addEventListener("timeupdate", () => {
 
   $("#range-duration").val(audio.currentTime);
 });
-
-// ------------------------------------------ //
-function selectTag(event, tag) {
-  document.querySelectorAll(".category-tag").forEach((element) => {
-    element.classList.remove("tag-selected");
-  });
-  event.target.classList.add("tag-selected");
-  if (tag) {
-    $.ajax({
-      url: "server/server.php",
-      type: "POST",
-      data: {
-        requestCode: 2,
-        data: tag,
-        userEmail,
-      },
-      success: (response) => {
-        DataResponseSortByTag = JSON.parse(
-          response.replace("<!-- Server -->", "")
-        );
-        if (DataResponseSortByTag) {
-          sortByTagRenderItem(DataResponseSortByTag, "DataResponseSortByTag");
-        }
-      },
-      error: (status, error) => {
-        console.error(status, error);
-      },
-    });
-  }
-}
 // ------------------------------------------------------------ //
 function musicSkip(action) {
   if (action) {
@@ -370,3 +311,6 @@ function searchMusic(searchString) {
     },
   });
 }
+
+// ------------------------------------------------------------- //
+function onclickAlbums(albumID) {}
