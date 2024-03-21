@@ -39,7 +39,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   if (isset($_POST["sign-up-email"]) && isset($_POST["sign-up-password"]) && isset($_POST["sign-up-repeat-password"]) && isset($_POST["sign-up-username"])) {
     $repeatPassword = check($_POST["sign-up-repeat-password"]);
     $password = check($_POST["sign-up-password"]);
-    $email = check($_POST["sign-up-email"]);
+    $email = strtolower(check($_POST["sign-up-email"]));
     $username = check($_POST["sign-up-username"]);
 
     if ($repeatPassword == $password) {

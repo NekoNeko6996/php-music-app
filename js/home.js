@@ -72,6 +72,9 @@ function checkImg(imgUrl) {
 }
 
 function renderPlaylist(playlist, index) {
+  playlist = playlist ? playlist : currentPlaylist;
+  index = index ? index : currentID;
+
   var html = "";
   playlist.forEach((row, idx) => {
     if (idx === index + 1) html += `<p class="playlist-next-title">Next</p>`;
@@ -94,8 +97,8 @@ function renderPlaylist(playlist, index) {
             libraryIDList.indexOf(currentPlaylist[idx][0]) == -1
               ? "white"
               : "#FF00CC"
-          }">
-              <path fill-rule="evenodd" clip-rule="evenodd" d="M12 6.00019C10.2006 3.90317 7.19377 3.2551 4.93923 5.17534C2.68468 7.09558 2.36727 10.3061 4.13778 12.5772C5.60984 14.4654 10.0648 18.4479 11.5249 19.7369C11.6882 19.8811 11.7699 19.9532 11.8652 19.9815C11.9483 20.0062 12.0393 20.0062 12.1225 19.9815C12.2178 19.9532 12.2994 19.8811 12.4628 19.7369C13.9229 18.4479 18.3778 14.4654 19.8499 12.5772C21.6204 10.3061 21.3417 7.07538 19.0484 5.17534C16.7551 3.2753 13.7994 3.90317 12 6.00019Z" stroke="#AAA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          }" onclick='addLibraryClick(${currentPlaylist[idx][0]}, event)'>
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M12 6.00019C10.2006 3.90317 7.19377 3.2551 4.93923 5.17534C2.68468 7.09558 2.36727 10.3061 4.13778 12.5772C5.60984 14.4654 10.0648 18.4479 11.5249 19.7369C11.6882 19.8811 11.7699 19.9532 11.8652 19.9815C11.9483 20.0062 12.0393 20.0062 12.1225 19.9815C12.2178 19.9532 12.2994 19.8811 12.4628 19.7369C13.9229 18.4479 18.3778 14.4654 19.8499 12.5772C21.6204 10.3061 21.3417 7.07538 19.0484 5.17534C16.7551 3.2753 13.7994 3.90317 12 6.00019Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>  
 
           <svg width="22px" height="22px" viewBox="0 0 23 23" fill="none" onclick='deleteFromPlaylist(${JSON.stringify(
@@ -128,8 +131,8 @@ function clickToListen(id, playlists) {
     audioControl(interact);
 
     //
-    const sec = Math.round(audio.duration % 60);
-    const minutes = Math.round(audio.duration / 60);
+    const sec = Math.floor(audio.duration % 60);
+    const minutes = Math.floor(audio.duration / 60);
 
     //
     $("#music-time-max").text(`${numpadS(minutes)}:${numpadS(sec)}`);
@@ -216,6 +219,7 @@ $("document").ready(() => {
       clickToListen(currentID, currentPlaylist);
     },
   });
+  $("#volume-range").css("--value", 100);
   $("#volume-range").val(audio.volume * 100);
   $("#volume-percent-show").text(`${Math.round(audio.volume * 100)}%`);
 });
@@ -229,20 +233,35 @@ function audioVolume(value) {
   $("#volume-percent-show").text(`${Math.round(audio.volume * 100)}%`);
 }
 
-function onDurationChange(value) {
-  audio.currentTime = value;
+function onDurationChange(target) {
+  audio.currentTime = target.value;
 }
 
+$("#range-duration").on("input", function () {
+  var value = $(this).val();
+  // Đặt giá trị của biến --value vào trong CSS của các phần tử input[type="range"]
+  $("#range-duration").css("--value", (value / audio.duration) * 100);
+});
+
+$("#volume-range").on("input", function () {
+  var value = $(this).val();
+  $("#volume-range").css("--value", value);
+});
+
 audio.addEventListener("timeupdate", () => {
-  const sec = Math.round(audio.currentTime % 60);
-  const minutes = Math.round(audio.currentTime / 60);
+  const sec = Math.floor(audio.currentTime % 60);
+  const minutes = Math.floor(audio.currentTime / 60);
 
   if (!isNaN(numpadS(minutes)) && !isNaN(numpadS(sec))) {
     $("#music-time-current").text(`${numpadS(minutes)}:${numpadS(sec)}`);
   }
-
+  $("#range-duration").css(
+    "--value",
+    (audio.currentTime / audio.duration) * 100
+  );
   $("#range-duration").val(audio.currentTime);
 });
+
 // ------------------------------------------------------------ //
 function musicSkip(action) {
   if (action) {
@@ -307,7 +326,7 @@ function logoutF() {
 function exist(music, callback) {
   // int element -> string element
   const convertMusic = convertNumbersToStrings(music);
-  
+
   // check
   return currentPlaylist.some((child, index) => {
     if (JSON.stringify(child) === JSON.stringify(convertMusic)) {
@@ -321,7 +340,7 @@ function exist(music, callback) {
 function addToPlaylist(music) {
   if (!exist(music)) {
     currentPlaylist.splice(currentID + 1, 0, convertNumbersToStrings(music));
-    renderPlaylist(currentPlaylist, currentID);
+    renderPlaylist();
   }
 }
 

@@ -104,46 +104,65 @@ function loadMusicData(event) {
   } else console.log("[ERROR] musicID must be greater than 0");
 }
 
+function getDuration(path, callback) {
+  if (path) {
+    let audioDuration = new Audio(path);
+    audioDuration.oncanplay = () => {
+      callback(Math.floor(audioDuration.duration));
+    };
+  } else console.error("[getPath ERROR]");
+}
+
 // upload music
 function uploadMusic(event) {
   event.preventDefault();
-  const formData = $("#uploadMusic-form").serialize();
 
-  $.ajax({
-    url: "server/adminPage.php",
-    type: "POST",
-    data: {
-      requestCode: 2,
-      formData,
-    },
-    success: (response) => {
-      console.log(JSON.parse(response.replace("<!-- SERVER -->", "")));
-      window.location.reload();
-    },
-    error: (status, error) => {
-      console.error(status, error);
-    },
+  var formData = $("#uploadMusic-form").serializeArray();
+  getDuration(formData[1].value, (duration) => {
+    formData.push({ name: "duration", value: duration });
+    formData = $.param(formData);
+
+    $.ajax({
+      url: "server/adminPage.php",
+      type: "POST",
+      data: {
+        requestCode: 2,
+        formData,
+      },
+      success: (response) => {
+        console.log(JSON.parse(response.replace("<!-- SERVER -->", "")));
+        window.location.reload();
+      },
+      error: (status, error) => {
+        console.error(status, error);
+      },
+    });
   });
 }
 
 // update music
 function updateMusicRequest(event) {
   event.preventDefault();
-  const formData = $("#update-music-form-data").serialize();
-  console.log("this", formData);
-  $.ajax({
-    url: "server/adminPage.php",
-    type: "POST",
-    data: {
-      requestCode: 4,
-      formData,
-    },
-    success: (response) => {
-      console.log(response);
-    },
-    error: (status, error) => {
-      console.error(status, error);
-    },
+  let formData = $("#update-music-form-data").serializeArray();
+
+  getDuration(formData[2].value, (duration) => {
+    formData.push({ name: "duration", value: duration });
+    formData = $.param(formData);
+
+    $.ajax({
+      url: "server/adminPage.php",
+      type: "POST",
+      data: {
+        requestCode: 4,
+        formData,
+      },
+      success: (response) => {
+        console.log(response);
+      },
+      error: (status, error) => {
+        console.error(status, error);
+      },
+    });
   });
 }
 

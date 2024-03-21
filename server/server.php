@@ -53,7 +53,7 @@ function onloadQuery($DB, $email)
     $result["newMusic"] = mysqli_query($DB, 'SELECT * FROM music_source_path ORDER BY timeUpload DESC LIMIT 9');
     $result['top3Music'] = mysqli_query($DB, 'SELECT * FROM music_source_path ORDER BY listens DESC LIMIT 3');
     $result['playlists'] = mysqli_query($DB, 'SELECT * FROM music_source_path ORDER BY RAND() LIMIT 10');
-    $result['musicByTag'] = mysqli_query($DB, 'SELECT * FROM music_source_path LIMIT 30');
+    $result['musicByTag'] = mysqli_query($DB, 'SELECT * FROM music_source_path ORDER BY timeUpload DESC LIMIT 30');
     $result['albumsLoad'] = mysqli_query($DB, 'SELECT * FROM albums');
 
     if (!$result["newMusic"] || !$result["top3Music"]) {
@@ -94,8 +94,8 @@ function sqlAddLibrary($musicID, $email, $DB)
 function searchMusic($searchString, $DB)
 {
     if (!empty($searchString)) {
-        $string = "$searchString%";
-        $searchQuery = "SELECT * FROM music_source_path WHERE musicName LIKE ? LIMIT 10";
+        $string = "%$searchString%";
+        $searchQuery = "SELECT * FROM music_source_path WHERE musicName LIKE ? LIMIT 6";
         $stmt = mysqli_prepare($DB, $searchQuery);
         mysqli_stmt_bind_param($stmt, "s", $string);
         mysqli_stmt_execute($stmt) or die(mysqli_error($DB));

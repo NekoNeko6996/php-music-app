@@ -35,7 +35,7 @@ session_start();
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
   if (isset($_POST["login-email"]) && isset($_POST["login-password"])) {
     $password = check($_POST["login-password"]);
-    $email = check($_POST["login-email"]);
+    $email = strtolower(check($_POST["login-email"]));
 
     $result = mysqli_query($connect, "SELECT userName, hash, permissionID, block FROM user WHERE email = '$email'") or die(mysqli_error($connect));
     if (mysqli_num_rows($result) > 0) {

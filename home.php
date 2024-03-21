@@ -151,8 +151,8 @@ if (isset ($_SESSION["user"]) && isset ($_SESSION["username"])) {
     <div class="play-zone-btn-box">
       <p id="music-time-current" class="music-time-p">00:00</p>
       <input type="range" name="music" id="range-duration" min="0" max="300" value="0"
-        onchange="onDurationChange(event.target.value)" />
-      <p id="music-time-max" class="music-time-p">03:00</p>
+        onchange="onDurationChange(event.target)"/>
+      <p id="music-time-max" class="music-time-p">00:00</p>
     </div>
     <div class="music-volume-control">
       <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none">
@@ -168,7 +168,9 @@ if (isset ($_SESSION["user"]) && isset ($_SESSION["username"])) {
 
   <script>
     const userEmail = "<?php echo isset ($_SESSION['user']) ? $_SESSION['user'] : '' ?>";
-    function addLibraryClick(musicID) {
+    function addLibraryClick(musicID, event) {
+      if(event) event.stopPropagation();
+
       if (userEmail != '') {
         $.ajax({
           url: "server/server.php",
@@ -180,6 +182,7 @@ if (isset ($_SESSION["user"]) && isset ($_SESSION["username"])) {
           },
           success: (response) => {
             console.log(response);
+            renderPlaylist();
           },
           error: (status, error) => {
             console.error(status, error);
