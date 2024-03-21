@@ -48,7 +48,8 @@ if (isset ($_SESSION["user"]) && isset ($_SESSION["username"])) {
       <div class="search-container">
         <form action="">
           <input type="text" name="search-music" id="search-music-input" placeholder="Search..."
-            oninput="searchMusic(event.target.value)" />
+            oninput="searchMusic(event.target.value)" onfocus="searchInputFocus(true)"
+            onblur="searchInputFocus(false)" />
           <button type="submit" id="search-btn-nav">
             <svg width="35px" height="35px" viewBox="0 0 24 24" fill="none">
               <path
@@ -87,9 +88,8 @@ if (isset ($_SESSION["user"]) && isset ($_SESSION["username"])) {
 
     <!-- --------------- body ------------------- -->
     <span class="body-web-show">
-
+      <!-- body web show here -->
     </span>
-
     <!-- ---------------------------------------- -->
 
     <footer></footer>
@@ -186,6 +186,11 @@ if (isset ($_SESSION["user"]) && isset ($_SESSION["username"])) {
           },
         })
       } else window.location.href = "login.php";
+    }
+
+    function searchInputFocus(focus) {
+      if (focus) $(".search-result-box").css("display", "block");
+      else $(".search-result-box").css("display", "none");
     }
   </script>
 </body>

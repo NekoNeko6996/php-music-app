@@ -36,6 +36,7 @@
   </div>
 
   <script>
+    var albumIndex = null;
     function selectTag(event, tag) {
       document.querySelectorAll(".category-tag").forEach((element) => {
         element.classList.remove("tag-selected");
@@ -67,7 +68,7 @@
         });
       }
     }
-    
+
     function dateUploadCalculator(date) {
       const result = Math.floor(
         (new Date() - new Date(date)) / (1000 * 60 * 60 * 24)

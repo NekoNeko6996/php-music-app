@@ -8,7 +8,7 @@
       />
       <p id="album-name-p">Moon Halo Honkai Impact 3rd</p>
       <p id="album-author-p">MiHoYo - Honkai Impact 3rd</p>
-      <button class="album-play-btn">Play</button>
+      <button class="album-play-btn" onclick="playAlbumChecked()">Play</button>
       <span> </span>
     </div>
     <div class="albums-show-items-container">
@@ -24,6 +24,33 @@
   </section>
 
   <script>
+    var albumsChecked = [];
+    var onloadAlbumsList = [];
+
+    function addToAlbumsChecked(music) {
+      const exist = albumsChecked.some(
+        (child) => JSON.stringify(child) === JSON.stringify(music)
+      );
+      if (!exist) {
+        albumsChecked.push(music);
+      } else {
+        const index = albumsChecked.findIndex(
+          (child) => JSON.stringify(child) === JSON.stringify(music)
+        );
+        if (index != -1) {
+          albumsChecked.splice(index, 1);
+        }
+      }
+    }
+
+    function playAlbumChecked() {
+      if (albumsChecked.length > 0) {
+        clickToListen(0, albumsChecked);
+      } else {
+        clickToListen(0, onloadAlbumsList);
+      }
+    }
+
     function secToMinutes(sec) {
       return `${Math.round(sec / 60)
         .toString()
@@ -33,6 +60,8 @@
     }
 
     function renderInfoAlbum(info) {
+      console.log(info);
+
       $("#album-img-info").attr("src", info[4]);
       $("#album-name-p").text(info[1]);
       $("#album-author-p").text(info[2]);
@@ -44,12 +73,27 @@
       list.forEach((row, index) => {
         htmlComponent += `
           <div class="al-sh-items-box">
+            <input type="checkbox" name="check-to-play-music-${
+              row[0]
+            }" id="check-to-play-music-${
+          row[0]
+        }" onchange='addToAlbumsChecked(${JSON.stringify(row)})'>
+            <label for="check-to-play-music-${row[0]}"></label>
             <img src="${checkImg(row[4])}" alt="no-img" />
             <span>
               <span class="item-info-name">
                 <p>${row[1]}</p>
                 <p>${row[3]}</p>
               </span>
+
+              <button class="add-playlist-al-btn" onclick='addToPlaylist(${JSON.stringify(
+                row
+              )})'>
+                <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none">
+                  <path opacity="0.5" d="M2 12C2 7.28595 2 4.92893 3.46447 3.46447C4.92893 2 7.28595 2 12 2C16.714 2 19.0711 2 20.5355 3.46447C22 4.92893 22 7.28595 22 12C22 16.714 22 19.0711 20.5355 20.5355C19.0711 22 16.714 22 12 22C7.28595 22 4.92893 22 3.46447 20.5355C2 19.0711 2 16.714 2 12Z" stroke="white" stroke-width="1.5"/>
+                  <path d="M15 12L12 12M12 12L9 12M12 12L12 9M12 12L12 15" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>  
+              </button>
 
               <p>${secToMinutes(row[9])}</p>
             </span>
@@ -60,6 +104,7 @@
     }
 
     $("document").ready(() => {
+      var albumID = onloadData.albumsLoad[albumIndex][0];
       $.ajax({
         url: "server/server.php",
         type: "POST",
@@ -69,12 +114,13 @@
         },
         success: (response) => {
           if (response) {
-            const musicAlbumsList = JSON.parse(
-              response.replace("<!-- Server -->", "")
-            );
-            loadAlbumItems(musicAlbumsList);
-            if (onloadData.albumsLoad[albumID - 1]) {
-              renderInfoAlbum(onloadData.albumsLoad[albumID - 1]);
+            onloadAlbumsList = JSON.parse(response.replace("<!-- Server -->", ""));
+
+            loadAlbumItems([...onloadAlbumsList]);
+
+            console.log()
+            if (onloadData.albumsLoad[albumIndex]) {
+              renderInfoAlbum(onloadData.albumsLoad[albumIndex]);
             }
           }
         },

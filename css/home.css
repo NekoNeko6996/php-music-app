@@ -11,12 +11,12 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: row;
-  justify-content: center;
+  justify-content: flex-start;
   overflow: hidden;
 }
 
 .mid-body {
-  width: 70%;
+  width: 67%;
   height: calc(100vh - 90px);
   position: relative;
 
@@ -96,12 +96,34 @@ body {
   width: 450px;
   background-color: #170f23;
   top: 60px;
+} 
+
+.search-result-box > .playlist-item {
+  cursor: auto !important;
 }
 
+.search-result-box:hover {
+  display: block !important;
+}
+
+.playlist-item:hover > .add-playlist-al-btn {
+  opacity: 1;
+}
+
+.playlist-item > .add-playlist-al-btn {
+  padding: 0 !important;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  position: absolute;
+  right: 10px;
+  opacity: 1;
+}
+
+/* ------------------------------------ */
 .body-web-show {
   width: 100%;
 }
-
 
 /* ----------------------------------- */
 .mid-banner {
@@ -146,8 +168,8 @@ body {
 
 /* ------------------------- */
 .new-music-box {
-  width: 100%;
-  padding: 20px 10px 20px 10px;
+  width: 94%;
+  margin: 20px 3% 20px 3%;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -155,7 +177,7 @@ body {
 }
 .music-item-box {
   height: 100px;
-  width: 400px;
+  width: calc(100% / 3 - 20px);
 
   display: flex;
   flex-direction: row;
@@ -367,7 +389,7 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 .top-music-item > img {
-  height: 90%;
+  width: 15%;
   aspect-ratio: 1/1;
   margin: 0 10px 0 10px;
 }
@@ -375,12 +397,23 @@ input[type="range"]::-webkit-slider-thumb {
 .info {
   position: relative;
   overflow: hidden;
+
+  width: 62%;
 }
 
 .top-music-item > .info > p {
   margin: 13px 0 13px 0 !important;
   font-size: 18px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
+
+.top-music-item > .info > p:nth-child(2),
+.top-music-item > .info > p:nth-child(3) {
+  color: rgba(255, 255, 255, 0.521);
+}
+
 .top-music-item > .info > .music-name {
   flex-grow: 1;
   font-size: 20px;
@@ -393,6 +426,7 @@ input[type="range"]::-webkit-slider-thumb {
   right: 10px;
   position: absolute;
   right: 0;
+  text-align: center;
 }
 
 .top-info-box > .top-text {
@@ -462,17 +496,18 @@ input[type="range"]::-webkit-slider-thumb {
   width: 15%;
 
   background-color: #231b2e;
-  position: absolute;
+  position: relative;
   top: 0;
   left: 0;
   border-right: 1px solid rgb(41, 41, 41);
+  float: left;
 }
 .aside-right {
   height: calc(100vh - 90px);
-  width: 15%;
+  width: 18%;
 
   background-color: #231b2e;
-  position: absolute;
+  position: relative;
   top: 0;
   right: 0;
   border-left: 1px solid rgb(41, 41, 41);
@@ -480,6 +515,7 @@ input[type="range"]::-webkit-slider-thumb {
   flex-direction: column;
   color: white;
   padding-bottom: 10px;
+  float: right;
 }
 .playlists-title {
   color: white;
@@ -504,13 +540,14 @@ input[type="range"]::-webkit-slider-thumb {
   cursor: pointer;
   overflow: hidden;
   padding-right: 5px;
+  position: relative;
 }
 .playlist-item:hover {
   border-color: rgb(238, 169, 255);
 }
 
 .playlist-item > div {
-  width: 75%;
+  overflow: hidden;
 }
 
 .playlists-img {
@@ -523,21 +560,38 @@ input[type="range"]::-webkit-slider-thumb {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  width: 80%;
 }
 
 .playlist-music-name {
   font-size: 14px;
   font-weight: bold;
-  margin-bottom: 7px;
+  margin: 0 35px 7px 0;
 }
 .playlist-play {
-  background: rgb(32, 24, 43);
-  background: linear-gradient(
-    16deg,
-    rgba(32, 24, 43, 1) 35%,
-    rgba(152, 118, 203, 1) 100%
-  );
+  border-right: 5px solid rgba(207, 142, 238, 0.774);
+}
+
+.hidden-option-playlist-c {
+  position: absolute;
+
+  height: 50%;
+  width: 60px;
+  right: 5px;
+  top: 25%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(171, 108, 230, 0.863);
+  display: none;
+  border-radius: 10px;
+}
+.hidden-option-playlist-c > svg {
+  margin: 5px;
+}
+
+.playlist-item:hover .hidden-option-playlist-c {
+  display: flex;
 }
 
 .playlist-next-title {
@@ -598,7 +652,10 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 .category-item-box {
-  width: 200px;
+  width: calc(100% / 6 - 8px);
+  max-width: 200px;
+  min-width: 170px;
+
   border: 1px solid #724391;
   color: white;
   padding-bottom: 10px;

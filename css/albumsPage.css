@@ -78,11 +78,32 @@
   display: flex;
   align-items: center;
   padding-right: 10px;
+  position: relative;
 }
 .al-sh-items-box:hover {
   background-color: rgba(231, 179, 255, 0.11);
-  cursor: pointer;
 }
+
+input[type="checkbox"] {
+  display: none;
+}
+
+input[type="checkbox"] + label::before {
+  content: "";
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  border: 1px solid #ffb0fb38;
+  background-color: #231b2e; 
+  margin: 10px;
+  vertical-align: middle;
+}
+
+input[type="checkbox"]:checked + label::before {
+  background-color: white;
+  border-radius: 2px;
+}
+
 
 .al-sh-items-box > img {
   height: 65%;
@@ -104,3 +125,18 @@
   font-size: 14px;
   margin-top: 10px;
 }
+
+.add-playlist-al-btn {
+  padding: 0 !important;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  position: absolute;
+  right: 80px;
+  opacity: 0;
+}
+.al-sh-items-box:hover .add-playlist-al-btn {
+  opacity: 1;
+} 
+
+/* -------------------------------------- */

@@ -10,6 +10,39 @@ var previousPlayLists,
 var currentID = 0;
 
 // ---------------------------------------------- //
+function convertNumbersToStrings(arr) {
+  if (typeof arr[0] == "object") {
+    return arr.map((row) =>
+      row.map((item) => (typeof item == "number" ? item.toString() : item))
+    );
+  } else {
+    return arr.map((item) =>
+      typeof item == "number" ? item.toString() : item
+    );
+  }
+}
+
+function toAlbumsPage(alIdx) {
+  albumIndex = alIdx;
+  loadBodyComponent("components/home_albums_component.html");
+}
+
+function renderAlbums(albumsList) {
+  if ($(".mid-banner")) {
+    var albumsHtmlComponent = "";
+    albumsList.forEach((row, index) => {
+      albumsHtmlComponent += `
+      <div class="album-box" onclick="toAlbumsPage(${index})">
+        <img src="${row[4]}" alt="no-img">
+        <p class="album-name">${row[1]}</p>
+        <p>${row[2]}</p>
+      </div>
+      `;
+    });
+    $(".mid-banner").html(albumsHtmlComponent);
+  }
+}
+
 function audioControl(action) {
   switch (action) {
     case true:
@@ -55,6 +88,23 @@ function renderPlaylist(playlist, index) {
           <p class="playlist-music-name">${row[1]}</p>
           <p>${row[3] || "Unknown"}</p>
         </div>
+
+        <div class='hidden-option-playlist-c'>
+          <svg width="24px" height="24px" viewBox="0 0 23 23" fill="${
+            libraryIDList.indexOf(currentPlaylist[idx][0]) == -1
+              ? "white"
+              : "#FF00CC"
+          }">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M12 6.00019C10.2006 3.90317 7.19377 3.2551 4.93923 5.17534C2.68468 7.09558 2.36727 10.3061 4.13778 12.5772C5.60984 14.4654 10.0648 18.4479 11.5249 19.7369C11.6882 19.8811 11.7699 19.9532 11.8652 19.9815C11.9483 20.0062 12.0393 20.0062 12.1225 19.9815C12.2178 19.9532 12.2994 19.8811 12.4628 19.7369C13.9229 18.4479 18.3778 14.4654 19.8499 12.5772C21.6204 10.3061 21.3417 7.07538 19.0484 5.17534C16.7551 3.2753 13.7994 3.90317 12 6.00019Z" stroke="#AAA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>  
+
+          <svg width="22px" height="22px" viewBox="0 0 23 23" fill="none" onclick='deleteFromPlaylist(${JSON.stringify(
+            row
+          )}, event)'>
+            <path d="M17 12C17 11.4477 16.5523 11 16 11H8C7.44772 11 7 11.4477 7 12C7 12.5523 7.44771 13 8 13H16C16.5523 13 17 12.5523 17 12Z" fill="white"/>
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M12 23C18.0751 23 23 18.0751 23 12C23 5.92487 18.0751 1 12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23ZM12 20.9932C7.03321 20.9932 3.00683 16.9668 3.00683 12C3.00683 7.03321 7.03321 3.00683 12 3.00683C16.9668 3.00683 20.9932 7.03321 20.9932 12C20.9932 16.9668 16.9668 20.9932 12 20.9932Z" fill="white"/>
+          </svg>
+        </div>
         </div>
       `;
     if (idx === index - 1)
@@ -63,12 +113,16 @@ function renderPlaylist(playlist, index) {
   $("#playlist-container").html(html);
 }
 
+// -------------------------------------------------------- //
 function clickToListen(id, playlists) {
-  audio.src = playlists[id][2];
-  currentID = id;
-  currentPlaylist = [...playlists];
-  console.log(playlists);
-  renderPlaylist(playlists, id);
+  currentID = id ? id : 0;
+  currentPlaylist = convertNumbersToStrings(
+    playlists ? playlists : currentPlaylist
+  );
+
+  audio.src = currentPlaylist[currentID][2];
+
+  renderPlaylist(currentPlaylist, currentID);
   audio.oncanplay = () => {
     // kiểm tra user đã nhấn vào button play lần nào hay chưa
     audioControl(interact);
@@ -83,14 +137,16 @@ function clickToListen(id, playlists) {
     $("#range-duration").attr("max", Math.round(audio.duration)); //gán max
 
     $("#play-music-info").html(`
-        <img src="${checkImg(playlists[id][4])}" alt="no-img">
+        <img src="${checkImg(currentPlaylist[currentID][4])}" alt="no-img">
         <div id="info">
-            <p id="on-play-music-name">${playlists[id][1]}</p>
-            <p>${playlists[id][3]}</p>
+            <p id="on-play-music-name">${currentPlaylist[currentID][1]}</p>
+            <p>${currentPlaylist[currentID][3]}</p>
         </div>
-        <div id="love-box-btn" onclick="addLibraryClick(${playlists[id][0]})">
+        <div id="love-box-btn" onclick="addLibraryClick(${
+          currentPlaylist[currentID][0]
+        })">
             <svg width="100%" height="100%" viewBox="0 0 24 24" fill="${
-              libraryIDList.indexOf(playlists[id][0]) == -1
+              libraryIDList.indexOf(currentPlaylist[currentID][0]) == -1
                 ? "white"
                 : "#FF00CC"
             }">
@@ -110,25 +166,17 @@ audio.onended = () => {
   }
 };
 
-
 // ----------------------------- load body ------------------------------- //
 var prevLocationArray = [];
-var albumID = null;
 
 function toPrevBody() {
-  if(prevLocationArray[prevLocationArray.length - 2]) {
-    loadBodyComponent(prevLocationArray[prevLocationArray.length - 2])
+  if (prevLocationArray[prevLocationArray.length - 2]) {
+    loadBodyComponent(prevLocationArray[prevLocationArray.length - 2]);
     prevLocationArray.pop();
-    console.log("to")
+    console.log("to");
   }
-  console.log(prevLocationArray)
+  console.log(prevLocationArray);
 }
-
-function toAlbumsPage(alID) {
-  albumID = alID;
-  loadBodyComponent("components/home_albums_component.html");
-}
-
 
 function loadBodyComponent(page) {
   $.ajax({
@@ -138,28 +186,11 @@ function loadBodyComponent(page) {
     success: (response) => {
       $(".body-web-show").html(response);
       prevLocationArray.push(page);
-    }
-  })
+    },
+  });
 }
-
 
 // --------------------------------------------------------------- //
-function renderAlbums(albumsList) {
-  if ($(".mid-banner")) {
-    var albumsHtmlComponent = "";
-    albumsList.forEach((row, index) => {
-      albumsHtmlComponent += `
-      <div class="album-box" onclick="toAlbumsPage(${row[0]})">
-        <img src="${row[4]}" alt="no-img">
-        <p class="album-name">${row[1]}</p>
-        <p>${row[2]}</p>
-      </div>
-      `;
-    });
-    $(".mid-banner").html(albumsHtmlComponent);
-  }
-}
-
 // onload
 $("document").ready(() => {
   $.ajax({
@@ -181,8 +212,7 @@ $("document").ready(() => {
       // load body //
       loadBodyComponent("components/home_normal_component.html");
 
-
-      currentPlaylist = onloadData.playlists;
+      currentPlaylist = convertNumbersToStrings(onloadData.playlists);
       clickToListen(currentID, currentPlaylist);
     },
   });
@@ -274,6 +304,39 @@ function logoutF() {
 }
 
 // ------------------------------------------------------------- //
+function exist(music, callback) {
+  // int element -> string element
+  const convertMusic = convertNumbersToStrings(music);
+  
+  // check
+  return currentPlaylist.some((child, index) => {
+    if (JSON.stringify(child) === JSON.stringify(convertMusic)) {
+      if (callback) callback(index);
+      return true;
+    }
+    return false;
+  });
+}
+
+function addToPlaylist(music) {
+  if (!exist(music)) {
+    currentPlaylist.splice(currentID + 1, 0, convertNumbersToStrings(music));
+    renderPlaylist(currentPlaylist, currentID);
+  }
+}
+
+function deleteFromPlaylist(music, event) {
+  // ngăn chặn việc gọi onclick của phần tử cha
+  event.stopPropagation();
+
+  // xóa
+  exist(music, (index) => {
+    currentPlaylist.splice(index, 1);
+  });
+  renderPlaylist(currentPlaylist, currentID);
+}
+
+// ------------------------------------------------------------- //
 function searchMusic(searchString) {
   $.ajax({
     url: "server/server.php",
@@ -290,7 +353,7 @@ function searchMusic(searchString) {
       if (searchMusicResult) {
         searchMusicResult.forEach((row, index) => {
           searchHtmlElement += `
-            <div class="playlist-item" onclick="" style="${
+            <div class="playlist-item" style="${
               index == searchMusicResult.length - 1 ? "margin-bottom: 20px" : ""
             }">
               <img src="${checkImg(
@@ -300,6 +363,14 @@ function searchMusic(searchString) {
                 <p class="playlist-music-name">${row[1]}</p>
                 <p>${row[3]}</p>
               </div>  
+              <button class="add-playlist-al-btn">
+                <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" onclick='addToPlaylist(${JSON.stringify(
+                  row
+                )})'>
+                  <path opacity="0.5" d="M2 12C2 7.28595 2 4.92893 3.46447 3.46447C4.92893 2 7.28595 2 12 2C16.714 2 19.0711 2 20.5355 3.46447C22 4.92893 22 7.28595 22 12C22 16.714 22 19.0711 20.5355 20.5355C19.0711 22 16.714 22 12 22C7.28595 22 4.92893 22 3.46447 20.5355C2 19.0711 2 16.714 2 12Z" stroke="white" stroke-width="1.5"/>
+                  <path d="M15 12L12 12M12 12L9 12M12 12L12 9M12 12L12 15" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>  
+              </button>
             </div>
           `;
         });
@@ -313,4 +384,3 @@ function searchMusic(searchString) {
 }
 
 // ------------------------------------------------------------- //
-function onclickAlbums(albumID) {}
