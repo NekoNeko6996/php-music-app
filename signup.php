@@ -11,16 +11,7 @@
 </head>
 
 <?php
-$server_nameDB = "localhost";
-$usernameDB = "root";
-$passwordDB = "";
-$DB = "music_app_db";
-
-$connect = mysqli_connect($server_nameDB, $usernameDB, $passwordDB, $DB);
-if (mysqli_connect_error()) {
-  die("[SQL] connect Error" . mysqli_connect_error());
-}
-
+include 'database/connect.php';
 
 function check($string)
 {
@@ -32,25 +23,24 @@ function check($string)
 }
 
 $createUserSql = "INSERT INTO user (email, userName, hash, permissionID) VALUES (?, ?, ?, ?)";
-$stmt = mysqli_prepare($connect, $createUserSql);
+$stmt = $connect->prepare($createUserSql);
 
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  if (isset($_POST["sign-up-email"]) && isset($_POST["sign-up-password"]) && isset($_POST["sign-up-repeat-password"]) && isset($_POST["sign-up-username"])) {
+  if (isset ($_POST["sign-up-email"]) && isset ($_POST["sign-up-password"]) && isset ($_POST["sign-up-repeat-password"]) && isset ($_POST["sign-up-username"])) {
     $repeatPassword = check($_POST["sign-up-repeat-password"]);
     $password = check($_POST["sign-up-password"]);
     $email = strtolower(check($_POST["sign-up-email"]));
     $username = check($_POST["sign-up-username"]);
 
     if ($repeatPassword == $password) {
-      $findUser = mysqli_query($connect, "SELECT id FROM user WHERE email = '$email'") or die("[SQL ERROR] find user ERROR" . mysqli_error($connect));
+      $findUser = $connect->query("SELECT id FROM user WHERE email = '$email'");
 
-      if (mysqli_num_rows($findUser) == 0) {
+      if ($findUser->rowCount() == 0) {
         $hash = password_hash($password, PASSWORD_DEFAULT);
         $permission = 3;
 
-        $createUserParam = mysqli_stmt_bind_param($stmt, "sssi", $email, $username, $hash, $permission);
-        $exeResult = mysqli_stmt_execute($stmt);
+        $exeResult = $stmt->execute([$email, $username, $hash, $permission]);
         if ($exeResult == 1) {
           session_start();
           $_SESSION["user"] = $email;
@@ -69,7 +59,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   }
 }
 
-if (isset($_SESSION["user"]) && isset($_SESSION["permissionID"])) {
+if (isset ($_SESSION["user"]) && isset ($_SESSION["permissionID"])) {
   header("Location: home.php");
 }
 ?>

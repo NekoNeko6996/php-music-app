@@ -12,15 +12,7 @@
 
 
 <?php
-$server_nameDB = "localhost";
-$usernameDB = "root";
-$passwordDB = "";
-$DB = "music_app_db";
-
-$connect = mysqli_connect($server_nameDB, $usernameDB, $passwordDB, $DB);
-if (mysqli_connect_error()) {
-  die("[SQL] connect Error" . mysqli_connect_error());
-}
+include 'database/connect.php';
 
 function check($string)
 {
@@ -31,20 +23,29 @@ function check($string)
   return $string;
 }
 
+function convertToArray($Array)
+{
+  foreach ($Array as &$row) {
+      $row = array_values($row);
+  }
+  return $Array;
+}
+
 session_start();
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
   if (isset($_POST["login-email"]) && isset($_POST["login-password"])) {
     $password = check($_POST["login-password"]);
     $email = strtolower(check($_POST["login-email"]));
 
-    $result = mysqli_query($connect, "SELECT userName, hash, permissionID, block FROM user WHERE email = '$email'") or die(mysqli_error($connect));
-    if (mysqli_num_rows($result) > 0) {
-      $findUser = mysqli_fetch_all($result);
+    $result = $connect->query("SELECT userName, hash, permissionID, block FROM user WHERE email = '$email'");
+    if($result)
+    if ($result->rowCount() > 0) {
+      $findUser = $result->fetchAll(PDO::FETCH_ASSOC);
 
-      $hashPassword = $findUser[0][1];
-      $username = $findUser[0][0];
-      $permissionID = $findUser[0][2];
-      $blockStatus = $findUser[0][3];
+      $hashPassword = $findUser[0]["hash"];
+      $username = $findUser[0]["userName"];
+      $permissionID = $findUser[0]["permissionID"];
+      $blockStatus = $findUser[0]["block"];
 
       if ($blockStatus != 1) {
         $checkHash = password_verify($password, $hashPassword);

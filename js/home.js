@@ -208,7 +208,7 @@ $("document").ready(() => {
         console.log("[request error] invalid request code");
         return;
       }
-      onloadData = JSON.parse(response.replace("<!-- Server -->", ""));
+      onloadData = JSON.parse(response);
       libraryIDList = onloadData.library.map((row) => row[0].toString());
       console.log(onloadData);
 
@@ -365,9 +365,7 @@ function searchMusic(searchString) {
       searchString,
     },
     success: (response) => {
-      const searchMusicResult = JSON.parse(
-        response.replace("<!-- Server -->", "")
-      );
+      const searchMusicResult = JSON.parse(response);
       var searchHtmlElement = "";
       if (searchMusicResult) {
         searchMusicResult.forEach((row, index) => {

@@ -19,8 +19,6 @@ if (isset($_SESSION["user"]) && isset($_SESSION["permissionID"]) && $_SESSION["p
   header("Location: home.php");
   exit();
 }
-
-
 ?>
 
 <body>

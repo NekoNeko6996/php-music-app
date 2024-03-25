@@ -37,7 +37,6 @@
 
   <script>
     var albumIndex = null;
-    
     function selectTag(event, tag) {
       document.querySelectorAll(".category-tag").forEach((element) => {
         element.classList.remove("tag-selected");
@@ -53,9 +52,7 @@
             userEmail,
           },
           success: (response) => {
-            DataResponseSortByTag = JSON.parse(
-              response.replace("<!-- Server -->", "")
-            );
+            DataResponseSortByTag = JSON.parse(response);
             if (DataResponseSortByTag) {
               sortByTagRenderItem(
                 DataResponseSortByTag,

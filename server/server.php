@@ -1,116 +1,123 @@
-<!-- Server -->
 <?php
-$server_name = 'localhost';
-$username = 'root';
-$password = '';
-$database = 'music_app_db';
 
-$DB = mysqli_connect($server_name, $username, $password, $database);
-if (!$DB) {
-    die('[sql] Error connect' . mysqli_connect_error());
-}
+include '../database/connect.php';
 
 function check($string)
 {
-  $string = trim($string);
-  $string = stripcslashes($string);
-  $string = htmlspecialchars($string);
+    $string = trim($string);
+    $string = stripcslashes($string);
+    $string = htmlspecialchars($string);
 
-  return $string;
+    return $string;
+}
+function convertToArray($Array)
+{
+    foreach ($Array as &$row) {
+        $row = array_values($row);
+    }
+    return $Array;
 }
 
 // query
-function findIDUSer($email, $DB)
+function findIDUSer($email, $connect)
 {
-    $userID = mysqli_query($DB, "SELECT id FROM user WHERE email = '$email'");
-    if (mysqli_num_rows($userID) != 0) {
-        return mysqli_fetch_array($userID)[0][0];
+    $stmt = $connect->prepare("SELECT id FROM user WHERE email = ?");
+    $stmt->execute([$email]);
+    $userID = $stmt->fetchColumn();
+    if ($userID !== false) {
+        return $userID;
     }
     return false;
 }
 
-function sortByTag($tag, $DB, $email)
+function sortByTag($tag, $connect, $email)
 {
-    if ($tag == "random")
+    if ($tag == "random"){
         $sqlSortTag = "SELECT * FROM music_source_path ORDER BY RAND() LIMIT 30";
+        $stmt = $connect->query($sqlSortTag);
+    }
     else if ($tag == "library") {
-        $userID = findIDUSer($email, $DB);
-        if (!empty($userID)) {
-            $sqlSortTag = "SELECT * FROM music_source_path WHERE id IN (SELECT musicID FROM library WHERE userID = '$userID')";
+        $userID = findIDUSer($email, $connect);
+        if (!empty ($userID)) {
+            $sqlSortTag = "SELECT * FROM music_source_path WHERE id IN (SELECT musicID FROM library WHERE userID = ?)";
+            $stmt = $connect->prepare($sqlSortTag);
+            $stmt->execute([$userID]);
         } else {
             $sqlSortTag = "SELECT * FROM music_source_path WHERE id IN (SELECT musicID FROM library WHERE userID = -1)";
+            $stmt = $connect->query($sqlSortTag);
         }
-    } else
-        $sqlSortTag = "SELECT * FROM music_source_path WHERE tag LIKE '%$tag%' LIMIT 30";
-
-    $result = mysqli_query($DB, $sqlSortTag);
-    $result = mysqli_fetch_all($result);
-    return $result;
-}
-
-function onloadQuery($DB, $email)
-{
-    $result["newMusic"] = mysqli_query($DB, 'SELECT * FROM music_source_path ORDER BY timeUpload DESC LIMIT 9');
-    $result['top3Music'] = mysqli_query($DB, 'SELECT * FROM music_source_path ORDER BY listens DESC LIMIT 3');
-    $result['playlists'] = mysqli_query($DB, 'SELECT * FROM music_source_path ORDER BY RAND() LIMIT 10');
-    $result['musicByTag'] = mysqli_query($DB, 'SELECT * FROM music_source_path ORDER BY timeUpload DESC LIMIT 30');
-    $result['albumsLoad'] = mysqli_query($DB, 'SELECT * FROM albums');
-
-    if (!$result["newMusic"] || !$result["top3Music"]) {
-        die('[query] Error' . mysqli_connect_error());
+    } else {
+        $sqlSortTag = "SELECT * FROM music_source_path WHERE tag LIKE ? LIMIT 30";
+        $stmt = $connect->prepare($sqlSortTag);
+        $stmt->execute(["%$tag%"]);
     }
 
-    $result["newMusic"] = mysqli_fetch_all($result["newMusic"]);
-    $result["top3Music"] = mysqli_fetch_all($result["top3Music"]);
-    $result["playlists"] = mysqli_fetch_all($result["playlists"]);
-    $result["musicByTag"] = mysqli_fetch_all($result["musicByTag"]);
-    $result["albumsLoad"] = mysqli_fetch_all($result["albumsLoad"]);
-    $result["library"] = sortByTag("library", $DB, $email);
+    return convertToArray($stmt->fetchAll(PDO::FETCH_ASSOC));
+}
 
-    if (empty($result["newMusic"]) || empty($result["top3Music"]) || empty($result["playlists"]))
+function onloadQuery($connect, $email)
+{
+    $newMusicStmt = $connect->query('SELECT * FROM music_source_path ORDER BY timeUpload DESC LIMIT 9');
+    $top3MusicStmt = $connect->query('SELECT * FROM music_source_path ORDER BY listens DESC LIMIT 3');
+    $playlistsStmt = $connect->query('SELECT * FROM music_source_path ORDER BY RAND() LIMIT 10');
+    $musicByTagStmt = $connect->query('SELECT * FROM music_source_path ORDER BY timeUpload DESC LIMIT 40');
+    $albumsLoadStmt = $connect->query('SELECT * FROM albums');
+
+    if (!$newMusicStmt || !$top3MusicStmt) {
+        die ('[query] Error');
+    }
+
+    $result["newMusic"] = convertToArray($newMusicStmt->fetchAll(PDO::FETCH_ASSOC));
+    $result["top3Music"] = convertToArray($top3MusicStmt->fetchAll(PDO::FETCH_ASSOC));
+    $result["playlists"] = convertToArray($playlistsStmt->fetchAll(PDO::FETCH_ASSOC));
+    $result["musicByTag"] = convertToArray($musicByTagStmt->fetchAll(PDO::FETCH_ASSOC));
+    $result["albumsLoad"] = convertToArray($albumsLoadStmt->fetchAll(PDO::FETCH_ASSOC));
+    $result["library"] = convertToArray(sortByTag("library", $connect, $email));
+
+    if (empty ($result["newMusic"]) || empty ($result["top3Music"]) || empty ($result["playlists"]))
         echo 'data is null';
+
     return $result;
 }
 
 
-function sqlAddLibrary($musicID, $email, $DB)
+function sqlAddLibrary($musicID, $email, $connect)
 {
-    $userID = findIDUSer($email, $DB);
+    $userID = findIDUSer($email, $connect);
     if ($userID) {
-        if (mysqli_num_rows(mysqli_query($DB, "SELECT * FROM library WHERE userID = '$userID' AND musicID = '$musicID'")) == 0) {
+        $stmt = $connect->prepare("SELECT * FROM library WHERE userID = ? AND musicID = ?");
+        $stmt->execute([$userID, $musicID]);
+        if ($stmt->rowCount() == 0) {
             $sqlAddLibrary = "INSERT INTO library (userID, musicID) VALUES (?, ?)";
-            $stmt = mysqli_prepare($DB, $sqlAddLibrary);
-            mysqli_stmt_bind_param($stmt, "ss", $userID, $musicID);
-            $result = mysqli_stmt_execute($stmt);
+            $stmt = $connect->prepare($sqlAddLibrary);
+            $result = $stmt->execute([$userID, $musicID]);
             return $result;
         } else {
-            mysqli_query($DB, "DELETE FROM library WHERE userID = '$userID' AND musicID = '$musicID'");
+            $stmt = $connect->prepare("DELETE FROM library WHERE userID = ? AND musicID = ?");
+            $result = $stmt->execute([$userID, $musicID]);
             return "Delete";
         }
     }
     return false;
 }
 
-function searchMusic($searchString, $DB)
+function searchMusic($searchString, $connect)
 {
-    if (!empty($searchString)) {
+    if (!empty ($searchString)) {
         $string = "%$searchString%";
-        $searchQuery = "SELECT * FROM music_source_path WHERE musicName LIKE ? LIMIT 6";
-        $stmt = mysqli_prepare($DB, $searchQuery);
-        mysqli_stmt_bind_param($stmt, "s", $string);
-        mysqli_stmt_execute($stmt) or die(mysqli_error($DB));
-        return mysqli_fetch_all(mysqli_stmt_get_result($stmt));
+        $stmt = $connect->prepare("SELECT * FROM music_source_path WHERE musicName LIKE ? LIMIT 6");
+        $stmt->execute([$string]);
+        return convertToArray($stmt->fetchAll(PDO::FETCH_ASSOC));
     }
     return [];
 }
 
-function loadAlbumsList($albumID, $DB) {
-    if (!empty($albumID)) {
-        $sql = "SELECT * FROM music_source_path WHERE id in (SELECT musicID FROM albums_music_list WHERE albumID = ?)";
-        $stmt = mysqli_prepare($DB, $sql);
-        mysqli_stmt_bind_param($stmt,"i", $albumID);
-        mysqli_execute($stmt);
-        $result = mysqli_fetch_all(mysqli_stmt_get_result($stmt));
+function loadAlbumsList($albumID, $connect)
+{
+    if (!empty ($albumID)) {
+        $stmt = $connect->prepare("SELECT * FROM music_source_path WHERE id in (SELECT musicID FROM albums_music_list WHERE albumID = ?)");
+        $stmt->execute([$albumID]);
+        $result = convertToArray($stmt->fetchAll(PDO::FETCH_ASSOC));
         return $result;
     }
     return [];
@@ -119,27 +126,27 @@ function loadAlbumsList($albumID, $DB) {
 // ---------------- //
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $response = [];
-    if (isset($_POST["requestCode"])) {
+    if (isset ($_POST["requestCode"])) {
         switch ($_POST["requestCode"]) {
             case 1:
-                $response = onloadQuery($DB, $_POST["userEmail"]);
+                $response = onloadQuery($connect, $_POST["userEmail"]);
                 break;
             case 2:
-                $response = sortByTag($_POST["data"], $DB, $_POST["userEmail"]);
-
+                $response = sortByTag($_POST["data"], $connect, $_POST["userEmail"]);
+                break;
             case 3:
-                if (isset($_POST["musicID"]) && isset($_POST["userEmail"])) {
-                    $response = sqlAddLibrary($_POST["musicID"], $_POST["userEmail"], $DB);
+                if (isset ($_POST["musicID"]) && isset ($_POST["userEmail"])) {
+                    $response = sqlAddLibrary($_POST["musicID"], $_POST["userEmail"], $connect);
                 }
                 break;
             case 4:
-                if (isset($_POST["searchString"])) {
-                    $response = searchMusic(check($_POST["searchString"]), $DB);
+                if (isset ($_POST["searchString"])) {
+                    $response = searchMusic(check($_POST["searchString"]), $connect);
                 }
                 break;
             case 5:
-                if (isset($_POST["albumID"])) {
-                    $response = loadAlbumsList(check($_POST["albumID"]), $DB);
+                if (isset ($_POST["albumID"])) {
+                    $response = loadAlbumsList(check($_POST["albumID"]), $connect);
                 }
                 break;
             default:
@@ -150,5 +157,4 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         echo 0;
     }
 }
-
 ?>
