@@ -47,7 +47,7 @@ if (isset($_SESSION["user"]) && isset($_SESSION["username"])) {
       <!-- search input -->
       <div class="search-container">
         <form action="">
-          <input type="text" name="search-music" id="search-music-input" placeholder="Search..."
+          <input type="text" name="search-music" id="search-music-input" placeholder="Search..." autocomplete="off"
             oninput="searchMusic(event.target.value)" onfocus="searchInputFocus(true)"
             onblur="searchInputFocus(false)" />
           <button type="submit" id="search-btn-nav" title="search">
