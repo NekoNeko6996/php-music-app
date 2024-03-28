@@ -4,7 +4,6 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="js/signup.js" defer></script>
   <link rel="stylesheet" href="css/signup.css" />
   <title>Login</title>
@@ -13,57 +12,47 @@
 
 <?php
 include 'database/connect.php';
+include 'library/library.php';
 
-function check($string)
-{
-  $string = trim($string);
-  $string = stripcslashes($string);
-  $string = htmlspecialchars($string);
-
-  return $string;
-}
-
-function convertToArray($Array)
-{
-  foreach ($Array as &$row) {
-      $row = array_values($row);
-  }
-  return $Array;
-}
 
 session_start();
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  if (isset($_POST["login-email"]) && isset($_POST["login-password"])) {
+  if (isset ($_POST["login-email"]) && isset ($_POST["login-password"])) {
     $password = check($_POST["login-password"]);
     $email = strtolower(check($_POST["login-email"]));
 
-    $result = $connect->query("SELECT userName, hash, permissionID, block FROM user WHERE email = '$email'");
-    if($result)
-    if ($result->rowCount() > 0) {
-      $findUser = $result->fetchAll(PDO::FETCH_ASSOC);
+    $result = $connect->query("SELECT userName, hash, permissionID, loginToken block FROM user WHERE email = '$email'");
+    if ($result)
+      if ($result->rowCount() > 0) {
+        $findUser = $result->fetchAll(PDO::FETCH_ASSOC);
+        $hashPassword = $findUser[0]["hash"];
+        $username = $findUser[0]["userName"];
+        $permissionID = $findUser[0]["permissionID"];
+        $blockStatus = $findUser[0]["block"];
 
-      $hashPassword = $findUser[0]["hash"];
-      $username = $findUser[0]["userName"];
-      $permissionID = $findUser[0]["permissionID"];
-      $blockStatus = $findUser[0]["block"];
+        if ($blockStatus != 1) {
+          $checkHash = password_verify($password, $hashPassword);
+          if ($checkHash) {
+            $token = createToken(64);
 
-      if ($blockStatus != 1) {
-        $checkHash = password_verify($password, $hashPassword);
-        if ($checkHash) {
-          $_SESSION["user"] = $email;
-          $_SESSION["username"] = $username;
-          $_SESSION["permissionID"] = $permissionID;
-        } else {
-          echo '<div class="login-error-display">Email or password is incorrect!</div>';
-        }
+            $_SESSION["user"] = $email;
+            $_SESSION["username"] = $username;
+            $_SESSION["permissionID"] = $permissionID;
+            $_SESSION["token"] = $token;
+
+            $connect->query("UPDATE user SET loginToken = '$token' WHERE email = '$email'");
+
+          } else {
+            echo '<div class="login-error-display">Email or password is incorrect!</div>';
+          }
+        } else
+          echo '<div class="login-error-display">The user has been blocked by the administrator</div>';
       } else
-        echo '<div class="login-error-display">The user has been blocked by the administrator</div>';
-    } else
-      echo '<div class="login-error-display">Email not found!</div>';
+        echo '<div class="login-error-display">Email not found!</div>';
   }
 }
 
-if (isset($_SESSION["user"]) && isset($_SESSION["permissionID"])) {
+if (isset ($_SESSION["user"]) && isset ($_SESSION["permissionID"]) && isset ($_SESSION["token"])) {
   header("Location: home.php");
 }
 ?>

@@ -151,7 +151,7 @@ if (isset ($_SESSION["user"]) && isset ($_SESSION["username"])) {
     <div class="play-zone-btn-box">
       <p id="music-time-current" class="music-time-p">00:00</p>
       <input type="range" name="music" id="range-duration" min="0" max="300" value="0"
-        onchange="onDurationChange(event.target)"/>
+        onchange="onDurationChange(event.target)" />
       <p id="music-time-max" class="music-time-p">00:00</p>
     </div>
     <div class="music-volume-control">
@@ -168,8 +168,10 @@ if (isset ($_SESSION["user"]) && isset ($_SESSION["username"])) {
 
   <script>
     const userEmail = "<?php echo isset ($_SESSION['user']) ? $_SESSION['user'] : '' ?>";
+    const token = "<?php echo isset ($_SESSION['token']) ? $_SESSION['token'] : '' ?>";
+
     function addLibraryClick(musicID, event) {
-      if(event) event.stopPropagation();
+      if (event) event.stopPropagation();
 
       if (userEmail != '') {
         $.ajax({
@@ -194,6 +196,27 @@ if (isset ($_SESSION["user"]) && isset ($_SESSION["username"])) {
     function searchInputFocus(focus) {
       if (focus) $(".search-result-box").css("display", "block");
       else $(".search-result-box").css("display", "none");
+    }
+
+    function logoutF() {
+      $.ajax({
+        url: "server/logout.php",
+        type: "POST",
+        data: {
+          token,
+          userEmail
+        },
+        success: (response) => {
+          console.log(response);
+          const result = JSON.parse(response);
+          if(result.status) {
+            window.location.reload()
+          }
+        },
+        error: (status, error) => {
+          console.error(status, error);
+        },
+      })
     }
   </script>
 </body>

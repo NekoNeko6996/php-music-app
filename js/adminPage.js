@@ -28,18 +28,20 @@ if ($("#user-display-table") != null) {
     userArray.forEach((row, index) => {
       htmlComponent += `
       <tr class="user-table-tr">
-        <td class="user-table-td">${row[0]}</td>
-        <td class="user-table-td">${row[1]}</td>
-        <td class="user-table-td">${row[2]}</td>
-        <td class="user-table-td">${row[3]}</td>
+        <td class="user-table-td">${row.id}</td>
+        <td class="user-table-td">${row.email}</td>
+        <td class="user-table-td">${row.username}</td>
+        <td class="user-table-td">${row.permissionName}</td>
         <td class="user-table-td flex-right">
           ${
             row[3] != "root"
               ? `<button type="button" class="user-option-btn block-btn" onclick="userAction(${
-                  row[0]
-                }, 5)">${row[4] == 1 ? "UNBLOCK USER" : "BLOCK USER"}</button>
+                  row.id
+                }, 5)">${
+                  row.block == 1 ? "UNBLOCK USER" : "BLOCK USER"
+                }</button>
                 <button type="button" class="user-option-btn delete-btn" onclick="userAction(${
-                  row[0]
+                  row.id
                 }, 6)">DELETE USER</button>`
               : ""
           }
@@ -59,9 +61,8 @@ if ($("#user-display-table") != null) {
         data: "",
       },
       success: (response) => {
-        const onloadDataResponse = JSON.parse(
-          response.replace("<!-- SERVER -->", "")
-        );
+        // console.log(response);
+        const onloadDataResponse = JSON.parse(response);
         console.log(onloadDataResponse);
         loadItemShowUser(onloadDataResponse.userList);
       },
@@ -85,16 +86,15 @@ function loadMusicData(event) {
         musicID,
       },
       success: (response) => {
-        const musicDataResponse = JSON.parse(
-          response.replace("<!-- SERVER -->", "")
-        );
+        console.log(response);
+        const musicDataResponse = JSON.parse(response);
         if (musicDataResponse) {
-          $("#update-music-name").val(musicDataResponse[0][0]);
-          $("#update-music-path").val(musicDataResponse[0][1]);
-          $("#update-music-author").val(musicDataResponse[0][2]);
-          $("#update-img-path").val(musicDataResponse[0][3]);
-          $("#update-gif-path").val(musicDataResponse[0][4]);
-          $("#update-music-tag").val(musicDataResponse[0][5]);
+          // $("#update-music-name").val(musicDataResponse[0].musicName);
+          // $("#update-music-path").val(musicDataResponse[0].musicPath);
+          // $("#update-music-author").val(musicDataResponse[0].author);
+          // $("#update-img-path").val(musicDataResponse[0].imgPath);
+          // $("#update-gif-path").val(musicDataResponse[0].gifPath);
+          // $("#update-music-tag").val(musicDataResponse[0].tag);
         }
       },
       error: (status, error) => {
@@ -130,7 +130,7 @@ function uploadMusic(event) {
         formData,
       },
       success: (response) => {
-        console.log(JSON.parse(response.replace("<!-- SERVER -->", "")));
+        console.log(JSON.parse(response));
         window.location.reload();
       },
       error: (status, error) => {
@@ -174,7 +174,6 @@ function userAction(userID, code) {
       type: "POST",
       data: {
         requestCode: code,
-        requestCode: code,
         userID,
       },
       success: (response) => {
@@ -201,7 +200,7 @@ function searchUser(event) {
       email,
     },
     success: (response) => {
-      const result = JSON.parse(response.replace("<!-- SERVER -->", ""));
+      const result = JSON.parse(response);
       loadItemShowUser(result);
     },
     error: (status, error) => {

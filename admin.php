@@ -46,7 +46,7 @@ if (isset($_SESSION["user"]) && isset($_SESSION["permissionID"]) && $_SESSION["p
       <h2>Update Music</h2>
       <form action="" method="POST" id="update-music-form-data">
         <table>
-          <tr>
+          <!-- <tr>
             <td><label for="update-music-id">Input ID</label></td>
             <td></td>
           </tr>
@@ -98,7 +98,10 @@ if (isset($_SESSION["user"]) && isset($_SESSION["permissionID"]) && $_SESSION["p
               </button>
               <button class="normal-btn delete-btn">Delete Music</button>
             </td>
-          </tr>
+          </tr> -->
+
+          
+
         </table>
       </form>
     </div>

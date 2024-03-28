@@ -8,8 +8,11 @@
 </head>
 
 <?php
-echo "<p>app is working</p>";
+include '../library/library.php';
+include '../database/connect.php';
+include '../auth/AuthUser.php';
 
+echo "<p>app is working</p>";
 
 $server_name = 'localhost';
 $username = 'root';
@@ -18,14 +21,14 @@ $database = 'music_app_db';
 
 $connect = mysqli_connect($server_name, $username, $password, $database);
 if (!$connect) {
-    die('[sql] Error connect' . mysqli_connect_error());
+    die ('[sql] Error connect' . mysqli_connect_error());
 }
 echo '[sql] Connect success';
 
 
 $result = mysqli_query($connect, 'SELECT * FROM music_source_path');
 if (!$result) {
-    die('[query] Error' . mysqli_connect_error());
+    die ('[query] Error' . mysqli_connect_error());
 }
 
 $musicArray = array();
@@ -42,14 +45,18 @@ if (mysqli_num_rows($result) > 0) {
 
 <body>
     <?php
-    if (!empty($musicArray)) {
-        foreach ($musicArray as $data) {
-            echo '<audio controls><source src="' . $data['musicPath'] . '" type="audio/mp3"></audio>';
-        }
-    } else {
-        echo '<source src="" type="audio/mp3">';
-    }
+    $DATABASE = new DATABASE($connect);
+
+    // var_dump($DATABASE->select("SELECT * FROM user WHERE email = ?", ["nam@gmail.com"]));
+    
+    echo '<br>';
+    echo $_SERVER['REMOTE_ADDR'] . '<br>';
+    echo $_SERVER['HTTP_USER_AGENT'] . '<br>';
+
+    echo Auth("e40034e2ebc1cd1e6d02c21afc144d6751d3a6140e4be7450ed2f53708d682a5", $connect);
     ?>
+
+
 </body>
 
 </html>

@@ -1,100 +1,91 @@
-<!-- SERVER -->
 <?php
-$server_name = "localhost";
-$username = "root";
-$password = "";
-$database = "music_app_db";
+include '../database/connect.php';
 
-$connect = mysqli_connect($server_name, $username, $password, $database);
-
-if (!$connect) {
-    die ("[SQL] Error" . mysqli_connect_error());
-}
-
-
-$insertQuery = "INSERT INTO music_source_path (musicName, musicPath, author, imgPath, gifPath, duration) VALUES (?, ?, ?, ?, ?, ?)";
 
 function findUser($DB, $email)
 {
-    if (!empty ($email))
+    if (!empty ($email)) {
         $sql = "SELECT user.id, user.email, user.username, permission.permissionName, user.block FROM user INNER JOIN permission ON user.permissionID = permission.permissionID WHERE email = ?";
-    else
-        $sql = "SELECT user.id, user.email, user.username, permission.permissionName, user.block FROM user INNER JOIN permission ON user.permissionID = permission.permissionID";
-
-    $stmt = mysqli_prepare($DB, $sql);
-    if (!empty ($email))
-        mysqli_stmt_bind_param($stmt, "s", $email);
-    mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
-    if (mysqli_num_rows($result)) {
-        return mysqli_fetch_all($result);
+        $stmt = $DB->prepare($sql);
+        $stmt->execute([$email]);
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } else {
+        $sql = 'SELECT user.id, user.email, user.username, permission.permissionName, user.block FROM user INNER JOIN permission ON user.permissionID = permission.permissionID';
+        $stmt = $DB->prepare($sql);
+        $stmt->execute();
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    return [];
+    return $result;
 }
 
 function AD_onloadQuery($DB)
 {
     $result["userList"] = findUser($DB, "");
-    $result["musicList"] = mysqli_fetch_all(mysqli_query($DB, "SELECT * FROM music_source_path LIMIT 10"));
+    $stmt = $DB->query("SELECT * FROM music_source_path LIMIT 10");
+    $result["musicList"] = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     if (!isset ($result["userList"]) || !isset ($result["musicList"])) {
-        die ("[SQL ERROR] query error" . mysqli_error($DB));
+        die ("[SQL ERROR] query error");
     }
     return $result;
 }
+
 
 function getMusicById($DB, $id)
 {
-    $result = mysqli_fetch_all(mysqli_query($DB, "SELECT musicName, musicPath, author, imgPath, gifPath, tag FROM music_source_path WHERE id = '$id'"));
+    $stmt = $DB->prepare("SELECT musicName, musicPath, author, imgPath, gifPath, tag FROM music_source_path WHERE id = ?");
+    $stmt->execute([$id]);
+    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
     if (!isset ($result)) {
-        die ("[SQL ERROR] query error" . mysqli_error($DB));
+        die ("[SQL ERROR] query error");
     }
     return $result;
 }
 
+
 function updateMusic($DB, $data)
 {
-    $updateQuery = "UPDATE music_source_path SET musicName = ?, musicPath = ?, author = ?, imgPath = ?, gifPath = ?, tag = ?, duration = ? WHERE id = ?";
-    $stmt = mysqli_prepare($DB, $updateQuery);
-    mysqli_stmt_bind_param($stmt, "ssssssii", $data["musicName"], $data["musicPath"], $data["musicAuthor"], $data["imgPath"], $data["update-gif-path"], $data["update-music-tag"], $data["duration"], $data["musicId"]);
-    $updateResult = mysqli_stmt_execute($stmt);
+    $stmt = $DB->prepare("UPDATE music_source_path SET musicName = ?, musicPath = ?, author = ?, imgPath = ?, gifPath = ?, tag = ?, duration = ? WHERE id = ?");
+    $updateResult = $stmt->execute([$data["musicName"], $data["musicPath"], $data["musicAuthor"], $data["imgPath"], $data["update-gif-path"], $data["update-music-tag"], $data["duration"], $data["musicId"]]);
+
     if (!$updateResult) {
-        die ("[SQL ERROR] update error" . mysqli_error($DB));
+        die ("[SQL ERROR] update error");
     }
     return $updateResult;
 }
+
 function userAction($DB, $userID, $action)
 {
     if (!empty ($userID)) {
-        $stmtCHECK = mysqli_prepare($DB, "SELECT permissionID, block FROM user WHERE id = ?");
-        $stmtCHECK = mysqli_prepare($DB, "SELECT permissionID, block FROM user WHERE id = ?");
-        mysqli_stmt_bind_param($stmtCHECK, "i", $userID);
-        mysqli_stmt_execute($stmtCHECK);
-        $CheckResult = mysqli_stmt_get_result($stmtCHECK);
-        $CheckResult = mysqli_fetch_all($CheckResult);
+        $stmtCHECK = $DB->prepare("SELECT permissionID, block FROM user WHERE id = ?");
+        $stmtCHECK->execute([$userID]);
+        $CheckResult = $stmtCHECK->fetchAll(PDO::FETCH_ASSOC);
+
         if (isset ($CheckResult[0])) {
-            $permissionID = $CheckResult[0][0];
-            $blockStatus = $CheckResult[0][1];
+            $permissionID = $CheckResult[0]['permissionID'];
+            $blockStatus = $CheckResult[0]['block'];
+
             if ($permissionID != 1) {
                 if ($action == "block") {
-                    $stmtAction = "UPDATE user SET block = !{$blockStatus} WHERE id = ?";
+                    $stmtAction = $DB->prepare("UPDATE user SET block = !{$blockStatus} WHERE id = ?");
                 } else {
-                    $stmtAction = "DELETE FROM user WHERE id = ?";
+                    $stmtAction = $DB->prepare("DELETE FROM user WHERE id = ?");
                 }
 
-                $stmtAction = mysqli_prepare($DB, $stmtAction);
-                mysqli_stmt_bind_param($stmtAction, "i", $userID);
-                $result = mysqli_stmt_execute($stmtAction);
+                $result = $stmtAction->execute([$userID]);
                 return ["status" => $result];
             } else {
                 return ["status" => -1];
             }
-        } else
+        } else {
             return ["status" => -1];
+        }
     }
 }
 
 
+$insertQuery = "INSERT INTO music_source_path (musicName, musicPath, author, imgPath, gifPath, duration) VALUES (?, ?, ?, ?, ?, ?)";
 function uploadMusic($data, $connect, $insertQuery)
 {
     if (isset ($data["name-music"]) && isset ($data["path-music"])) {
@@ -105,16 +96,14 @@ function uploadMusic($data, $connect, $insertQuery)
         $gifPath = $data["gif-path-music"];
         $uploadMusicDuration = $data["duration"];
 
-        $stmt = mysqli_prepare($connect, $insertQuery);
-        mysqli_stmt_bind_param($stmt, "sssssi", $nameMusic, $pathMusic, $author, $imgPath, $gifPath, $uploadMusicDuration);
-
-        $uploadResult = mysqli_stmt_execute($stmt);
+        $stmt = $connect->prepare($insertQuery);
+        $uploadResult = $stmt->execute([$nameMusic, $pathMusic, $author, $imgPath, $gifPath, $uploadMusicDuration]);
         if (!$uploadResult) {
-            echo "[SQL] Insert ERROR" . mysqli_error($connect);
+            return ["status" => false];
         }
         return ["status" => $uploadResult];
-    }
-    else return ["status" => false];
+    } else
+        return ["status" => false];
 }
 
 

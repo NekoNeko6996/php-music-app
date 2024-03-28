@@ -317,10 +317,6 @@ function userAvatarClick() {
     $(".user-nav-box").attr("id", "");
   }
 }
-// ------------------------------------------------------------- //
-function logoutF() {
-  window.location.href = "server/logout.php";
-}
 
 // ------------------------------------------------------------- //
 function exist(music, callback) {
