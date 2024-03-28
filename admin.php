@@ -13,7 +13,7 @@
 
 <?php
 session_start();
-if (isset($_SESSION["user"]) && isset($_SESSION["permissionID"]) && $_SESSION["permissionID"] != 3 && $_SESSION["permissionID"] != -1) {
+if (isset ($_SESSION["user"]) && isset ($_SESSION["permissionID"]) && $_SESSION["permissionID"] != 3 && $_SESSION["permissionID"] != -1) {
   $permission = $_SESSION["permissionID"];
 } else {
   header("Location: home.php");
@@ -26,7 +26,7 @@ if (isset($_SESSION["user"]) && isset($_SESSION["permissionID"]) && $_SESSION["p
     <a href="home.php">Home</a>
   </nav>
   <div class="music-edit-container">
-    <div class="add-new-music">
+    <!-- <div class="add-new-music">
       <form action="" id="uploadMusic-form" method="post" onsubmit="uploadMusic(event)">
         <h2>Upload Music</h2>
         <label for="name-music-input">Name Music:</label>
@@ -41,69 +41,23 @@ if (isset($_SESSION["user"]) && isset($_SESSION["permissionID"]) && $_SESSION["p
         <input type="text" name="gif-path-music" id="gif-path-music-input" />
         <input type="submit" value="UpLoad Music" id="submit-music-btn" class="normal-btn" />
       </form>
-    </div>
-    <div class="music-update-box">
-      <h2>Update Music</h2>
-      <form action="" method="POST" id="update-music-form-data">
-        <table>
-          <!-- <tr>
-            <td><label for="update-music-id">Input ID</label></td>
-            <td></td>
-          </tr>
+    </div> -->
+    <div class="music-box">
+      <h2>Music Uploaded By You</h2>
+      <table class="show-music-table-container">
+        <thead>
           <tr>
-            <td>
-              <input type="number" name="musicId" id="update-music-id" class="update-input" />
-            </td>
-            <td>
-              <button class="normal-btn f-left no-margin" onclick="loadMusicData(event)">
-                Search Music
-              </button>
-            </td>
+            <th>Music Name</th>
+            <th>Author</th>
+            <th>Tag</th>
+            <th></th>
           </tr>
-          <tr>
-            <td>
-              <label for="update-music-name">Music Name</label>
-              <input type="text" name="musicName" id="update-music-name" class="update-input" />
-            </td>
-            <td>
-              <label for="update-music-path">Music Path</label>
-              <input type="text" name="musicPath" id="update-music-path" class="update-input" />
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <label for="update-music-author">Music Author</label>
-              <input type="text" name="musicAuthor" id="update-music-author" class="update-input" />
-            </td>
-            <td>
-              <label for="update-img-path">Music Image</label>
-              <input type="text" name="imgPath" id="update-img-path" class="update-input" />
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <label for="update-gif-path">Music Gif</label>
-              <input type="text" name="update-gif-path" id="update-gif-path" class="update-input" />
-            </td>
-            <td>
-              <label for="update-music-tag">Music Tag</label>
-              <input type="text" name="update-music-tag" id="update-music-tag" class="update-input" />
-            </td>
-          </tr>
-          <tr>
-            <td></td>
-            <td>
-              <button class="normal-btn" onclick="updateMusicRequest(event)">
-                Update Music
-              </button>
-              <button class="normal-btn delete-btn">Delete Music</button>
-            </td>
-          </tr> -->
+        </thead>
 
-          
-
-        </table>
-      </form>
+        <tbody class="uploader-show-music-area">
+          <!-- show here -->
+        </tbody>
+      </table>
     </div>
   </div>
 

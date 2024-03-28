@@ -17,7 +17,7 @@
 
 <?php
 session_start();
-if (isset ($_SESSION["user"]) && isset ($_SESSION["username"])) {
+if (isset($_SESSION["user"]) && isset($_SESSION["username"])) {
   $user = $_SESSION["user"];
   $username = $_SESSION["username"];
   $permission = $_SESSION["permissionID"];
@@ -36,7 +36,7 @@ if (isset ($_SESSION["user"]) && isset ($_SESSION["username"])) {
   <section class="mid-body">
     <nav class="mid-nav">
       <!-- prev btn -->
-      <button type="button" onclick="toPrevBody()" class="prev-body-btn">
+      <button type="button" onclick="toPrevBody()" class="prev-body-btn" title="back">
         <svg width="27px" height="24px" viewBox="0 0 1024 1024">
           <path fill="white" d="M224 480h640a32 32 0 1 1 0 64H224a32 32 0 0 1 0-64z" />
           <path fill="white"
@@ -50,7 +50,7 @@ if (isset ($_SESSION["user"]) && isset ($_SESSION["username"])) {
           <input type="text" name="search-music" id="search-music-input" placeholder="Search..."
             oninput="searchMusic(event.target.value)" onfocus="searchInputFocus(true)"
             onblur="searchInputFocus(false)" />
-          <button type="submit" id="search-btn-nav">
+          <button type="submit" id="search-btn-nav" title="search">
             <svg width="35px" height="35px" viewBox="0 0 24 24" fill="none">
               <path
                 d="M17.5556 3C19.4579 3 21 4.54213 21 6.44444V17.5556C21 19.4579 19.4579 21 17.5556 21H6.44444C4.54213 21 3 19.4579 3 17.5556V6.44444C3 4.54213 4.54213 3 6.44444 3H17.5556Z"
@@ -79,7 +79,7 @@ if (isset ($_SESSION["user"]) && isset ($_SESSION["username"])) {
           else
             echo '<p onclick="window.location.href=\'login.php\'">Login</p><p onclick="window.location.href=\'signup.php\'">Sign Up</p>' ?>
             <?php
-          if (isset ($permission) && $permission != 3 && $permission != -1)
+          if (isset($permission) && $permission != 3 && $permission != -1)
             echo '<p onclick="window.location.href =\'admin.php\'">Admin Page</p>';
           ?>
         </div>
@@ -102,7 +102,7 @@ if (isset ($_SESSION["user"]) && isset ($_SESSION["username"])) {
   <div class="play-zone">
     <div id="play-music-info"></div>
     <div class="play-zone-btn-box">
-      <button class="audio-control-btn" onclick="audioMix()">
+      <button class="audio-control-btn" onclick="audioMix()" title="mixer audio">
         <svg width="100%" height="100%" viewBox="0 0 24 24" fill="white">
           <path
             d="M2 16.25C1.58579 16.25 1.25 16.5858 1.25 17C1.25 17.4142 1.58579 17.75 2 17.75V16.25ZM10.7478 14.087L10.1047 13.7011L10.7478 14.087ZM13.2522 9.91303L13.8953 10.2989L13.2522 9.91303ZM22 7L22.5303 7.53033C22.8232 7.23744 22.8232 6.76256 22.5303 6.46967L22 7ZM19.4697 8.46967C19.1768 8.76256 19.1768 9.23744 19.4697 9.53033C19.7626 9.82322 20.2374 9.82322 20.5303 9.53033L19.4697 8.46967ZM20.5303 4.46967C20.2374 4.17678 19.7626 4.17678 19.4697 4.46967C19.1768 4.76256 19.1768 5.23744 19.4697 5.53033L20.5303 4.46967ZM15.2205 7.3894L14.851 6.73675V6.73675L15.2205 7.3894ZM2 17.75H5.60286V16.25H2V17.75ZM11.3909 14.4728L13.8953 10.2989L12.6091 9.52716L10.1047 13.7011L11.3909 14.4728ZM18.3971 7.75H22V6.25H18.3971V7.75ZM21.4697 6.46967L19.4697 8.46967L20.5303 9.53033L22.5303 7.53033L21.4697 6.46967ZM22.5303 6.46967L20.5303 4.46967L19.4697 5.53033L21.4697 7.53033L22.5303 6.46967ZM13.8953 10.2989C14.3295 9.57518 14.6286 9.07834 14.9013 8.70996C15.1644 8.35464 15.3692 8.16707 15.59 8.04205L14.851 6.73675C14.384 7.00113 14.0315 7.36397 13.6958 7.8174C13.3697 8.25778 13.0285 8.82806 12.6091 9.52716L13.8953 10.2989ZM18.3971 6.25C17.5819 6.25 16.9173 6.24918 16.3719 6.30219C15.8104 6.35677 15.3179 6.47237 14.851 6.73675L15.59 8.04205C15.8108 7.91703 16.077 7.83793 16.517 7.79516C16.9733 7.75082 17.5531 7.75 18.3971 7.75V6.25ZM5.60286 17.75C6.41814 17.75 7.0827 17.7508 7.62807 17.6978C8.18961 17.6432 8.6821 17.5276 9.14905 17.2632L8.41 15.9579C8.18919 16.083 7.92299 16.1621 7.48296 16.2048C7.02675 16.2492 6.44685 16.25 5.60286 16.25V17.75ZM10.1047 13.7011C9.67046 14.4248 9.37141 14.9217 9.09867 15.29C8.8356 15.6454 8.63081 15.8329 8.41 15.9579L9.14905 17.2632C9.616 16.9989 9.96851 16.636 10.3042 16.1826C10.6303 15.7422 10.9715 15.1719 11.3909 14.4728L10.1047 13.7011Z"
@@ -112,7 +112,7 @@ if (isset ($_SESSION["user"]) && isset ($_SESSION["username"])) {
             fill="white" class="mix-arrow" />
         </svg>
       </button>
-      <button class="audio-control-btn" onclick="musicSkip(false)">
+      <button class="audio-control-btn" onclick="musicSkip(false)" title="previous">
         <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none">
           <path
             d="M20.24 7.22005V16.7901C20.24 18.7501 18.11 19.98 16.41 19L12.26 16.61L8.10996 14.21C6.40996 13.23 6.40996 10.78 8.10996 9.80004L12.26 7.40004L16.41 5.01006C18.11 4.03006 20.24 5.25005 20.24 7.22005Z"
@@ -121,14 +121,14 @@ if (isset ($_SESSION["user"]) && isset ($_SESSION["username"])) {
             stroke-linejoin="round" fill="white" />
         </svg>
       </button>
-      <button class="audio-control-btn play-btn" id="playBtn" onclick="audioControl(audio.paused)">
+      <button class="audio-control-btn play-btn" id="playBtn" onclick="audioControl(audio.paused)" title="pause/play">
         <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" id="play-svg">
           <path
             d="M16.6582 9.28638C18.098 10.1862 18.8178 10.6361 19.0647 11.2122C19.2803 11.7152 19.2803 12.2847 19.0647 12.7878C18.8178 13.3638 18.098 13.8137 16.6582 14.7136L9.896 18.94C8.29805 19.9387 7.49907 20.4381 6.83973 20.385C6.26501 20.3388 5.73818 20.0469 5.3944 19.584C5 19.053 5 18.1108 5 16.2264V7.77357C5 5.88919 5 4.94701 5.3944 4.41598C5.73818 3.9531 6.26501 3.66111 6.83973 3.6149C7.49907 3.5619 8.29805 4.06126 9.896 5.05998L16.6582 9.28638Z"
             stroke="white" stroke-width="2" stroke-linejoin="round" />
         </svg>
       </button>
-      <button class="audio-control-btn" onclick="musicSkip(true)">
+      <button class="audio-control-btn" onclick="musicSkip(true)" title="next">
         <svg width="100%" height="100%" viewBox="0 0 24 24" fill="white">
           <path fill-rule="evenodd" clip-rule="evenodd"
             d="M8.715 6.36694L14.405 10.6669C14.7769 10.9319 14.9977 11.3603 14.9977 11.8169C14.9977 12.2736 14.7769 12.702 14.405 12.9669L8.715 17.6669C8.23425 18.0513 7.58151 18.1412 7.01475 17.9011C6.44799 17.6611 6.05842 17.1297 6 16.5169V7.51694C6.05842 6.90422 6.44799 6.37281 7.01475 6.13275C7.58151 5.89269 8.23425 5.9826 8.715 6.36694Z"
@@ -136,7 +136,7 @@ if (isset ($_SESSION["user"]) && isset ($_SESSION["username"])) {
           <path d="M18 6.01697V18.017" stroke="white" stroke-width="1.5" stroke-linecap="round" />
         </svg>
       </button>
-      <button class="audio-control-btn" onclick="musicLoop()">
+      <button class="audio-control-btn" onclick="musicLoop()" title="loop">
         <svg width="100%" height="100%" viewBox="0 0 556 556" fill="white" id="audioLoop-svg-active"
           class="audioLoop-svg">
           <path
@@ -151,7 +151,7 @@ if (isset ($_SESSION["user"]) && isset ($_SESSION["username"])) {
     <div class="play-zone-btn-box">
       <p id="music-time-current" class="music-time-p">00:00</p>
       <input type="range" name="music" id="range-duration" min="0" max="300" value="0"
-        onchange="onDurationChange(event.target)" />
+        onchange="onDurationChange(event.target)" oninput="changeCurrentTimeP(event.target.value)" />
       <p id="music-time-max" class="music-time-p">00:00</p>
     </div>
     <div class="music-volume-control">
@@ -167,8 +167,8 @@ if (isset ($_SESSION["user"]) && isset ($_SESSION["username"])) {
   </div>
 
   <script>
-    const userEmail = "<?php echo isset ($_SESSION['user']) ? $_SESSION['user'] : '' ?>";
-    const token = "<?php echo isset ($_SESSION['token']) ? $_SESSION['token'] : '' ?>";
+    const userEmail = "<?php echo isset($_SESSION['user']) ? $_SESSION['user'] : '' ?>";
+    const token = "<?php echo isset($_SESSION['token']) ? $_SESSION['token'] : '' ?>";
 
     function addLibraryClick(musicID, event) {
       if (event) event.stopPropagation();
@@ -209,7 +209,7 @@ if (isset ($_SESSION["user"]) && isset ($_SESSION["username"])) {
         success: (response) => {
           console.log(response);
           const result = JSON.parse(response);
-          if(result.status) {
+          if (result.status) {
             window.location.reload()
           }
         },

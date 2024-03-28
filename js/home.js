@@ -136,14 +136,17 @@ function clickToListen(id, playlists) {
 
     //
     $("#music-time-max").text(`${numpadS(minutes)}:${numpadS(sec)}`);
-    $("#music-time-current").text(`00:00`);
     $("#range-duration").attr("max", Math.round(audio.duration)); //gán max
 
     $("#play-music-info").html(`
         <img src="${checkImg(currentPlaylist[currentID][4])}" alt="no-img">
         <div id="info">
             <p id="on-play-music-name">${currentPlaylist[currentID][1]}</p>
-            <p>${currentPlaylist[currentID][3]}</p>
+            <p>${
+              currentPlaylist[currentID][3]
+                ? currentPlaylist[currentID][3]
+                : "Unknown"
+            }</p>
         </div>
         <div id="love-box-btn" onclick="addLibraryClick(${
           currentPlaylist[currentID][0]
@@ -231,6 +234,12 @@ function numpadS(num) {
 function audioVolume(value) {
   audio.volume = value / 100;
   $("#volume-percent-show").text(`${Math.round(audio.volume * 100)}%`);
+}
+function changeCurrentTimeP(value) {
+  console.log(value);
+  $("#music-time-current").text(
+    `${numpadS(Math.floor(value / 60))}:${numpadS(Math.floor(value % 60))}`
+  );
 }
 
 function onDurationChange(target) {

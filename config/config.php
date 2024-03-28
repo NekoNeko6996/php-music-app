@@ -1,8 +1,7 @@
-
-<?php 
-    $hostname = "localhost";
-    $database = "music_app_db";
-    $username = 'root';
-    $password = '';
-    $port = 3306;
+<?php
+$hostname = "localhost";
+$database = "music_app_db";
+$username = 'root';
+$password = '';
+$port = 3306;
 ?>

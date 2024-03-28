@@ -12,37 +12,25 @@ function check($string)
     return $string;
 }
 
-class DATABASE
+function query(string $query, array $param, $connect)
 {
-    public $connect;
+    $connect = $GLOBALS['connect'];
 
+    $stmt = $connect->prepare($query);
+    $stmt->execute([...$param]);
+    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    function __construct($connect)
-    {
-        $this->connect = $connect;
-    }
-
-    public function select($query, array $param)
-    {
-        try {
-            if (count($param) > 0) {
-                $stmt = $this->connect->prepare($query);
-                $stmt->bind_param("s", ...$param);
-                $result = $stmt->execute();
-                if ($result !== false) {
-                    if ($result->rowCount() > 0)
-                        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-                    else
-                        return [];
-                } else {
-                    throw new Exception("Error executing query: " . implode(", ", $stmt->errorInfo()));
-                }
-            }
-        } catch (Exception $e) {
-            echo "Error: " . $e->getMessage();
-        }
-    }
-
+    return ["stmt" => $stmt, "result" => $result, "numRow" => count($result)];
 }
 
+function destroyToken($token, $email, $connect)
+{
+    if (!empty($token) && !empty($email)) {
+        $query = "UPDATE user SET loginToken = null WHERE loginToken = :token AND email = :email";
+        $stmt = $connect->prepare($query);
+        $result = $stmt->execute(array(':token' => $token, ':email' => $email));
+        return $result;
+    } else
+        return false;
+}
 ?>
