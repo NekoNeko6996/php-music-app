@@ -103,6 +103,7 @@ function uploaderLoadMusicItemToShow(data) {
     data.forEach((row, idx) => {
       html += `
       <tr>
+        <td>${idx + 1}</td>
         <td>
           <p class="uploader-show-item-p">${row.musicName}</p>
         </td>  
@@ -113,7 +114,9 @@ function uploaderLoadMusicItemToShow(data) {
           <p class="uploader-show-item-p">${row.tag}</p>
         </td> 
         <td>
-          <button type="button" class="normal-btn more-info-btn" onclick="redirectToMusicInfo(${row.id})">More Info</button>
+          <button type="button" class="normal-btn more-info-btn" onclick="redirectToMusicInfo(${
+            row.id
+          })">More Info</button>
         </td>
       </tr>
       `;

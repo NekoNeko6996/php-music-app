@@ -1,53 +1,43 @@
 <?php
 include '../database/connect.php';
+include '../library/library.php';
 
+session_start();
 
 function findUser($DB, $email)
 {
     if (!empty($email)) {
         $sql = "SELECT user.id, user.email, user.username, permission.permissionName, user.block FROM user INNER JOIN permission ON user.permissionID = permission.permissionID WHERE email = ?";
-        $stmt = $DB->prepare($sql);
-        $stmt->execute([$email]);
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $result = query($sql, [$email], $DB)['result'];
     } else {
         $sql = 'SELECT user.id, user.email, user.username, permission.permissionName, user.block FROM user INNER JOIN permission ON user.permissionID = permission.permissionID';
-        $stmt = $DB->prepare($sql);
-        $stmt->execute();
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $result = query($sql, [], $DB)['result'];
     }
     return $result;
 }
 
 function AD_onloadQuery($DB)
 {
-    $stmt = $DB->query("SELECT * FROM music_source_path LIMIT 10");
-
-    $result["userList"] = findUser($DB, "");
-    $result["musicList"] = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    if (!isset($result["userList"]) || !isset($result["musicList"])) {
-        die("[SQL ERROR] query error");
+    if (!isset($_SESSION['userID']) || empty($_SESSION['userID'])) {
+        echo $_SESSION['userID'];
+        return false;
     }
+    $userID = $_SESSION['userID'];
+    $result["userList"] = findUser($DB, "");
+    $result["musicList"] = query("SELECT * FROM music_source_path WHERE uploadBy = ?", [$userID], $DB)['result'];
     return $result;
 }
 
 function updateMusic($DB, $data)
 {
-    $stmt = $DB->prepare("UPDATE music_source_path SET musicName = ?, author = ?, tag = ?, duration = ? WHERE id = ?");
-    $updateResult = $stmt->execute([$data["musicName"], $data["musicAuthor"], $data["update-music-tag"], $data["duration"], $data["musicId"]]);
-
-    if (!$updateResult) {
-        die("[SQL ERROR] update error");
-    }
+    $updateResult = query("UPDATE music_source_path SET musicName = ?, author = ?, tag = ? WHERE id = ?", [$data["musicName"], $data["musicAuthor"], $data["update-music-tag"], $data["musicId"]], $DB)['stmt'];
     return $updateResult;
 }
 
 function userAction($DB, $userID, $action)
 {
     if (!empty($userID)) {
-        $stmtCHECK = $DB->prepare("SELECT permissionID, block FROM user WHERE id = ?");
-        $stmtCHECK->execute([$userID]);
-        $CheckResult = $stmtCHECK->fetchAll(PDO::FETCH_ASSOC);
+        $CheckResult = query("SELECT permissionID, block FROM user WHERE id = ?", [$userID], $DB)['result'];
 
         if (isset($CheckResult[0])) {
             $permissionID = $CheckResult[0]['permissionID'];
@@ -55,12 +45,12 @@ function userAction($DB, $userID, $action)
 
             if ($permissionID != 1) {
                 if ($action == "block") {
-                    $stmtAction = $DB->prepare("UPDATE user SET block = !{$blockStatus} WHERE id = ?");
+                    $stmtAction = "UPDATE user SET block = !{$blockStatus} WHERE id = ?";
                 } else {
-                    $stmtAction = $DB->prepare("DELETE FROM user WHERE id = ?");
+                    $stmtAction = "DELETE FROM user WHERE id = ?";
                 }
 
-                $result = $stmtAction->execute([$userID]);
+                $result = query($stmtAction, [$userID], $DB)['stmt'];
                 return ["status" => $result];
             } else {
                 return ["status" => -1];
@@ -72,25 +62,35 @@ function userAction($DB, $userID, $action)
 }
 
 
-$insertQuery = "INSERT INTO music_source_path (musicName, musicPath, author, imgPath, gifPath, duration) VALUES (?, ?, ?, ?, ?, ?)";
-function uploadMusic($data, $connect, $insertQuery)
-{
-    if (isset($data["name-music"]) && isset($data["path-music"])) {
-        $nameMusic = $data["name-music"];
-        $pathMusic = $data["path-music"];
-        $author = $data["author-music"];
-        $imgPath = $data["img-path-music"];
-        $gifPath = $data["gif-path-music"];
-        $uploadMusicDuration = $data["duration"];
 
-        $stmt = $connect->prepare($insertQuery);
-        $uploadResult = $stmt->execute([$nameMusic, $pathMusic, $author, $imgPath, $gifPath, $uploadMusicDuration]);
-        if (!$uploadResult) {
-            return ["status" => false];
+function uploadMusic($data, $connect)
+{
+    if (isset($data["musicName"])) {
+        $insertQuery = "INSERT INTO music_source_path (musicName, author, imgPath, tag, uploadBy) VALUES (?, ?, ?, ?, ?)";
+        $nameMusic = $data["musicName"];
+        $author = $data["musicAuthor"];
+        $tag = $data['update-music-tag'];
+        $imgPath = 'music/img/default.jpg';
+
+        if (!isset($_SESSION['userID']) || empty($_SESSION['userID'])) {
+            echo $_SESSION['userID'];
+            return false;
         }
-        return ["status" => $uploadResult];
+        $userID = $_SESSION['userID'];
+
+        $uploadResult = query($insertQuery, [$nameMusic, $author, $imgPath, $tag, $userID], $connect)['stmt'];
+        if (!$uploadResult) {
+            return false;
+        }
+        $findNewID = query("SELECT id FROM music_source_path WHERE musicName = ? AND author = ? AND tag = ?", [$nameMusic, $author, $tag], $connect);
+        if ($findNewID['numRow'] == 1) {
+            $_SESSION['newUploadMusicID'] = $findNewID['result'][0]['id'];
+            return true;
+        } else {
+            return false;
+        }
     } else
-        return ["status" => false];
+        return false;
 }
 
 
@@ -99,7 +99,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         switch ($_POST["requestCode"]) {
             case 2:
                 parse_str($_POST["formData"], $formData);
-                echo json_encode(uploadMusic($formData, $connect, $insertQuery));
+                echo json_encode(uploadMusic($formData, $connect));
                 break;
             case 1:
                 echo json_encode(AD_onloadQuery($connect));

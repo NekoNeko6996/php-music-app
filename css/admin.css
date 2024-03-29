@@ -99,8 +99,8 @@ td {
   padding: 10px;
 }
 
-.user-table-td,
-.user-table-th {
+td,
+th {
   border: 1px solid #dddddd;
   text-align: left;
   padding: 8px;
@@ -145,7 +145,6 @@ td {
 }
 
 .show-music-table-container {
-  border-collapse: collapse;
   margin-top: 20px;
 }
 
@@ -231,6 +230,8 @@ td {
   justify-content: center;
   align-items: center;
   font-weight: bold;
+
+  color: black;
 }
 
 .admin-page-nav > a:hover {

@@ -172,3 +172,13 @@ svg {
   border: 1px solid rgb(158, 158, 158);
   border-radius: 10px;
 }
+
+.width-100 {
+  width: 100% !important;
+  margin: 0 !important;
+  margin-top: 20px !important;
+}
+
+audio {
+  margin-right: 10px;
+}

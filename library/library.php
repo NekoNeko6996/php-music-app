@@ -14,13 +14,17 @@ function check($string)
 
 function query(string $query, array $param, $connect)
 {
-    $connect = $GLOBALS['connect'];
+    try {
+        $connect = $GLOBALS['connect'];
 
-    $stmt = $connect->prepare($query);
-    $stmt->execute([...$param]);
-    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $stmt = $connect->prepare($query);
+        $stmt->execute([...$param]);
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    return ["stmt" => $stmt, "result" => $result, "numRow" => count($result)];
+        return ["stmt" => $stmt, "result" => $result, "numRow" => count($result)];
+    } catch (PDOException $e) {
+        die('[SQL] Error query' . $e->getMessage());
+    }
 }
 
 function destroyToken($token, $email, $connect)

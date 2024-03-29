@@ -1,27 +1,16 @@
 <?php
+include '../library/library.php';
 
 function Auth(string $token, $connect)
 {
-  try {
-    $query = "SELECT permissionID FROM user WHERE loginToken = ?";
-    $stmt = $connect->prepare($query);
+  $query = "SELECT permissionID FROM user WHERE loginToken = ?";
 
-    if(!$stmt){
-      echo "Prepare failed: (". $connect->errno.") ".$connect->error."<br>";
-   }
+  $result = query($query, [$token], $connect);
 
-    $stmt->bind_param('s', $token);
-    $stmt->execute();
-
-    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    if (count($result) > 0) {
-      return $result;
-    } else {
-      return false;
-    }
-  } catch (PDOException $e) {
-    die ('[sql] Error connect' . $e->getMessage());
+  if ($result['numRow'] == 1) {
+    return $result['result'][0];
+  } else {
+    return false;
   }
 }
 ?>

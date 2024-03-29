@@ -173,24 +173,31 @@ if (isset($_SESSION["user"]) && isset($_SESSION["username"])) {
     function addLibraryClick(musicID, event) {
       if (event) event.stopPropagation();
 
-      if (userEmail != '') {
-        $.ajax({
-          url: "server/server.php",
-          type: "POST",
-          data: {
-            requestCode: 3,
-            musicID,
-            userEmail
-          },
-          success: (response) => {
-            console.log(response);
-            renderPlaylist();
-          },
-          error: (status, error) => {
-            console.error(status, error);
-          },
-        })
-      } else window.location.href = "login.php";
+      <?php
+      if (isset($_SESSION['token'])) {
+        echo '
+          $.ajax({
+            url: "server/server.php",
+            type: "POST",
+            data: {
+              token,
+              requestCode: 3,
+              musicID,
+              userEmail
+            },
+            success: (response) => {
+              console.log(response);
+              renderPlaylist();
+            },
+            error: (status, error) => {
+              console.error(status, error);
+            },
+          })
+          ';
+      } else
+        echo 'window.location.href = "login.php"';
+      ?>
+
     }
 
     function searchInputFocus(focus) {

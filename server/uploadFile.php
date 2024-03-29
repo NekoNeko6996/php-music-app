@@ -2,19 +2,21 @@
 include '../database/connect.php';
 include '../library/library.php';
 
+session_start();
+
 // folder upload
 $folder = "\\music\\";
 
 // cập nhật đường dẫn ở database
-function updateMusicSource($status, $type, $newSrc, $id)
+function updateMusicSource($status, $type, array $param)
 {
     $sqlUpdateImg = "UPDATE music_source_path SET imgPath = ? WHERE id = ?";
-    $sqlUpdateMusic = "UPDATE music_source_path SET musicPath = ? WHERE id = ?";
+    $sqlUpdateMusic = "UPDATE music_source_path SET musicPath = ?, duration = ? WHERE id = ?";
     if ($status) {
         if ($type == 'img') {
-            return query($sqlUpdateImg, [$newSrc, $id], $GLOBALS['connect'])['stmt'];
+            return query($sqlUpdateImg, [...$param], $GLOBALS['connect'])['stmt'];
         } else {
-            return query($sqlUpdateMusic, [$newSrc, $id], $GLOBALS['connect'])['stmt'];
+            return query($sqlUpdateMusic, [...$param], $GLOBALS['connect'])['stmt'];
         }
     }
 }
@@ -99,12 +101,12 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     if (isset($_FILES['imageFile']) && isset($_POST['musicID'])) {
         $status_0 = deleteFile('img', $_POST['musicID']);
         $newSrc = uploadFile("imageFile", 'img');
-        updateMusicSource($newSrc, 'img', $newSrc, $_POST['musicID']);
+        updateMusicSource($newSrc, 'img', [$newSrc, $_POST['musicID']]);
 
-    } else if (isset($_FILES['audioFile']) && isset($_POST['musicID'])) {
+    } else if (isset($_FILES['audioFile']) && isset($_POST['musicID']) && isset($_POST['duration'])) {
         $status_0 = deleteFile('audio', $_POST['musicID']);
         $newSrc = uploadFile("audioFile", "audio");
-        updateMusicSource($newSrc, 'audio', $newSrc, $_POST['musicID']);
+        updateMusicSource($newSrc, 'audio', [$newSrc, $_POST['duration'], $_POST['musicID']]);
     }
 }
 ?>

@@ -11,34 +11,38 @@ function getDuration(path, callback) {
 function updateMusicRequest(event) {
   event.preventDefault();
 
-  const param = new URLSearchParams(window.location.search);
-
-  const id = param.get("id");
+  var requestCode = 4;
   let formData = $("#update-music-form-data").serializeArray();
+  const param = new URLSearchParams(window.location.search);
 
   console.log(formData);
 
-  getDuration($('#musicPath').val(), (duration) => {
-    formData.push({ name: "duration", value: duration });
+  if (param.get("id")) {
+    var id = param.get("id");
     formData.push({ name: "musicId", value: id });
-    formData = $.param(formData);
+  } else {
+    requestCode = 2;
+  }
+  formData = $.param(formData);
 
-    console.log(formData);
+  console.log(formData);
 
-    $.ajax({
-      url: "server/adminPage.php",
-      type: "POST",
-      data: {
-        requestCode: 4,
-        formData,
-      },
-      success: (response) => {
-        console.log(response);
-      },
-      error: (status, error) => {
-        console.error(status, error);
-      },
-    });
+  $.ajax({
+    url: "server/adminPage.php",
+    type: "POST",
+    data: {
+      requestCode,
+      formData,
+    },
+    success: (response) => {
+      console.log(response);
+      if (response && JSON.parse(response) === true) {
+        window.location.reload();
+      }
+    },
+    error: (status, error) => {
+      console.error(status, error);
+    },
   });
 }
 
@@ -50,6 +54,10 @@ $("#audioFile").on("change", (event) => {
     return;
   }
   const src = URL.createObjectURL(file);
+
+  getDuration(src, (duration) => {
+    $("#duration").val(duration);
+  });
 
   $(".new-source-span").html(`
     <h3>New</h3>

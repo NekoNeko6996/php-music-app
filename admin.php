@@ -12,41 +12,45 @@
 
 
 <?php
+include 'database/connect.php';
+include 'library/library.php';
+
 session_start();
-if (isset ($_SESSION["user"]) && isset ($_SESSION["permissionID"]) && $_SESSION["permissionID"] != 3 && $_SESSION["permissionID"] != -1) {
-  $permission = $_SESSION["permissionID"];
+if (isset($_SESSION['token'])) {
+  if (isset($_SESSION["user"]) && isset($_SESSION["permissionID"]) && $_SESSION["permissionID"] != 3 && $_SESSION["permissionID"] != -1) {
+    $permission = $_SESSION["permissionID"];
+  }
 } else {
   header("Location: home.php");
   exit();
 }
+
+
+$token = $_SESSION['token'];
+$userID = query("SELECT id FROM user WHERE loginToken = ?", [$token], $connect);
+if (!isset($userID['result'][0]['id'])) {
+  echo '[USER] NOT FOUND';
+} else {
+  $_SESSION['userID'] = $userID['result'][0]['id'];
+}
 ?>
+
+
 
 <body>
   <nav class="admin-page-nav">
+    <a href="moreInfo.php?action=upload">
+      Upload New Music
+    </a>
     <a href="home.php">Home</a>
   </nav>
   <div class="music-edit-container">
-    <!-- <div class="add-new-music">
-      <form action="" id="uploadMusic-form" method="post" onsubmit="uploadMusic(event)">
-        <h2>Upload Music</h2>
-        <label for="name-music-input">Name Music:</label>
-        <input type="text" name="name-music" id="name-music-input" required />
-        <label for="path-music-input">Path:</label>
-        <input type="text" name="path-music" id="path-music-input" required />
-        <label for="author-music-input">Author:</label>
-        <input type="text" name="author-music" id="author-music-input" />
-        <label for="img-path-music-input">Image Path:</label>
-        <input type="text" name="img-path-music" id="img-path-music-input" />
-        <label for="gif-path-music-input">Gif Path(option):</label>
-        <input type="text" name="gif-path-music" id="gif-path-music-input" />
-        <input type="submit" value="UpLoad Music" id="submit-music-btn" class="normal-btn" />
-      </form>
-    </div> -->
     <div class="music-box">
       <h2>Music Uploaded By You</h2>
       <table class="show-music-table-container">
         <thead>
           <tr>
+            <th></th>
             <th>Music Name</th>
             <th>Author</th>
             <th>Tag</th>
