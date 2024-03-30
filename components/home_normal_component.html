@@ -53,11 +53,20 @@
           },
           success: (response) => {
             DataResponseSortByTag = JSON.parse(response);
-            if (DataResponseSortByTag) {
+            if (DataResponseSortByTag.length > 0) {
               sortByTagRenderItem(
                 DataResponseSortByTag,
                 "DataResponseSortByTag"
               );
+            } else {
+              $(".category-show-item").html(`
+                <h1 class="nothing-text">Hmm... Nothing to see here</h1>
+                <h3 class="nothing-text-h3">You need to be logged in to add songs to your library</h3>
+                <span class="center-box-btn">
+                  <button class="sl-left-eff-btn" onclick="window.location.href = 'login.php'"></button>
+                  <button class="sl-left-eff-btn signup-btn-nt" onclick="window.location.href = 'signup.php'"></button>
+                </span>
+              `);
             }
           },
           error: (status, error) => {
@@ -140,13 +149,7 @@
 
     // -------------------------------------- //
     $(".top-1-show").html(
-      `<img src="${
-        // onloadData.top3Music[0][7]
-        //   ? onloadData.top3Music[0][7]
-        //   : checkImg(onloadData.top3Music[0][4])
-
-        checkImg(onloadData.top3Music[0][4])
-      }" alt="no-img">`
+      `<img src="${checkImg(onloadData.top3Music[0][4])}" alt="no-img">`
     );
     $(".top-table").html(top3MusicComponent);
     $(".new-music-box").html(newMusicComponent);

@@ -5,7 +5,7 @@ const array_row = [];
 //model của columns
 const model = "normal"; // normal or 'smooth'
 //số cột
-const columns = 25;
+const columns = 24;
 //số ô màu
 const rows = 10;
 const index = 1; //thay dổi độ nhạy của sóng
