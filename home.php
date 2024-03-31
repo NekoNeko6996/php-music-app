@@ -31,6 +31,10 @@ if (isset($_SESSION["user"]) && isset($_SESSION["username"])) {
 
 <body>
   <aside class="aside-left">
+    <div class="app-logo-aside">
+      <img src="assets/logo/logo.png" alt="error-load">
+      <p>𝓜𝓾𝓼𝓲𝓬 𝓐𝓹𝓹</p>
+    </div>
     <div id="WaveContainer"></div>
   </aside>
   <section class="mid-body">
@@ -71,7 +75,7 @@ if (isset($_SESSION["user"]) && isset($_SESSION["username"])) {
             <?php
             echo $username ?>
           </p>
-          <img src="music/img/default.jpg" alt="no-img" class="user-avatar">
+          <img src="assets/img/default.jpg" alt="no-img" class="user-avatar">
         </span>
         <div class="nav-user-option" id="nav-userAvatar-close">
           <?php if ($permission != -1)
