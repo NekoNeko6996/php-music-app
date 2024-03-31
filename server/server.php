@@ -1,15 +1,8 @@
 <?php
 
 include '../database/connect.php';
+include '../library/library.php';
 
-function check($string)
-{
-    $string = trim($string);
-    $string = stripcslashes($string);
-    $string = htmlspecialchars($string);
-
-    return $string;
-}
 function convertToArray($Array)
 {
     foreach ($Array as &$row) {
@@ -32,13 +25,12 @@ function findIDUSer($email, $connect)
 
 function sortByTag($tag, $connect, $email)
 {
-    if ($tag == "random"){
+    if ($tag == "random") {
         $sqlSortTag = "SELECT * FROM music_source_path ORDER BY RAND() LIMIT 30";
         $stmt = $connect->query($sqlSortTag);
-    }
-    else if ($tag == "library") {
+    } else if ($tag == "library") {
         $userID = findIDUSer($email, $connect);
-        if (!empty ($userID)) {
+        if (!empty($userID)) {
             $sqlSortTag = "SELECT * FROM music_source_path WHERE id IN (SELECT musicID FROM library WHERE userID = ?)";
             $stmt = $connect->prepare($sqlSortTag);
             $stmt->execute([$userID]);
@@ -52,11 +44,14 @@ function sortByTag($tag, $connect, $email)
         $stmt->execute(["%$tag%"]);
     }
 
-    return convertToArray($stmt->fetchAll(PDO::FETCH_ASSOC));
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
-function onloadQuery($connect, $email)
+function onloadQuery($connect, $email, $token)
 {
+
+    $user = Auth($token, $connect);
+
     $newMusicStmt = $connect->query('SELECT * FROM music_source_path ORDER BY timeUpload DESC LIMIT 9');
     $top3MusicStmt = $connect->query('SELECT * FROM music_source_path ORDER BY listens DESC LIMIT 3');
     $playlistsStmt = $connect->query('SELECT * FROM music_source_path ORDER BY RAND() LIMIT 10');
@@ -64,17 +59,21 @@ function onloadQuery($connect, $email)
     $albumsLoadStmt = $connect->query('SELECT * FROM albums');
 
     if (!$newMusicStmt || !$top3MusicStmt) {
-        die ('[query] Error');
+        die('[query] Error');
     }
 
-    $result["newMusic"] = convertToArray($newMusicStmt->fetchAll(PDO::FETCH_ASSOC));
-    $result["top3Music"] = convertToArray($top3MusicStmt->fetchAll(PDO::FETCH_ASSOC));
-    $result["playlists"] = convertToArray($playlistsStmt->fetchAll(PDO::FETCH_ASSOC));
-    $result["musicByTag"] = convertToArray($musicByTagStmt->fetchAll(PDO::FETCH_ASSOC));
-    $result["albumsLoad"] = convertToArray($albumsLoadStmt->fetchAll(PDO::FETCH_ASSOC));
-    $result["library"] = convertToArray(sortByTag("library", $connect, $email));
+    $result["newMusic"] = $newMusicStmt->fetchAll(PDO::FETCH_ASSOC);
+    $result["top3Music"] = $top3MusicStmt->fetchAll(PDO::FETCH_ASSOC);
+    $result["playlists"] = $playlistsStmt->fetchAll(PDO::FETCH_ASSOC);
+    $result["musicByTag"] = $musicByTagStmt->fetchAll(PDO::FETCH_ASSOC);
+    $result["albumsLoad"] = $albumsLoadStmt->fetchAll(PDO::FETCH_ASSOC);
+    $result["library"] = sortByTag("library", $connect, $email);
 
-    if (empty ($result["newMusic"]) || empty ($result["top3Music"]) || empty ($result["playlists"]))
+    if (isset($user['permissionID']) && isset($user['id'])) {
+        $result["userAlbumsList"] = query("SELECT id, albumName, createAt, albumImgPath FROM user_albums WHERE userID = ?", [$user['id']], $connect)['result'];
+    }
+
+    if (empty($result["newMusic"]) || empty($result["top3Music"]) || empty($result["playlists"]))
         echo 'data is null';
 
     return $result;
@@ -103,50 +102,74 @@ function sqlAddLibrary($musicID, $email, $connect)
 
 function searchMusic($searchString, $connect)
 {
-    if (!empty ($searchString)) {
+    if (!empty($searchString)) {
         $string = "%$searchString%";
         $stmt = $connect->prepare("SELECT * FROM music_source_path WHERE musicName LIKE ? LIMIT 6");
         $stmt->execute([$string]);
-        return convertToArray($stmt->fetchAll(PDO::FETCH_ASSOC));
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
     return [];
 }
 
-function loadAlbumsList($albumID, $connect)
+function loadAlbumsList($albumID, $connect, $myAlbum)
 {
-    if (!empty ($albumID)) {
-        $stmt = $connect->prepare("SELECT * FROM music_source_path WHERE id in (SELECT musicID FROM albums_music_list WHERE albumID = ?)");
-        $stmt->execute([$albumID]);
-        $result = convertToArray($stmt->fetchAll(PDO::FETCH_ASSOC));
+    if (!empty($albumID)) {
+        $sql = "SELECT * FROM music_source_path WHERE id in (SELECT musicID FROM albums_music_list WHERE albumID = ?)";
+        if ($myAlbum == 1) {
+            $sql = "SELECT * FROM music_source_path WHERE id in (SELECT musicID FROM user_albums_music_list WHERE userAlbumID = ?)";
+        }
+        $execute = query($sql, [$albumID], $connect);
+        $result = $execute['result'];
         return $result;
     }
     return [];
 }
 
+
+function createMyAlbum($token, $createNameAlbum)
+{
+    $defaultImg = 'assets/img/default.jpg';
+    $connect = $GLOBALS['connect'];
+    $user = Auth(check($token), $connect);
+    if (query("SELECT albumName FROM user_albums WHERE userID = ? AND albumName = ?", [$user['id'], $createNameAlbum], $connect)['numRow'] == 0) {
+        if (isset($user['permissionID']) && isset($user['id'])) {
+            $sql = "INSERT INTO user_albums (albumName, userID, albumImgPath) VALUES (?, ?, ?)";
+            return query($sql, [$createNameAlbum, $user['id'], $defaultImg], $connect)['stmt'];
+        }
+    }
+    return false;
+}
+
 // ---------------- //
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $response = [];
-    if (isset ($_POST["requestCode"])) {
+    if (isset($_POST["requestCode"])) {
         switch ($_POST["requestCode"]) {
             case 1:
-                $response = onloadQuery($connect, $_POST["userEmail"]);
+                $response = onloadQuery($connect, $_POST["userEmail"], !empty($_POST['token']) ? $_POST['token'] : "");
                 break;
             case 2:
                 $response = sortByTag($_POST["data"], $connect, $_POST["userEmail"]);
                 break;
             case 3:
-                if (isset ($_POST["musicID"]) && isset ($_POST["userEmail"])) {
+                if (isset($_POST["musicID"]) && isset($_POST["userEmail"])) {
                     $response = sqlAddLibrary($_POST["musicID"], $_POST["userEmail"], $connect);
                 }
                 break;
             case 4:
-                if (isset ($_POST["searchString"])) {
+                if (isset($_POST["searchString"])) {
                     $response = searchMusic(check($_POST["searchString"]), $connect);
                 }
                 break;
             case 5:
-                if (isset ($_POST["albumID"])) {
-                    $response = loadAlbumsList(check($_POST["albumID"]), $connect);
+                if (isset($_POST["albumID"])) {
+                    $response = loadAlbumsList(check($_POST["albumID"]), $connect, json_decode($_POST['myAlbum']));
+                }
+                break;
+
+            case 6:
+                if (isset($_POST['createNameAlbum']) && isset($_POST['token'])) {
+                    $response = createMyAlbum($_POST['token'], $_POST['createNameAlbum']);
                 }
                 break;
             default:

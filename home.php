@@ -30,10 +30,35 @@ if (isset($_SESSION["user"]) && isset($_SESSION["username"])) {
 <!-- Client -->
 
 <body>
+  <!-- <div class="floating-div-container">
+    <div class="create-new-my-album-floating-box">
+      he
+    </div>
+  </div> -->
   <aside class="aside-left">
     <div class="app-logo-aside">
       <img src="assets/logo/logo.png" alt="error-load">
       <p>𝓜𝓾𝓼𝓲𝓬 𝓐𝓹𝓹</p>
+    </div>
+    <div class="my-album-container">
+      <p>Your Albums</p>
+      <div class="my-albums-show-container">
+        <!-- albums show here -->
+      </div>
+      <p>Create New My Album</p>
+      <!-- <div class="aside-create-new-album-container">
+        <p>Create New</p>
+        <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <g id="Edit / Add_Plus">
+            <path id="Vector" d="M6 12H12M12 12H18M12 12V18M12 12V6" stroke="white" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" />
+          </g>
+        </svg>
+      </div> -->
+      <div class="create-new-my-album-form">
+        <input type="text" name="create-name-album" id="create-name-album" placeholder="Name of album..." autocomplete="off">
+        <button type="button" onclick="createNewAlbumRequest()">Create</button>
+      </div>
     </div>
     <div id="WaveContainer"></div>
   </aside>
@@ -218,7 +243,6 @@ if (isset($_SESSION["user"]) && isset($_SESSION["username"])) {
           userEmail
         },
         success: (response) => {
-          console.log(response);
           const result = JSON.parse(response);
           if (result.status) {
             window.location.reload()

@@ -10,39 +10,6 @@ var previousPlayLists,
 var currentID = 0;
 
 // ---------------------------------------------- //
-function convertNumbersToStrings(arr) {
-  if (typeof arr[0] == "object") {
-    return arr.map((row) =>
-      row.map((item) => (typeof item == "number" ? item.toString() : item))
-    );
-  } else {
-    return arr.map((item) =>
-      typeof item == "number" ? item.toString() : item
-    );
-  }
-}
-
-function toAlbumsPage(alIdx) {
-  albumIndex = alIdx;
-  loadBodyComponent("components/home_albums_component.html");
-}
-
-function renderAlbums(albumsList) {
-  if ($(".mid-banner")) {
-    var albumsHtmlComponent = "";
-    albumsList.forEach((row, index) => {
-      albumsHtmlComponent += `
-      <div class="album-box" onclick="toAlbumsPage(${index})">
-        <img src="${row[4]}" alt="no-img">
-        <p class="album-name">${row[1]}</p>
-        <p>${row[2]}</p>
-      </div>
-      `;
-    });
-    $(".mid-banner").html(albumsHtmlComponent);
-  }
-}
-
 function audioControl(action) {
   switch (action) {
     case true:
@@ -68,7 +35,7 @@ function audioControl(action) {
 }
 
 function checkImg(imgUrl) {
-  return imgUrl ? imgUrl : "music/img/default.jpg";
+  return imgUrl ? imgUrl : "assets/img/default.jpg";
 }
 
 function renderPlaylist(playlist, index) {
@@ -83,21 +50,21 @@ function renderPlaylist(playlist, index) {
           idx == index ? "playlist-play" : ""
         }" onclick="clickToListen(${idx}, currentPlaylist)">
         <img
-          src="${checkImg(row[4])}"
+          src="${checkImg(row.imgPath)}"
           alt="no-img"
           class="playlists-img"
         />
         <div>
-          <p class="playlist-music-name">${row[1]}</p>
-          <p>${row[3] || "Unknown"}</p>
+          <p class="playlist-music-name">${row.musicName}</p>
+          <p>${row.author || "Unknown"}</p>
         </div>
 
         <div class='hidden-option-playlist-c'>
           <svg width="24px" height="24px" viewBox="0 0 23 23" fill="${
-            libraryIDList.indexOf(currentPlaylist[idx][0]) == -1
+            libraryIDList.indexOf(currentPlaylist[idx].id) == -1
               ? "white"
               : "#FF00CC"
-          }" onclick='addLibraryClick(${currentPlaylist[idx][0]}, event)'>
+          }" onclick='addLibraryClick(${currentPlaylist[idx].id}, event)'>
               <path fill-rule="evenodd" clip-rule="evenodd" d="M12 6.00019C10.2006 3.90317 7.19377 3.2551 4.93923 5.17534C2.68468 7.09558 2.36727 10.3061 4.13778 12.5772C5.60984 14.4654 10.0648 18.4479 11.5249 19.7369C11.6882 19.8811 11.7699 19.9532 11.8652 19.9815C11.9483 20.0062 12.0393 20.0062 12.1225 19.9815C12.2178 19.9532 12.2994 19.8811 12.4628 19.7369C13.9229 18.4479 18.3778 14.4654 19.8499 12.5772C21.6204 10.3061 21.3417 7.07538 19.0484 5.17534C16.7551 3.2753 13.7994 3.90317 12 6.00019Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>  
 
@@ -119,11 +86,9 @@ function renderPlaylist(playlist, index) {
 // -------------------------------------------------------- //
 function clickToListen(id, playlists) {
   currentID = id ? id : 0;
-  currentPlaylist = convertNumbersToStrings(
-    playlists ? playlists : currentPlaylist
-  );
+  currentPlaylist = playlists ? playlists : currentPlaylist;
 
-  audio.src = currentPlaylist[currentID][2];
+  audio.src = currentPlaylist[currentID].musicPath;
 
   renderPlaylist(currentPlaylist, currentID);
   audio.oncanplay = () => {
@@ -139,20 +104,22 @@ function clickToListen(id, playlists) {
     $("#range-duration").attr("max", Math.round(audio.duration)); //gán max
 
     $("#play-music-info").html(`
-        <img src="${checkImg(currentPlaylist[currentID][4])}" alt="no-img">
+        <img src="${checkImg(currentPlaylist[currentID].imgPath)}" alt="no-img">
         <div id="info">
-            <p id="on-play-music-name">${currentPlaylist[currentID][1]}</p>
+            <p id="on-play-music-name">${
+              currentPlaylist[currentID].musicName
+            }</p>
             <p>${
-              currentPlaylist[currentID][3]
-                ? currentPlaylist[currentID][3]
+              currentPlaylist[currentID].author
+                ? currentPlaylist[currentID].author
                 : "Unknown"
             }</p>
         </div>
         <div id="love-box-btn" onclick="addLibraryClick(${
-          currentPlaylist[currentID][0]
+          currentPlaylist[currentID].id
         })">
             <svg width="100%" height="100%" viewBox="0 0 24 24" fill="${
-              libraryIDList.indexOf(currentPlaylist[currentID][0]) == -1
+              libraryIDList.indexOf(currentPlaylist[currentID].id) == -1
                 ? "white"
                 : "#FF00CC"
             }">
@@ -174,6 +141,30 @@ audio.onended = () => {
 
 // ----------------------------- load body ------------------------------- //
 var prevLocationArray = [];
+var myAlbum = false;
+
+function toAlbumsPage(alIdx, myAlbum_) {
+  myAlbum = myAlbum_ ? myAlbum_ : false;
+  console.log(myAlbum_, " ", myAlbum);
+  albumIndex = alIdx;
+  loadBodyComponent("components/home_albums_component.html");
+}
+
+function renderAlbums(albumsList) {
+  if ($(".mid-banner")) {
+    var albumsHtmlComponent = "";
+    albumsList.forEach((row, index) => {
+      albumsHtmlComponent += `
+      <div class="album-box" onclick="toAlbumsPage(${index}, false)">
+        <img src="${row.albumImgPath}" alt="no-img">
+        <p class="album-name">${row.albumName}</p>
+        <p>${row.author}</p>
+      </div>
+      `;
+    });
+    $(".mid-banner").html(albumsHtmlComponent);
+  }
+}
 
 function toPrevBody() {
   if (prevLocationArray[prevLocationArray.length - 2]) {
@@ -191,9 +182,29 @@ function loadBodyComponent(page) {
     dataType: "html",
     success: (response) => {
       $(".body-web-show").html(response);
-      prevLocationArray.push(page);
+      if (prevLocationArray.indexOf(page) == -1) prevLocationArray.push(page);
     },
   });
+}
+
+// --------------------------------------------------------------- //
+function loadUserAlbums(data) {
+  var html = "";
+  if (data) {
+    data.forEach((row, idx) => {
+      html += `
+      <div class="aside-left-album-item-box" onclick="toAlbumsPage(${idx}, true)">
+        <p>${row.albumName}</p>
+        <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none">
+          <path
+            d="M5 12V6C5 5.44772 5.44772 5 6 5H18C18.5523 5 19 5.44772 19 6V18C19 18.5523 18.5523 19 18 19H12M8.11111 12H12M12 12V15.8889M12 12L5 19"
+            stroke="white" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </div>
+      `;
+    });
+    $(".my-albums-show-container").html(html);
+  }
 }
 
 // --------------------------------------------------------------- //
@@ -205,21 +216,25 @@ $("document").ready(() => {
     data: {
       requestCode: 1,
       userEmail,
+      token,
     },
     success: (response) => {
+      console.log(response);
       if (response == 0) {
         console.log("[request error] invalid request code");
         return;
       }
       onloadData = JSON.parse(response);
-      libraryIDList = onloadData.library.map((row) => row[0].toString());
+      libraryIDList = [];
+      // onloadData.library.map((row) => row[0].toString())
       console.log(onloadData);
 
       // load body //
       loadBodyComponent("components/home_normal_component.html");
 
-      currentPlaylist = convertNumbersToStrings(onloadData.playlists);
+      currentPlaylist = onloadData.playlists;
       clickToListen(currentID, currentPlaylist);
+      loadUserAlbums(onloadData.userAlbumsList);
     },
   });
   $("#volume-range").css("--value", 100);
@@ -330,11 +345,12 @@ function userAvatarClick() {
 // ------------------------------------------------------------- //
 function exist(music, callback) {
   // int element -> string element
-  const convertMusic = convertNumbersToStrings(music);
+
+  console.log(music);
 
   // check
   return currentPlaylist.some((child, index) => {
-    if (JSON.stringify(child) === JSON.stringify(convertMusic)) {
+    if (JSON.stringify(child) === JSON.stringify(music)) {
       if (callback) callback(index);
       return true;
     }
@@ -343,8 +359,15 @@ function exist(music, callback) {
 }
 
 function addToPlaylist(music) {
-  if (!exist(music)) {
-    currentPlaylist.splice(currentID + 1, 0, convertNumbersToStrings(music));
+  if (
+    !exist(music, (index) => {
+      currentID = index;
+      renderPlaylist();
+      clickToListen(currentID, currentPlaylist);
+      return true;
+    })
+  ) {
+    currentPlaylist.splice(currentID + 1, 0, music);
     renderPlaylist();
   }
 }
@@ -379,11 +402,11 @@ function searchMusic(searchString) {
               index == searchMusicResult.length - 1 ? "margin-bottom: 20px" : ""
             }">
               <img src="${checkImg(
-                row[4]
+                row.imgPath
               )}" alt="no-img" class="playlists-img" />
               <div>
-                <p class="playlist-music-name">${row[1]}</p>
-                <p>${row[3]}</p>
+                <p class="playlist-music-name">${row.musicName}</p>
+                <p>${row.author}</p>
               </div>  
               <button class="add-playlist-al-btn">
                 <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" onclick='addToPlaylist(${JSON.stringify(
@@ -406,3 +429,22 @@ function searchMusic(searchString) {
 }
 
 // ------------------------------------------------------------- //
+function createNewAlbumRequest() {
+  var createNameAlbum = $("#create-name-album").val();
+
+  $.ajax({
+    url: "server/server.php",
+    type: "POST",
+    data: {
+      requestCode: 6,
+      createNameAlbum,
+      token,
+    },
+    success: (response) => {
+      console.log(response);
+    },
+    error: (status, error) => {
+      console.error(status, error);
+    },
+  });
+}

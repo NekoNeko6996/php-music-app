@@ -96,11 +96,11 @@
       var musicByTagComponent = "";
       array.forEach((row, index) => {
         musicByTagComponent += loadMusicItemByTag(
-          row[4],
-          row[1],
-          row[3],
+          row.imgPath,
+          row.musicName,
+          row.author,
           libraryIDList.indexOf(row[0]) == -1 ? "none" : "#ba63d4",
-          row[0],
+          row.id,
           row
         );
       });
@@ -113,11 +113,11 @@
     onloadData.newMusic.forEach((row, index) => {
       newMusicComponent += `
           <div class="music-item-box" onclick="clickToListen(${index}, onloadData.newMusic)">
-            <img src="${checkImg(row[4])}" alt="no-img"> 
+            <img src="${checkImg(row.imgPath)}" alt="no-img"> 
             <div class="info">
-              <p class="music-name">${row[1]}</p>
-              <p class="music-author">${row[3] || "Unknown"}</p>
-              <p class="time-upload">${dateUploadCalculator(row[5])}</p>
+              <p class="music-name">${row.musicName}</p>  
+              <p class="music-author">${row.author || "Unknown"}</p>
+              <p class="time-upload">${dateUploadCalculator(row.timeUpload)}</p>
             </div>
           </div>`;
     });
@@ -127,15 +127,15 @@
           <div class='top-music-item ${
             index == 0 ? "scale" : ""
           }' onclick="clickToListen(${index}, onloadData.top3Music)">
-            <img src="${checkImg(row[4])}" alt="no-img" />
+            <img src="${checkImg(row.imgPath)}" alt="no-img" />
             <div class="info">
-              <p class="music-name">${row[1]}</p>
-              <p class="music-author">${row[3] || "Unknown"}</p>
-              <p class="time-upload">${dateUploadCalculator(row[5])}</p>
+              <p class="music-name">${row.musicName}</p>
+              <p class="music-author">${row.author || "Unknown"}</p>
+              <p class="time-upload">${dateUploadCalculator(row.timeUpload)}</p>
             </div>
             <div class="top-info-box">
               <p class="top-text">TOP ${index + 1}</p>
-              <p>LISTENS ${thousandConvert(row[6])}</p>
+              <p>LISTENS ${thousandConvert(row.listens)}</p>
             </div>
           </div>
         `;
@@ -148,7 +148,7 @@
 
     // -------------------------------------- //
     $(".top-1-show").html(
-      `<img src="${checkImg(onloadData.top3Music[0][4])}" alt="no-img">`
+      `<img src="${checkImg(onloadData.top3Music[0].imgPath)}" alt="no-img">`
     );
     $(".top-table").html(top3MusicComponent);
     $(".new-music-box").html(newMusicComponent);

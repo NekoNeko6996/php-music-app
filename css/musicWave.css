@@ -3,9 +3,9 @@
   width: 100%;
   display: grid;
   grid-column-gap: 0px;
-  position: absolute;
+  position: relative;
   left: 0;
-  bottom: 90px;
+  border-top: 1px solid #8a8a8a5e;
 }
 .grid-item-Wave {
   width: 10px;
