@@ -1,0 +1,142 @@
+.fl-row-space-between {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.albums-session {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 30px;
+}
+
+/* --------------------------------------- */
+.albums-info-container {
+  width: 25%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.albums-info-container > img {
+  width: 100%;
+  aspect-ratio: 1/1;
+  border-radius: 10px;
+}
+.albums-info-container > p {
+  color: white;
+  font-size: 20px;
+  text-align: center;
+  font-weight: bold;
+  margin: 10px;
+}
+.albums-info-container > p:nth-child(3) {
+  opacity: 0.6;
+  font-size: 15px;
+  font-weight: normal;
+  margin: 5px 0 20px 0;
+}
+/* --------------------------------------- */
+.albums-list-title {
+  color: white;
+  padding: 0 2.5% 0 2.5%;
+  margin-bottom: 5px;
+}
+
+/* --------------------------------------- */
+.album-play-btn {
+  padding: 10px 20px 10px 20px;
+  width: 200px;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+}
+
+
+/* --------------------------------------- */
+.albums-show-items-container {
+  width: 60%;
+  border-left: 1px solid rgba(239, 198, 255, 0.411);
+  margin-left: 60px;
+  padding: 20px 0 20px 0;
+}
+
+.albums-show-items-container > #al-child-contain {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.al-sh-items-box {
+  width: 95%;
+  height: 70px;
+  border-bottom: 1px solid rgba(237, 204, 250, 0.096);
+  border-top: 1px solid rgba(237, 204, 250, 0.096);
+  display: flex;
+  align-items: center;
+  padding-right: 10px;
+  position: relative;
+}
+.al-sh-items-box:hover {
+  background-color: rgba(231, 179, 255, 0.11);
+}
+
+input[type="checkbox"] {
+  display: none;
+}
+
+input[type="checkbox"] + label::before {
+  content: "";
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  border: 1px solid #ffb0fb38;
+  background-color: #231b2e; 
+  margin: 10px;
+  vertical-align: middle;
+}
+
+input[type="checkbox"]:checked + label::before {
+  background-color: white;
+  border-radius: 2px;
+}
+
+
+.al-sh-items-box > img {
+  height: 65%;
+  aspect-ratio: 1/1;
+  margin: 0 20px 0 5px;
+}
+.al-sh-items-box > span {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  color: white;
+  font-weight: bold;
+  align-items: center;
+}
+.al-sh-items-box > span > .item-info-name p:nth-child(2) {
+  color: rgba(255, 255, 255, 0.308);
+  font-weight: normal;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+.add-playlist-al-btn {
+  padding: 0 !important;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  position: absolute;
+  right: 80px;
+  opacity: 0;
+}
+.al-sh-items-box:hover .add-playlist-al-btn {
+  opacity: 1;
+} 
+
+/* -------------------------------------- */
