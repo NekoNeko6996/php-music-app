@@ -54,8 +54,8 @@ if (isset($_SESSION["user"]) && isset($_SESSION["username"])) {
       </div>
       <p>Create New My Album</p>
       <div class="create-new-my-album-form">
-        <input type="text" name="create-name-album" id="create-name-album" placeholder="Name of album..."
-          autocomplete="off">
+        <input type="text" name="create-name-album" id="create-name-album" autocomplete="off"
+          placeholder="Name of album...">
         <button type="button" onclick="createNewAlbumRequest()">Create</button>
       </div>
     </div>
