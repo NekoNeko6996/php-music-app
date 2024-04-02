@@ -272,17 +272,17 @@ body {
   height: 40px;
   width: 40px;
 }
-
+/* -------------------------------------- */
 #play-music-info {
   height: 100%;
-  width: 23%;
+  width: 25%;
   position: absolute;
   display: flex;
   flex-direction: row;
   align-items: center;
   padding: 0 5px 0 5px;
   color: var(--text-color);
-  z-index: 4;
+  z-index: 6;
   left: 0;
 }
 
@@ -302,12 +302,13 @@ body {
   font-weight: bold;
   font-size: 17px;
 }
-#love-box-btn {
+#love-box-btn,
+#add-to-my-album-box-btn {
   height: 30px;
   aspect-ratio: 1/1;
-  position: absolute;
   right: 10px;
   cursor: pointer;
+  margin: 3px;
 }
 #love-box-btn > svg > path {
   color: white;
@@ -990,22 +991,81 @@ input[type="range"]::-moz-range-track {
   height: 100%;
   width: 100%;
 
-  background-color: rgba(173, 173, 173, 0.507);
+  background-color: rgba(128, 128, 128, 0.507);
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 11;
+  z-index: 12;
   display: flex;
   justify-content: center;
   align-items: center;
 }
-.create-new-my-album-floating-box {
+.floating-box {
   height: 500px;
   width: 350px;
 
-  background-color: #724391;
+  background-color: #231b2e;
+  border-radius: 10px;
+  color: white;
+  padding: 20px 15px 10px 15px;
+  display: flex;
+  flex-direction: column;
 }
 
+.floating-box-body {
+  flex-grow: 1;
+}
+
+.floating-box > h2 {
+  text-align: center;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #4d296a;
+}
+
+.pending-show-box {
+  width: 100%;
+  height: 40px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.pending-show-box > div {
+  height: 35px;
+  aspect-ratio: 1/1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+}
+.pending-show-box > div::before {
+  content: "";
+  height: 35px;
+  aspect-ratio: 1/1;
+  position: absolute;
+  background-color: aliceblue;
+  border-radius: 50%;
+  clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%, 75% 50%);
+  animation: pendingRotate 2s linear infinite;
+}
+.pending-show-box > div::after {
+  content: "";
+  height: 29px;
+  aspect-ratio: 1/1;
+  position: absolute;
+  background-color: #231b2e;
+  border-radius: 50%;
+}
+
+@keyframes pendingRotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+/* ----------------------------------------------- */
 .create-new-my-album-form {
   margin-left: 5%;
   width: 90%;

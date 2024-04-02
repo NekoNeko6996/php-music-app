@@ -61,9 +61,7 @@ function renderPlaylist(playlist, index) {
 
         <div class='hidden-option-playlist-c'>
           <svg width="24px" height="24px" viewBox="0 0 23 23" fill="${
-            libraryIDList.indexOf(currentPlaylist[idx].id) == -1
-              ? "white"
-              : "#FF00CC"
+            libraryIDList.indexOf(row.id) == -1 ? "white" : "#FF00CC"
           }" onclick='addLibraryClick(${currentPlaylist[idx].id}, event)'>
               <path fill-rule="evenodd" clip-rule="evenodd" d="M12 6.00019C10.2006 3.90317 7.19377 3.2551 4.93923 5.17534C2.68468 7.09558 2.36727 10.3061 4.13778 12.5772C5.60984 14.4654 10.0648 18.4479 11.5249 19.7369C11.6882 19.8811 11.7699 19.9532 11.8652 19.9815C11.9483 20.0062 12.0393 20.0062 12.1225 19.9815C12.2178 19.9532 12.2994 19.8811 12.4628 19.7369C13.9229 18.4479 18.3778 14.4654 19.8499 12.5772C21.6204 10.3061 21.3417 7.07538 19.0484 5.17534C16.7551 3.2753 13.7994 3.90317 12 6.00019Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>  
@@ -81,6 +79,38 @@ function renderPlaylist(playlist, index) {
       html += `<p class="playlist-next-title">Previous</p>`;
   });
   $("#playlist-container").html(html);
+}
+
+// -------------------------------------------------------- //
+function addToMyAlbum(albumID) {
+  var musicID = currentPlaylist[currentID].id;
+
+  $(".pending-show-box").html("<div></div>");
+
+  $.ajax({
+    url: "server/server.php",
+    type: "POST",
+    data: {
+      requestCode: 7,
+      musicID,
+      albumID,
+      token,
+    },
+    success: (response) => {
+      const res = JSON.parse(response);
+      if (res.status) {
+        $(".pending-show-box").html("<p style='color: white;'>Success!</p>");
+      } else {
+        $(".pending-show-box").html(
+          `<p style='color: red;'>${res.message}</p>`
+        );
+      }
+      // hideFloatLayer(false);
+    },
+    error: (status, error) => {
+      console.error(status, error);
+    },
+  });
 }
 
 // -------------------------------------------------------- //
@@ -117,7 +147,7 @@ function clickToListen(id, playlists) {
         </div>
         <div id="love-box-btn" onclick="addLibraryClick(${
           currentPlaylist[currentID].id
-        })">
+        })" title="add to your library">
             <svg width="100%" height="100%" viewBox="0 0 24 24" fill="${
               libraryIDList.indexOf(currentPlaylist[currentID].id) == -1
                 ? "white"
@@ -125,6 +155,13 @@ function clickToListen(id, playlists) {
             }">
                 <path fill-rule="evenodd" clip-rule="evenodd" d="M12 6.00019C10.2006 3.90317 7.19377 3.2551 4.93923 5.17534C2.68468 7.09558 2.36727 10.3061 4.13778 12.5772C5.60984 14.4654 10.0648 18.4479 11.5249 19.7369C11.6882 19.8811 11.7699 19.9532 11.8652 19.9815C11.9483 20.0062 12.0393 20.0062 12.1225 19.9815C12.2178 19.9532 12.2994 19.8811 12.4628 19.7369C13.9229 18.4479 18.3778 14.4654 19.8499 12.5772C21.6204 10.3061 21.3417 7.07538 19.0484 5.17534C16.7551 3.2753 13.7994 3.90317 12 6.00019Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
+        </div>
+        <div id="add-to-my-album-box-btn" onclick="hideFloatLayer('', true)" title="add to your album">
+          <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none">
+            <g id="Edit / Add_Plus">
+              <path id="Vector" d="M6 12H12M12 12H18M12 12V18M12 12V6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </g>
+          </svg>
         </div>
     `);
   };
@@ -190,6 +227,7 @@ function loadBodyComponent(page) {
 // --------------------------------------------------------------- //
 function loadUserAlbums(data) {
   var html = "";
+  var html2 = "";
   if (data) {
     data.forEach((row, idx) => {
       html += `
@@ -202,8 +240,19 @@ function loadUserAlbums(data) {
         </svg>
       </div>
       `;
+      html2 += `
+      <div class="aside-left-album-item-box" onclick="addToMyAlbum(${row.id})">
+        <p>${row.albumName}</p>
+        <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none">
+          <path
+            d="M5 12V6C5 5.44772 5.44772 5 6 5H18C18.5523 5 19 5.44772 19 6V18C19 18.5523 18.5523 19 18 19H12M8.11111 12H12M12 12V15.8889M12 12L5 19"
+            stroke="white" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </div>
+      `;
     });
     $(".my-albums-show-container").html(html);
+    $(".floating-box-body").html(html2);
   }
 }
 
@@ -219,14 +268,12 @@ $("document").ready(() => {
       token,
     },
     success: (response) => {
-      console.log(response);
       if (response == 0) {
         console.log("[request error] invalid request code");
         return;
       }
       onloadData = JSON.parse(response);
-      libraryIDList = [];
-      // onloadData.library.map((row) => row[0].toString())
+      libraryIDList = onloadData.library.map((row) => row.id);
       console.log(onloadData);
 
       // load body //
@@ -235,6 +282,9 @@ $("document").ready(() => {
       currentPlaylist = onloadData.playlists;
       clickToListen(currentID, currentPlaylist);
       loadUserAlbums(onloadData.userAlbumsList);
+    },
+    error: (status, error) => {
+      console.error(status, error);
     },
   });
   $("#volume-range").css("--value", 100);
@@ -447,4 +497,17 @@ function createNewAlbumRequest() {
       console.error(status, error);
     },
   });
+}
+
+// ----------------------------------------------------- //
+function hideFloatLayer(event, show) {
+  $(".pending-show-box").html("");
+  if (
+    event ? event.target.className == "floating-div-container" : true && !show
+  ) {
+    $(".floating-div-container").css("z-index", "-1");
+  }
+  if (show) {
+    $(".floating-div-container").css("z-index", "12");
+  }
 }

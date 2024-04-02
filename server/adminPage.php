@@ -70,7 +70,7 @@ function uploadMusic($data, $connect)
         $nameMusic = $data["musicName"];
         $author = $data["musicAuthor"];
         $tag = $data['update-music-tag'];
-        $imgPath = 'music/img/default.jpg';
+        $imgPath = 'assets/img/default.jpg';
 
         if (!isset($_SESSION['userID']) || empty($_SESSION['userID'])) {
             echo $_SESSION['userID'];

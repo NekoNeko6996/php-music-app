@@ -30,11 +30,18 @@ if (isset($_SESSION["user"]) && isset($_SESSION["username"])) {
 <!-- Client -->
 
 <body>
-  <!-- <div class="floating-div-container">
-    <div class="create-new-my-album-floating-box">
-      he
+  <div class="floating-div-container" onclick="hideFloatLayer(event, false)">
+    <div class="floating-box">
+      <h2>Choose Your Album</h2>
+      <div class="floating-box-body">
+        <!-- your list albums show here -->
+      </div>
+      <div class="pending-show-box">
+      </div>
     </div>
-  </div> -->
+  </div>
+
+
   <aside class="aside-left">
     <div class="app-logo-aside">
       <img src="assets/logo/logo.png" alt="error-load">
@@ -46,17 +53,9 @@ if (isset($_SESSION["user"]) && isset($_SESSION["username"])) {
         <!-- albums show here -->
       </div>
       <p>Create New My Album</p>
-      <!-- <div class="aside-create-new-album-container">
-        <p>Create New</p>
-        <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <g id="Edit / Add_Plus">
-            <path id="Vector" d="M6 12H12M12 12H18M12 12V18M12 12V6" stroke="white" stroke-width="2"
-              stroke-linecap="round" stroke-linejoin="round" />
-          </g>
-        </svg>
-      </div> -->
       <div class="create-new-my-album-form">
-        <input type="text" name="create-name-album" id="create-name-album" placeholder="Name of album..." autocomplete="off">
+        <input type="text" name="create-name-album" id="create-name-album" placeholder="Name of album..."
+          autocomplete="off">
         <button type="button" onclick="createNewAlbumRequest()">Create</button>
       </div>
     </div>
@@ -129,7 +128,9 @@ if (isset($_SESSION["user"]) && isset($_SESSION["username"])) {
   </aside>
 
   <div class="play-zone">
-    <div id="play-music-info"></div>
+    <div id="play-music-info">
+      <!--play music info show here -->
+    </div>
     <div class="play-zone-btn-box">
       <button class="audio-control-btn" onclick="audioMix()" title="mixer audio">
         <svg width="100%" height="100%" viewBox="0 0 24 24" fill="white">
@@ -166,14 +167,10 @@ if (isset($_SESSION["user"]) && isset($_SESSION["username"])) {
         </svg>
       </button>
       <button class="audio-control-btn" onclick="musicLoop()" title="loop">
-        <svg width="100%" height="100%" viewBox="0 0 556 556" fill="white" id="audioLoop-svg-active"
-          class="audioLoop-svg">
+        <svg width="100%" height="100%" viewBox="0 0 18 18" id="audioLoop-svg-active" class="audioLoop-svg">
           <path
-            d="M415.313,358.7c36.453-36.452,55.906-85.231,54.779-137.353-1.112-51.375-21.964-99.908-58.715-136.66L388.75,107.314A166.816,166.816,0,0,1,438.1,222.039c.937,43.313-15.191,83.81-45.463,114.083l-48.617,49.051.044-89.165-32-.016L311.992,440H456.063V408H366.449Z"
-            class="ci-primary" fill="white" />
-          <path
-            d="M47.937,112h89.614L88.687,161.3c-36.453,36.451-55.906,85.231-54.779,137.352a198.676,198.676,0,0,0,58.715,136.66l22.627-22.627A166.818,166.818,0,0,1,65.9,297.962c-.937-43.314,15.191-83.811,45.463-114.083l48.617-49.051-.044,89.165,32,.015L192.008,80H47.937Z"
-            class="ci-primary" fill="white" />
+            d="M1 9c0 2.206 1.711 4 3.813 4v1c-2.654 0-4.813-2.243-4.813-5s2.159-5 4.813-5h4.229l-1.646-1.646 0.707-0.707 2.854 2.853-2.853 2.854-0.708-0.708 1.647-1.646h-4.23c-2.102 0-3.813 1.794-3.813 4zM12.187 4v1c2.102 0 3.813 1.794 3.813 4s-1.711 4-3.813 4h-4.23l1.646-1.646-0.707-0.707-2.853 2.853 2.854 2.854 0.707-0.707-1.647-1.647h4.229c2.655 0 4.814-2.243 4.814-5s-2.159-5-4.813-5z"
+            fill="white" class="ci-primary" />
         </svg>
       </button>
     </div>

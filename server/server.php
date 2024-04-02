@@ -1,7 +1,12 @@
 <?php
-
 include '../database/connect.php';
 include '../library/library.php';
+
+session_start();
+// check
+if (isset($_SESSION['token']) && !empty($_SESSION['token'])) {
+    Auth($_SESSION['token'], $connect);
+}
 
 function convertToArray($Array)
 {
@@ -26,47 +31,30 @@ function findIDUSer($email, $connect)
 function sortByTag($tag, $connect, $email)
 {
     if ($tag == "random") {
-        $sqlSortTag = "SELECT * FROM music_source_path ORDER BY RAND() LIMIT 30";
-        $stmt = $connect->query($sqlSortTag);
+        $result = query("SELECT * FROM music_source_path ORDER BY RAND() LIMIT 30", [], $connect)['result'];
     } else if ($tag == "library") {
         $userID = findIDUSer($email, $connect);
         if (!empty($userID)) {
-            $sqlSortTag = "SELECT * FROM music_source_path WHERE id IN (SELECT musicID FROM library WHERE userID = ?)";
-            $stmt = $connect->prepare($sqlSortTag);
-            $stmt->execute([$userID]);
+            $result = query("SELECT * FROM music_source_path WHERE id IN (SELECT musicID FROM library WHERE userID = ?)", [$userID], $connect)['result'];
         } else {
-            $sqlSortTag = "SELECT * FROM music_source_path WHERE id IN (SELECT musicID FROM library WHERE userID = -1)";
-            $stmt = $connect->query($sqlSortTag);
+            $result = query("SELECT * FROM music_source_path WHERE id IN (SELECT musicID FROM library WHERE userID = -1)", [], $connect)['result'];
         }
     } else {
-        $sqlSortTag = "SELECT * FROM music_source_path WHERE tag LIKE ? LIMIT 30";
-        $stmt = $connect->prepare($sqlSortTag);
-        $stmt->execute(["%$tag%"]);
+        $result = query("SELECT * FROM music_source_path WHERE tag LIKE ? LIMIT 30", ["%$tag%"], $connect)['result'];
     }
 
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    return $result;
 }
 
 function onloadQuery($connect, $email, $token)
 {
-
     $user = Auth($token, $connect);
 
-    $newMusicStmt = $connect->query('SELECT * FROM music_source_path ORDER BY timeUpload DESC LIMIT 9');
-    $top3MusicStmt = $connect->query('SELECT * FROM music_source_path ORDER BY listens DESC LIMIT 3');
-    $playlistsStmt = $connect->query('SELECT * FROM music_source_path ORDER BY RAND() LIMIT 10');
-    $musicByTagStmt = $connect->query('SELECT * FROM music_source_path ORDER BY timeUpload DESC LIMIT 40');
-    $albumsLoadStmt = $connect->query('SELECT * FROM albums');
-
-    if (!$newMusicStmt || !$top3MusicStmt) {
-        die('[query] Error');
-    }
-
-    $result["newMusic"] = $newMusicStmt->fetchAll(PDO::FETCH_ASSOC);
-    $result["top3Music"] = $top3MusicStmt->fetchAll(PDO::FETCH_ASSOC);
-    $result["playlists"] = $playlistsStmt->fetchAll(PDO::FETCH_ASSOC);
-    $result["musicByTag"] = $musicByTagStmt->fetchAll(PDO::FETCH_ASSOC);
-    $result["albumsLoad"] = $albumsLoadStmt->fetchAll(PDO::FETCH_ASSOC);
+    $result["newMusic"] = query('SELECT * FROM music_source_path ORDER BY timeUpload DESC LIMIT 9', [], $connect)['result'];
+    $result["top3Music"] = query('SELECT * FROM music_source_path ORDER BY listens DESC LIMIT 3', [], $connect)['result'];
+    $result["playlists"] = query('SELECT * FROM music_source_path ORDER BY RAND() LIMIT 10', [], $connect)['result'];
+    $result["musicByTag"] = query('SELECT * FROM music_source_path ORDER BY timeUpload DESC LIMIT 40', [], $connect)['result'];
+    $result["albumsLoad"] = query('SELECT * FROM albums', [], $connect)['result'];
     $result["library"] = sortByTag("library", $connect, $email);
 
     if (isset($user['permissionID']) && isset($user['id'])) {
@@ -140,6 +128,25 @@ function createMyAlbum($token, $createNameAlbum)
     return false;
 }
 
+
+
+function addToMyAlbum($musicID, $albumID, $connect)
+{
+    if (isset($_SESSION['userID'])) {
+        $issetAlbum = query("SELECT * FROM user_albums WHERE id = ? AND userID = ?", [$albumID, $_SESSION['userID']], $connect)['numRow'] == 1;
+        $issetMusic = checkIssetMusic($musicID, $connect)['isset'];
+        $issetMusicInAlbum = query("SELECT * FROM user_albums_music_list WHERE userAlbumID = ? AND musicID = ?", [$albumID, $musicID], $connect)['numRow'] == 0;
+
+        if ($issetAlbum && $issetMusic && $issetMusicInAlbum) {
+            $sql = "INSERT INTO user_albums_music_list SET userAlbumID = ?, musicID = ?";
+            $status = query($sql, [$albumID, $musicID], $connect)['stmt'];
+            return ['status' => $status];
+        } else
+            return ['status' => false, 'message' => 'music has not been added to your album'];
+    } else
+        return false;
+}
+
 // ---------------- //
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $response = [];
@@ -170,6 +177,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             case 6:
                 if (isset($_POST['createNameAlbum']) && isset($_POST['token'])) {
                     $response = createMyAlbum($_POST['token'], $_POST['createNameAlbum']);
+                }
+                break;
+            case 7:
+                if (isset($_POST['musicID']) && isset($_POST['albumID']) && isset($_POST['token'])) {
+                    $response = addToMyAlbum($_POST['musicID'], $_POST['albumID'], $connect);
                 }
                 break;
             default:

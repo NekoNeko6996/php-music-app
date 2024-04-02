@@ -41,7 +41,7 @@ if (!isset($_GET['action'])) {
     function checkImg($src)
     {
         if (empty($src)) {
-            return 'music/img/default.jpg';
+            return 'assets/img/default.jpg';
         } else
             return $src;
     }
