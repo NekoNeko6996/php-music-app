@@ -140,12 +140,29 @@ function addToMyAlbum($musicID, $albumID, $connect)
         if ($issetAlbum && $issetMusic && $issetMusicInAlbum) {
             $sql = "INSERT INTO user_albums_music_list SET userAlbumID = ?, musicID = ?";
             $status = query($sql, [$albumID, $musicID], $connect)['stmt'];
-            return ['status' => $status];
+            return ['status' => $status, 'newList' => loadAlbumsList($albumID, $connect, true)];
         } else
             return ['status' => false, 'message' => 'music has not been added to your album'];
     } else
         return false;
 }
+
+
+function deleteFromMyAlbum($musicID, $albumID, $connect)
+{
+    if (isset($_SESSION['userID'])) {
+        $issetMusicInAlbum = query("SELECT * FROM user_albums_music_list WHERE musicID = ? AND userAlbumID = ?", [$musicID, $albumID], $connect)['numRow'] == 1;
+        $issetAlbum = query("SELECT * FROM user_albums WHERE id = ? AND userID = ?", [$albumID, $_SESSION['userID']], $connect)['numRow'] == 1;
+        if ($issetAlbum && $issetMusicInAlbum) {
+            $status = query("DELETE FROM user_albums_music_list WHERE musicID = ? AND userAlbumID = ?", [$musicID, $albumID], $connect)['stmt'];
+            return ['status' => $status, 'newList' => loadAlbumsList($albumID, $connect, true)];
+        } else
+            return ['status' => false, 'message' => 'music not found'];
+    }
+    return ['status' => false, 'message' => 'you must login to delete this'];
+}
+
+
 
 // ---------------- //
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -182,6 +199,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             case 7:
                 if (isset($_POST['musicID']) && isset($_POST['albumID']) && isset($_POST['token'])) {
                     $response = addToMyAlbum($_POST['musicID'], $_POST['albumID'], $connect);
+                }
+                break;
+            case 8:
+                if (isset($_POST['musicID']) && isset($_POST['albumID'])) {
+                    $response = deleteFromMyAlbum($_POST['musicID'], $_POST['albumID'], $connect);
                 }
                 break;
             default:

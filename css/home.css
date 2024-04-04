@@ -999,7 +999,7 @@ input[type="range"]::-moz-range-track {
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 12;
+  z-index: -1;
   display: flex;
   justify-content: center;
   align-items: center;
