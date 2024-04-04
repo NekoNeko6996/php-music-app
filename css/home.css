@@ -948,6 +948,8 @@ input[type="range"]::-moz-range-track {
   color: rgba(255, 255, 255, 0.521);
 }
 
+
+/* ----------------------------------------- */
 .sl-left-eff-btn {
   border: 3px solid #924ac2;
   padding: 7px 12px 7px 12px;
@@ -960,12 +962,12 @@ input[type="range"]::-moz-range-track {
   margin: 10px;
 }
 .sl-left-eff-btn::before {
-  content: "Login Now";
+  content: "YES!";
   position: relative;
   z-index: 2;
 }
-.signup-btn-nt::before {
-  content: "Register Now";
+.no-btn-nt::before {
+  content: "NO :(";
 }
 
 .sl-left-eff-btn::after {
@@ -1005,13 +1007,10 @@ input[type="range"]::-moz-range-track {
   align-items: center;
 }
 .floating-box {
-  height: 500px;
-  width: 350px;
-
   background-color: #231b2e;
   border-radius: 10px;
   color: white;
-  padding: 20px 15px 10px 15px;
+  padding: 25px 25px 20px 25px;
   display: flex;
   flex-direction: column;
 }
@@ -1022,7 +1021,7 @@ input[type="range"]::-moz-range-track {
 
 .floating-box > h2 {
   text-align: center;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
   border-bottom: 1px solid #4d296a;
 }
 
@@ -1033,6 +1032,7 @@ input[type="range"]::-moz-range-track {
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-top: 20px;
 }
 .pending-show-box > div {
   height: 35px;

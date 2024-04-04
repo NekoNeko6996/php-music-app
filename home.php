@@ -31,16 +31,8 @@ if (isset($_SESSION["user"]) && isset($_SESSION["username"])) {
 
 <body>
   <div class="floating-div-container" onclick="hideFloatLayer(event, false)">
-    <div class="floating-box">
-      <h2>Choose Your Album</h2>
-      <div class="floating-box-body">
-        <!-- your list albums show here -->
-      </div>
-      <div class="pending-show-box">
-      </div>
-    </div>
-  </div>
 
+  </div>
 
   <aside class="aside-left">
     <div class="app-logo-aside">
@@ -51,53 +43,59 @@ if (isset($_SESSION["user"]) && isset($_SESSION["username"])) {
       <p>Your Albums</p>
       <div class="my-albums-show-container">
         <!-- albums show here -->
-      </div>
-      <p>Create New My Album</p>
-      <div class="create-new-my-album-form">
-        <input type="text" name="create-name-album" id="create-name-album" autocomplete="off"
-          placeholder="Name of album...">
-        <button type="button" onclick="createNewAlbumRequest()">Create</button>
-      </div>
-    </div>
-    <div id="WaveContainer"></div>
-  </aside>
-  <section class="mid-body">
-    <nav class="mid-nav">
-      <!-- prev btn -->
-      <button type="button" onclick="toPrevBody()" class="prev-body-btn" title="back">
-        <svg width="27px" height="24px" viewBox="0 0 1024 1024">
-          <path fill="white" d="M224 480h640a32 32 0 1 1 0 64H224a32 32 0 0 1 0-64z" />
-          <path fill="white"
-            d="m237.248 512 265.408 265.344a32 32 0 0 1-45.312 45.312l-288-288a32 32 0 0 1 0-45.312l288-288a32 32 0 1 1 45.312 45.312L237.248 512z" />
-        </svg>
-      </button>
-
-      <!-- search input -->
-      <div class="search-container">
-        <form action="">
-          <input type="text" name="search-music" id="search-music-input" placeholder="Search..." autocomplete="off"
-            oninput="searchMusic(event.target.value)" onfocus="searchInputFocus(true)"
-            onblur="searchInputFocus(false)" />
-          <button type="submit" id="search-btn-nav" title="search">
-            <svg width="35px" height="35px" viewBox="0 0 24 24" fill="none">
-              <path
-                d="M17.5556 3C19.4579 3 21 4.54213 21 6.44444V17.5556C21 19.4579 19.4579 21 17.5556 21H6.44444C4.54213 21 3 19.4579 3 17.5556V6.44444C3 4.54213 4.54213 3 6.44444 3H17.5556Z"
-                stroke="white" stroke-width="2" />
-              <path fill-rule="evenodd" clip-rule="evenodd"
-                d="M11.5067 7.01392C9.02527 7.01392 7.01367 9.02551 7.01367 11.5069C7.01367 13.9884 9.02527 16 11.5067 16C12.3853 16 13.205 15.7478 13.8973 15.3119L15.1658 16.5803C15.5563 16.9709 16.1895 16.9709 16.58 16.5803C16.9705 16.1898 16.9705 15.5566 16.58 15.1661L15.3116 13.8977C15.7475 13.2053 15.9997 12.3856 15.9997 11.5069C15.9997 9.02551 13.9881 7.01392 11.5067 7.01392ZM9.01367 11.5069C9.01367 10.1301 10.1298 9.01392 11.5067 9.01392C12.8836 9.01392 13.9997 10.1301 13.9997 11.5069C13.9997 12.8838 12.8836 14 11.5067 14C10.1298 14 9.01367 12.8838 9.01367 11.5069Z"
-                fill="white" />
-            </svg>
-          </button>
-        </form>
-        <div class="search-result-box">
-          <!-- search result here -->
+        <?php if (!isset($_SESSION['token']))
+          echo '
+          <p style="color: #777; font-size: 15px;">You need to log in to create an album</p>
+        ';
+        else
+          echo '<p style="color: #777; font-size: 15px;">You don\'t have an album yet</p>' ?>
+        </div>
+        <p>Create New My Album</p>
+        <div class="create-new-my-album-form">
+          <input type="text" name="create-name-album" id="create-name-album" autocomplete="off"
+            placeholder="Name of album...">
+          <button type="button" onclick="createNewAlbumRequest()">Create</button>
         </div>
       </div>
-      <div class="user-nav-box">
-        <span onclick="userAvatarClick(event.target)">
-          <p>
-            <?php
-            echo $username ?>
+      <div id="WaveContainer"></div>
+    </aside>
+    <section class="mid-body">
+      <nav class="mid-nav">
+        <!-- prev btn -->
+        <button type="button" onclick="toPrevBody()" class="prev-body-btn" title="back">
+          <svg width="27px" height="24px" viewBox="0 0 1024 1024">
+            <path fill="white" d="M224 480h640a32 32 0 1 1 0 64H224a32 32 0 0 1 0-64z" />
+            <path fill="white"
+              d="m237.248 512 265.408 265.344a32 32 0 0 1-45.312 45.312l-288-288a32 32 0 0 1 0-45.312l288-288a32 32 0 1 1 45.312 45.312L237.248 512z" />
+          </svg>
+        </button>
+
+        <!-- search input -->
+        <div class="search-container">
+          <form action="">
+            <input type="text" name="search-music" id="search-music-input" placeholder="Search..." autocomplete="off"
+              oninput="searchMusic(event.target.value)" onfocus="searchInputFocus(true)"
+              onblur="searchInputFocus(false)" />
+            <button type="submit" id="search-btn-nav" title="search">
+              <svg width="35px" height="35px" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M17.5556 3C19.4579 3 21 4.54213 21 6.44444V17.5556C21 19.4579 19.4579 21 17.5556 21H6.44444C4.54213 21 3 19.4579 3 17.5556V6.44444C3 4.54213 4.54213 3 6.44444 3H17.5556Z"
+                  stroke="white" stroke-width="2" />
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                  d="M11.5067 7.01392C9.02527 7.01392 7.01367 9.02551 7.01367 11.5069C7.01367 13.9884 9.02527 16 11.5067 16C12.3853 16 13.205 15.7478 13.8973 15.3119L15.1658 16.5803C15.5563 16.9709 16.1895 16.9709 16.58 16.5803C16.9705 16.1898 16.9705 15.5566 16.58 15.1661L15.3116 13.8977C15.7475 13.2053 15.9997 12.3856 15.9997 11.5069C15.9997 9.02551 13.9881 7.01392 11.5067 7.01392ZM9.01367 11.5069C9.01367 10.1301 10.1298 9.01392 11.5067 9.01392C12.8836 9.01392 13.9997 10.1301 13.9997 11.5069C13.9997 12.8838 12.8836 14 11.5067 14C10.1298 14 9.01367 12.8838 9.01367 11.5069Z"
+                  fill="white" />
+              </svg>
+            </button>
+          </form>
+          <div class="search-result-box">
+            <!-- search result here -->
+          </div>
+        </div>
+        <div class="user-nav-box">
+          <span onclick="userAvatarClick(event.target)">
+            <p>
+              <?php
+        echo $username ?>
           </p>
           <img src="assets/img/default.jpg" alt="no-img" class="user-avatar">
         </span>
@@ -193,9 +191,7 @@ if (isset($_SESSION["user"]) && isset($_SESSION["username"])) {
   </div>
 
   <script>
-    const userEmail = "<?php echo isset($_SESSION['user']) ? $_SESSION['user'] : '' ?>";
-    const token = "<?php echo isset($_SESSION['token']) ? $_SESSION['token'] : '' ?>";
-
+    const _ = "<?php echo isset($_SESSION['token']) ?>"
     function addLibraryClick(musicID, event) {
       if (event) event.stopPropagation();
 
@@ -206,10 +202,8 @@ if (isset($_SESSION["user"]) && isset($_SESSION["username"])) {
             url: "server/server.php",
             type: "POST",
             data: {
-              token,
               requestCode: 3,
               musicID,
-              userEmail
             },
             success: (response) => {
               console.log(response);
@@ -221,7 +215,7 @@ if (isset($_SESSION["user"]) && isset($_SESSION["username"])) {
           })
           ';
       } else
-        echo 'window.location.href = "login.php"';
+        echo 'hideFloatLayer("", true, {title: "Message", content: "You need to be logged in to perform this action", yes: "window.location.href = \'login.php\'", no: "hideFloatLayer(\'\', false)"})';
       ?>
 
     }
@@ -235,10 +229,7 @@ if (isset($_SESSION["user"]) && isset($_SESSION["username"])) {
       $.ajax({
         url: "server/logout.php",
         type: "POST",
-        data: {
-          token,
-          userEmail
-        },
+        data: {},
         success: (response) => {
           const result = JSON.parse(response);
           if (result.status) {

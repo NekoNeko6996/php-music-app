@@ -8,6 +8,7 @@ var onloadData,
 var previousPlayLists,
   mixStatus = false;
 var currentID = 0;
+var FloatingUserAlbumsComponent = "";
 
 // ---------------------------------------------- //
 function audioControl(action) {
@@ -84,7 +85,6 @@ function renderPlaylist(playlist, index) {
 // -------------------------------------------------------- //
 function addToMyAlbum(albumID) {
   var musicID = currentPlaylist[currentID].id;
-
   $(".pending-show-box").html("<div></div>");
 
   $.ajax({
@@ -94,9 +94,9 @@ function addToMyAlbum(albumID) {
       requestCode: 7,
       musicID,
       albumID,
-      token,
     },
     success: (response) => {
+      console.log(response);
       const res = JSON.parse(response);
       if (res.status) {
         $(".pending-show-box").html("<p style='color: white;'>Success!</p>");
@@ -156,7 +156,9 @@ function clickToListen(id, playlists) {
                 <path fill-rule="evenodd" clip-rule="evenodd" d="M12 6.00019C10.2006 3.90317 7.19377 3.2551 4.93923 5.17534C2.68468 7.09558 2.36727 10.3061 4.13778 12.5772C5.60984 14.4654 10.0648 18.4479 11.5249 19.7369C11.6882 19.8811 11.7699 19.9532 11.8652 19.9815C11.9483 20.0062 12.0393 20.0062 12.1225 19.9815C12.2178 19.9532 12.2994 19.8811 12.4628 19.7369C13.9229 18.4479 18.3778 14.4654 19.8499 12.5772C21.6204 10.3061 21.3417 7.07538 19.0484 5.17534C16.7551 3.2753 13.7994 3.90317 12 6.00019Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
         </div>
-        <div id="add-to-my-album-box-btn" onclick="hideFloatLayer('', true)" title="add to your album">
+        <div id="add-to-my-album-box-btn" onclick="${
+          _ == 1 ? "hideFloatLayer('', true)" : "callMessageBox()"
+        }" title="add to your album">
           <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none">
             <g id="Edit / Add_Plus">
               <path id="Vector" d="M6 12H12M12 12H18M12 12V18M12 12V6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -167,6 +169,17 @@ function clickToListen(id, playlists) {
   };
 }
 
+//
+function callMessageBox() {
+  hideFloatLayer("", true, {
+    title: "Message",
+    content: "You need to be logged in to perform this action",
+    yes: "window.location.href = 'login.php'",
+    no: "hideFloatLayer('', false)",
+  });
+}
+
+// ----------------------------------------------------------------------- //
 audio.onended = () => {
   if (currentPlaylist[currentID + 1]) {
     clickToListen(currentID + 1, currentPlaylist);
@@ -184,7 +197,7 @@ function toAlbumsPage(alIdx, myAlbum_) {
   myAlbum = myAlbum_ ? myAlbum_ : false;
   console.log(myAlbum_, " ", myAlbum);
   albumIndex = alIdx;
-  loadBodyComponent("components/home_albums_component.html");
+  loadBodyComponent("components/home_albums_component.php");
 }
 
 function renderAlbums(albumsList) {
@@ -240,7 +253,7 @@ function loadUserAlbums(data) {
         </svg>
       </div>
       `;
-      html2 += `
+      FloatingUserAlbumsComponent += `
       <div class="aside-left-album-item-box" onclick="addToMyAlbum(${row.id})">
         <p>${row.albumName}</p>
         <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none">
@@ -251,8 +264,7 @@ function loadUserAlbums(data) {
       </div>
       `;
     });
-    $(".my-albums-show-container").html(html);
-    $(".floating-box-body").html(html2);
+    if (html) $(".my-albums-show-container").html(html);
   }
 }
 
@@ -264,8 +276,6 @@ $("document").ready(() => {
     type: "POST",
     data: {
       requestCode: 1,
-      userEmail,
-      token,
     },
     success: (response) => {
       if (response == 0) {
@@ -277,7 +287,7 @@ $("document").ready(() => {
       console.log(onloadData);
 
       // load body //
-      loadBodyComponent("components/home_normal_component.html");
+      loadBodyComponent("components/home_normal_component.php");
 
       currentPlaylist = onloadData.playlists;
       clickToListen(currentID, currentPlaylist);
@@ -488,7 +498,6 @@ function createNewAlbumRequest() {
     data: {
       requestCode: 6,
       createNameAlbum,
-      token,
     },
     success: (response) => {
       console.log(response);
@@ -500,8 +509,33 @@ function createNewAlbumRequest() {
 }
 
 // ----------------------------------------------------- //
-function hideFloatLayer(event, show) {
-  $(".pending-show-box").html("");
+function hideFloatLayer(event, show, message) {
+  if (!message) {
+    $(".floating-div-container").html(`    
+    <div class="floating-box">
+      <h2>Choose Your Album</h2>
+      <div class="floating-box-body">
+        <!-- your list albums show here -->
+      </div>
+      <div class="pending-show-box">
+      </div>
+    </div>`);
+  } else {
+    $(".floating-div-container").html(`    
+    <div class="floating-box">
+      <h2>${message.title}</h2>
+      <div class="floating-box-body">
+        ${message.content}
+      </div>
+      <div class="pending-show-box">
+        <button class="sl-left-eff-btn" onclick="${message.yes}"></button>
+        <button class="sl-left-eff-btn no-btn-nt" onclick="${message.no}"></button>
+      </div>
+    </div>`);
+  }
+
+  if (FloatingUserAlbumsComponent)
+    $(".floating-box-body").html(FloatingUserAlbumsComponent);
   if (
     event ? event.target.className == "floating-div-container" : true && !show
   ) {

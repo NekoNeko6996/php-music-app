@@ -87,7 +87,7 @@
             <span>
               <span class="item-info-name">
                 <p>${row.musicName}</p>
-                <p>${row.author}</p>
+                <p>${row.author || "UnKnown"}</p>
               </span>
 
               <button class="al-btn-svg" onclick='addToPlaylist(${JSON.stringify(
@@ -113,7 +113,7 @@
                   : ""
               }
 
-              <p>${secToMinutes(row.duration)}</p>
+              <p class="music-album-duration">${secToMinutes(row.duration)}</p>
             </span>
           </div>
         `;

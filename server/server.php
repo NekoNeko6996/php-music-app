@@ -28,16 +28,17 @@ function findIDUSer($email, $connect)
     return false;
 }
 
-function sortByTag($tag, $connect, $email)
+function sortByTag($tag, $connect)
 {
     if ($tag == "random") {
         $result = query("SELECT * FROM music_source_path ORDER BY RAND() LIMIT 30", [], $connect)['result'];
     } else if ($tag == "library") {
-        $userID = findIDUSer($email, $connect);
-        if (!empty($userID)) {
+
+        if (isset($_SESSION['token'])) {
+            $userID = $_SESSION['userID'];
             $result = query("SELECT * FROM music_source_path WHERE id IN (SELECT musicID FROM library WHERE userID = ?)", [$userID], $connect)['result'];
         } else {
-            $result = query("SELECT * FROM music_source_path WHERE id IN (SELECT musicID FROM library WHERE userID = -1)", [], $connect)['result'];
+            $result = [];
         }
     } else {
         $result = query("SELECT * FROM music_source_path WHERE tag LIKE ? LIMIT 30", ["%$tag%"], $connect)['result'];
@@ -46,18 +47,17 @@ function sortByTag($tag, $connect, $email)
     return $result;
 }
 
-function onloadQuery($connect, $email, $token)
+function onloadQuery($connect)
 {
-    $user = Auth($token, $connect);
-
     $result["newMusic"] = query('SELECT * FROM music_source_path ORDER BY timeUpload DESC LIMIT 9', [], $connect)['result'];
     $result["top3Music"] = query('SELECT * FROM music_source_path ORDER BY listens DESC LIMIT 3', [], $connect)['result'];
     $result["playlists"] = query('SELECT * FROM music_source_path ORDER BY RAND() LIMIT 10', [], $connect)['result'];
     $result["musicByTag"] = query('SELECT * FROM music_source_path ORDER BY timeUpload DESC LIMIT 40', [], $connect)['result'];
     $result["albumsLoad"] = query('SELECT * FROM albums', [], $connect)['result'];
-    $result["library"] = sortByTag("library", $connect, $email);
+    $result["library"] = sortByTag("library", $connect);
 
-    if (isset($user['permissionID']) && isset($user['id'])) {
+    if (isset($_SESSION['token'])) {
+        $user = Auth($_SESSION['token'], $connect);
         $result["userAlbumsList"] = query("SELECT id, albumName, createAt, albumImgPath FROM user_albums WHERE userID = ?", [$user['id']], $connect)['result'];
     }
 
@@ -68,9 +68,9 @@ function onloadQuery($connect, $email, $token)
 }
 
 
-function sqlAddLibrary($musicID, $email, $connect)
+function sqlAddLibrary($musicID, $connect)
 {
-    $userID = findIDUSer($email, $connect);
+    $userID = $_SESSION['userID'];
     if ($userID) {
         $stmt = $connect->prepare("SELECT * FROM library WHERE userID = ? AND musicID = ?");
         $stmt->execute([$userID, $musicID]);
@@ -114,15 +114,17 @@ function loadAlbumsList($albumID, $connect, $myAlbum)
 }
 
 
-function createMyAlbum($token, $createNameAlbum)
+function createMyAlbum($createNameAlbum)
 {
     $defaultImg = 'assets/img/default.jpg';
     $connect = $GLOBALS['connect'];
-    $user = Auth(check($token), $connect);
-    if (query("SELECT albumName FROM user_albums WHERE userID = ? AND albumName = ?", [$user['id'], $createNameAlbum], $connect)['numRow'] == 0) {
-        if (isset($user['permissionID']) && isset($user['id'])) {
-            $sql = "INSERT INTO user_albums (albumName, userID, albumImgPath) VALUES (?, ?, ?)";
-            return query($sql, [$createNameAlbum, $user['id'], $defaultImg], $connect)['stmt'];
+    if (isset($_SESSION['token'])) {
+        $user = Auth($_SESSION['token'], $connect);
+        if (query("SELECT albumName FROM user_albums WHERE userID = ? AND albumName = ?", [$user['id'], $createNameAlbum], $connect)['numRow'] == 0) {
+            if (isset($user['permissionID']) && isset($user['id'])) {
+                $sql = "INSERT INTO user_albums (albumName, userID, albumImgPath) VALUES (?, ?, ?)";
+                return query($sql, [$createNameAlbum, $user['id'], $defaultImg], $connect)['stmt'];
+            }
         }
     }
     return false;
@@ -170,14 +172,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST["requestCode"])) {
         switch ($_POST["requestCode"]) {
             case 1:
-                $response = onloadQuery($connect, $_POST["userEmail"], !empty($_POST['token']) ? $_POST['token'] : "");
+                $response = onloadQuery($connect);
                 break;
             case 2:
-                $response = sortByTag($_POST["data"], $connect, $_POST["userEmail"]);
+                $response = sortByTag($_POST["data"], $connect);
                 break;
             case 3:
-                if (isset($_POST["musicID"]) && isset($_POST["userEmail"])) {
-                    $response = sqlAddLibrary($_POST["musicID"], $_POST["userEmail"], $connect);
+                if (isset($_POST["musicID"])) {
+                    $response = sqlAddLibrary($_POST["musicID"], $connect);
                 }
                 break;
             case 4:
@@ -192,12 +194,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 break;
 
             case 6:
-                if (isset($_POST['createNameAlbum']) && isset($_POST['token'])) {
-                    $response = createMyAlbum($_POST['token'], $_POST['createNameAlbum']);
+                if (isset($_POST['createNameAlbum'])) {
+                    $response = createMyAlbum($_POST['createNameAlbum']);
                 }
                 break;
             case 7:
-                if (isset($_POST['musicID']) && isset($_POST['albumID']) && isset($_POST['token'])) {
+                if (isset($_POST['musicID']) && isset($_POST['albumID'])) {
                     $response = addToMyAlbum($_POST['musicID'], $_POST['albumID'], $connect);
                 }
                 break;

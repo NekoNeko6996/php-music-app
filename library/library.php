@@ -32,13 +32,10 @@ function query(string $query, array $param, $connect)
 }
 
 // destroy token //
-function destroyToken($token, $email, $connect)
+function destroyToken($token, $connect)
 {
-    if (!empty($token) && !empty($email)) {
-        $query = "UPDATE user SET loginToken = null WHERE loginToken = :token AND email = :email";
-        $stmt = $connect->prepare($query);
-        $result = $stmt->execute(array(':token' => $token, ':email' => $email));
-        return $result;
+    if (!empty($token)) {
+        return query("UPDATE user SET loginToken = null WHERE loginToken = ?", [$token], $connect)['stmt'];
     } else
         return false;
 }

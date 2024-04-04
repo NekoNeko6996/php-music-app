@@ -49,23 +49,18 @@
           data: {
             requestCode: 2,
             data: tag,
-            userEmail,
           },
           success: (response) => {
             DataResponseSortByTag = JSON.parse(response);
+            console.log(DataResponseSortByTag)
             if (DataResponseSortByTag.length > 0) {
               sortByTagRenderItem(
-                DataResponseSortByTag,
-                "DataResponseSortByTag"
+                DataResponseSortByTag
               );
             } else {
               $(".category-show-item").html(`
                 <h1 class="nothing-text">Hmm... Nothing to see here</h1>
-                <h3 class="nothing-text-h3">You need to be logged in to add songs to your library</h3>
-                <span class="center-box-btn">
-                  <button class="sl-left-eff-btn" onclick="window.location.href = 'login.php'"></button>
-                  <button class="sl-left-eff-btn signup-btn-nt" onclick="window.location.href = 'signup.php'"></button>
-                </span>
+                <h3 class="nothing-text-h3">You can add songs to this list by clicking on the heart</h3>
               `);
             }
           },
@@ -92,14 +87,14 @@
       }
     }
 
-    function sortByTagRenderItem(array, nameArray) {
+    function sortByTagRenderItem(array) {
       var musicByTagComponent = "";
       array.forEach((row, index) => {
         musicByTagComponent += loadMusicItemByTag(
           row.imgPath,
           row.musicName,
           row.author,
-          libraryIDList.indexOf(row[0]) == -1 ? "none" : "#ba63d4",
+          libraryIDList.indexOf(row.id) == -1 ? "none" : "#ba63d4",
           row.id,
           row
         );
@@ -124,9 +119,8 @@
 
     onloadData.top3Music.forEach((row, index) => {
       top3MusicComponent += `
-          <div class='top-music-item ${
-            index == 0 ? "scale" : ""
-          }' onclick="clickToListen(${index}, onloadData.top3Music)">
+          <div class='top-music-item ${index == 0 ? "scale" : ""
+        }' onclick="clickToListen(${index}, onloadData.top3Music)">
             <img src="${checkImg(row.imgPath)}" alt="no-img" />
             <div class="info">
               <p class="music-name">${row.musicName}</p>
