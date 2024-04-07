@@ -86,7 +86,6 @@ function renderPlaylist(playlist, index) {
 function addToMyAlbum(albumID) {
   var musicID = currentPlaylist[currentID].id;
   $(".pending-show-box").html("<div></div>");
-
   $.ajax({
     url: "server/server.php",
     type: "POST",
@@ -157,7 +156,9 @@ function clickToListen(id, playlists) {
             </svg>
         </div>
         <div id="add-to-my-album-box-btn" onclick="${
-          _ == 1 ? "hideFloatLayer('', true)" : "callMessageBox()"
+          _ == 1
+            ? "chooseAlbumHideFloatLayer('', true)"
+            : "callMessageBox('You need to be logged in to perform this action')"
         }" title="add to your album">
           <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none">
             <g id="Edit / Add_Plus">
@@ -167,16 +168,6 @@ function clickToListen(id, playlists) {
         </div>
     `);
   };
-}
-
-//
-function callMessageBox() {
-  hideFloatLayer("", true, {
-    title: "Message",
-    content: "You need to be logged in to perform this action",
-    yes: "window.location.href = 'login.php'",
-    no: "hideFloatLayer('', false)",
-  });
 }
 
 // ----------------------------------------------------------------------- //
@@ -509,39 +500,24 @@ function createNewAlbumRequest() {
 }
 
 // ----------------------------------------------------- //
-function hideFloatLayer(event, show, message) {
-  if (!message) {
-    $(".floating-div-container").html(`    
-    <div class="floating-box">
-      <h2>Choose Your Album</h2>
-      <div class="floating-box-body">
-        <!-- your list albums show here -->
-      </div>
-      <div class="pending-show-box">
-      </div>
-    </div>`);
-  } else {
-    $(".floating-div-container").html(`    
-    <div class="floating-box">
-      <h2>${message.title}</h2>
-      <div class="floating-box-body">
-        ${message.content}
-      </div>
-      <div class="pending-show-box">
-        <button class="sl-left-eff-btn" onclick="${message.yes}"></button>
-        <button class="sl-left-eff-btn no-btn-nt" onclick="${message.no}"></button>
-      </div>
-    </div>`);
-  }
-
+function chooseAlbumHideFloatLayer(event, show) {
+  $(".pending-show-box").html("");
   if (FloatingUserAlbumsComponent)
-    $(".floating-box-body").html(FloatingUserAlbumsComponent);
-  if (
-    event ? event.target.className == "floating-div-container" : true && !show
-  ) {
-    $(".floating-div-container").css("z-index", "-1");
-  }
-  if (show) {
-    $(".floating-div-container").css("z-index", "12");
+    $("#choose-album-body").html(FloatingUserAlbumsComponent);
+  if (event && event.target.id == "choose-album-list") {
+    $("#choose-album-list").css("z-index", "-1");
+  } else {
+    $("#choose-album-list").css("z-index", "12");
   }
 }
+
+//
+function callMessageBox(message) {
+  if (message) {
+    $("#floating-message-container").css("z-index", "12");
+    $("#show-message-body").html(message);
+  } else {
+    $("#floating-message-container").css("z-index", "-1");
+  }
+}
+

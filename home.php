@@ -30,8 +30,26 @@ if (isset($_SESSION["user"]) && isset($_SESSION["username"])) {
 <!-- Client -->
 
 <body>
-  <div class="floating-div-container" onclick="hideFloatLayer(event, false)">
+  <div class="floating-div-container" onclick="chooseAlbumHideFloatLayer(event, false)" id="choose-album-list">
+    <div class="floating-box">
+      <h2>Choose Your Album</h2>
+      <div class="floating-box-body" id="choose-album-body">
+        <!-- your list albums show here -->
+      </div>
+      <div class="pending-show-box">
+      </div>
+    </div>
+  </div>
 
+  <div class="floating-div-container" onclick="callMessageBox(false)" id="floating-message-container">
+    <div class="floating-box">
+      <h2>Message</h2>
+      <div class="floating-box-body" id="show-message-body">
+        <!-- your list albums show here -->
+      </div>
+      <div class="pending-show-box">
+      </div>
+    </div>
   </div>
 
   <aside class="aside-left">
@@ -54,7 +72,10 @@ if (isset($_SESSION["user"]) && isset($_SESSION["username"])) {
         <div class="create-new-my-album-form">
           <input type="text" name="create-name-album" id="create-name-album" autocomplete="off"
             placeholder="Name of album...">
-          <button type="button" onclick="createNewAlbumRequest()">Create</button>
+          <button type="button" onclick="<?php if (isset($_SESSION['token']))
+          echo 'createNewAlbumRequest()';
+        else
+          echo "callMessageBox('You need to be logged in to perform this action')" ?>">Create</button>
         </div>
       </div>
       <div id="WaveContainer"></div>
@@ -113,12 +134,10 @@ if (isset($_SESSION["user"]) && isset($_SESSION["username"])) {
     </nav>
 
     <!-- --------------- body ------------------- -->
-    <span class="body-web-show">
+    <div class="body-web-show">
       <!-- body web show here -->
-    </span>
+    </div>
     <!-- ---------------------------------------- -->
-
-    <footer></footer>
   </section>
   <aside class="aside-right">
     <p class="playlists-title">Playlists</p>
@@ -206,7 +225,15 @@ if (isset($_SESSION["user"]) && isset($_SESSION["username"])) {
               musicID,
             },
             success: (response) => {
-              console.log(response);
+              const res = JSON.parse(response);
+              if(libraryIDList.indexOf(musicID.toString()) == -1) {
+                libraryIDList.push(musicID.toString());
+                $(`#tag-i-loveHealth-${musicID}`).attr("fill", "#FF00CC");
+              }
+              else if (res == "Delete") {
+                libraryIDList.splice(libraryIDList.indexOf(musicID.toString()), 1);
+                $(`#tag-i-loveHealth-${musicID}`).attr("fill", "white");
+              }
               renderPlaylist();
             },
             error: (status, error) => {
@@ -215,7 +242,7 @@ if (isset($_SESSION["user"]) && isset($_SESSION["username"])) {
           })
           ';
       } else
-        echo 'hideFloatLayer("", true, {title: "Message", content: "You need to be logged in to perform this action", yes: "window.location.href = \'login.php\'", no: "hideFloatLayer(\'\', false)"})';
+        echo "callMessageBox('You need to be logged in to perform this action')";
       ?>
 
     }

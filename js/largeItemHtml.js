@@ -9,6 +9,7 @@ function loadMusicItemByTag(imgUrl, musicName, author, color, musicID, music) {
         viewBox="0 0 24 24"
         fill="${color}"
         onclick="addLibraryClick(${musicID})"
+        id='tag-i-loveHealth-${musicID}'
       >
         <path
           fill-rule="evenodd"

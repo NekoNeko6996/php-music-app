@@ -40,8 +40,10 @@ function sortByTag($tag, $connect)
         } else {
             $result = [];
         }
+    } else if ($tag == "all") {
+        $result = query("SELECT * FROM music_source_path", [], $connect)['result'];
     } else {
-        $result = query("SELECT * FROM music_source_path WHERE tag LIKE ? LIMIT 30", ["%$tag%"], $connect)['result'];
+        $result = query("SELECT * FROM music_source_path WHERE tag LIKE ?", ["%$tag%"], $connect)['result'];
     }
 
     return $result;
@@ -52,9 +54,11 @@ function onloadQuery($connect)
     $result["newMusic"] = query('SELECT * FROM music_source_path ORDER BY timeUpload DESC LIMIT 9', [], $connect)['result'];
     $result["top3Music"] = query('SELECT * FROM music_source_path ORDER BY listens DESC LIMIT 3', [], $connect)['result'];
     $result["playlists"] = query('SELECT * FROM music_source_path ORDER BY RAND() LIMIT 10', [], $connect)['result'];
-    $result["musicByTag"] = query('SELECT * FROM music_source_path ORDER BY timeUpload DESC LIMIT 40', [], $connect)['result'];
+    $result["musicByTag"] = query('SELECT * FROM music_source_path ORDER BY timeUpload DESC', [], $connect)['result'];
     $result["albumsLoad"] = query('SELECT * FROM albums', [], $connect)['result'];
     $result["library"] = sortByTag("library", $connect);
+    $result["maxNumRow"] = query('SELECT * FROM music_source_path', [], $connect)['numRow'];
+    $_SESSION['maxNumRow'] = $result["maxNumRow"];
 
     if (isset($_SESSION['token'])) {
         $user = Auth($_SESSION['token'], $connect);

@@ -123,6 +123,7 @@ body {
 /* ------------------------------------ */
 .body-web-show {
   width: 100%;
+  position: relative;
 }
 
 /* ----------------------------------- */
@@ -770,7 +771,6 @@ input[type="range"]::-moz-range-track {
 }
 /* ------------------------------------------------------- */
 .category-box {
-  height: 500px;
   width: 94%;
   margin: 3%;
   display: flex;
@@ -948,7 +948,6 @@ input[type="range"]::-moz-range-track {
   color: rgba(255, 255, 255, 0.521);
 }
 
-
 /* ----------------------------------------- */
 .sl-left-eff-btn {
   border: 3px solid #924ac2;
@@ -1097,4 +1096,143 @@ input[type="range"]::-moz-range-track {
 }
 .create-new-my-album-form > button:hover {
   background-color: #724391;
+}
+
+/* ------------------------------------------------------ */
+.pagination-container {
+  width: 100%;
+  height: 50px;
+  margin-bottom: 20px;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: row;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+.pagination-child-button-show {
+  display: flex;
+  flex-direction: row;
+}
+
+.pagination-child-button {
+  height: 40px;
+  aspect-ratio: 1/1;
+  margin: 0 2px 0 2px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #542b70;
+  cursor: pointer;
+}
+.pagination-child-button-control {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 40px;
+  width: 80px;
+  padding: 0 5px 0 5px;
+  margin: 0 2px 0 2px;
+  background-color: #542b70;
+  cursor: pointer;
+}
+
+.br-left {
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+}
+.br-right {
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+
+.pagination-child-button-control:hover,
+.pagination-child-button:hover {
+  background-color: #a84fc4;
+}
+
+/* -------------------------------------- */
+.home-normal-footer {
+  height: 300px;
+  width: 100%;
+  background-color: #4d296a56;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  color: rgba(255, 255, 255, 0.884);
+  padding: 30px 10px 30px 10px;
+  position: relative;
+}
+.home-normal-footer div {
+  width: 30%;
+}
+
+.home-normal-footer h2 {
+  margin-bottom: 10px;
+}
+
+.home-normal-footer p {
+  margin: 5px 0 5px 0;
+}
+
+.home-normal-footer span {
+  display: flex;
+  flex-direction: row;
+}
+.home-normal-footer img {
+  height: 40px;
+  border-radius: 5px;
+  margin-right: 10px;
+}
+
+.join-us-btn {
+  height: 50px;
+  width: 80%;
+  color: white;
+  background-color: inherit;
+  border: 2px solid #924ac2;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: bold;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.join-us-btn::after {
+  content: "JOIN US";
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.join-us-btn::before {
+  position: absolute;
+  content: "";
+  height: 0;
+  width: 0;
+  background-color: #724391;
+  transition: 0.3s;
+}
+.join-us-btn:hover::before {
+  animation: hover-join-us-btn 0.4s linear;
+  animation-fill-mode: forwards;
+}
+
+@keyframes hover-join-us-btn {
+  50% {
+    height: 100%;
+    width: 100%;
+  }
+  100% {
+    height: 100%;
+    width: 100%;
+    box-shadow: 0 0 10px 3px #a84fc4;
+  }
 }
