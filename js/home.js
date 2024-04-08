@@ -520,4 +520,3 @@ function callMessageBox(message) {
     $("#floating-message-container").css("z-index", "-1");
   }
 }
-

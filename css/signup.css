@@ -7,10 +7,7 @@ body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  background-image: url("../assets/img/loginBackground.webp");
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  background-size: cover;
+  overflow: hidden;
 }
 
 .sign-up-form {
@@ -20,8 +17,8 @@ body {
   justify-content: center;
   margin-top: 50px;
   border-radius: 10px;
-  background-color: #3f295fb9;
-  color: white;
+  /* background-color: #3f295fb9; */
+  /* color: white; */
   border: 2px solid #a45db6;
 }
 
@@ -30,17 +27,17 @@ body {
   margin: 10px 5px 5px 5px;
 }
 a {
-  color: white;
+  color: black;
 }
 
 input {
   height: 40px;
   width: 400px;
-  background-color: #3f295f2f;
+  /* background-color: #a5a5a52f; */
   border: none;
   border-bottom: 1px solid #a45db6;
   outline: none;
-  color: white;
+  /* color: white; */
   font-size: 17px;
 }
 label {
@@ -62,6 +59,7 @@ form {
   border: none;
   outline: none;
   border-radius: 10px;
+  cursor: pointer;
 }
 
 nav {
@@ -69,13 +67,23 @@ nav {
   top: 0;
   left: 0;
   height: 60px;
-  background-color: #3f295f;
+  border-bottom: 3px solid #a45db6;
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
+  z-index: 10;
+  box-shadow: 0 3px 10px 3px rgb(167, 167, 167);
 }
-nav > a {
+
+nav div {
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+nav a {
   height: 100%;
   width: 150px;
   display: flex;
@@ -85,15 +93,27 @@ nav > a {
   text-decoration: none;
   font-weight: bold;
 }
-nav > a:hover {
+nav a:hover {
   background-color: #a45db6;
 }
+
+nav img {
+  height: 90%;
+  aspect-ratio: 1/1;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+nav p {
+  font-size: 20px;
+}
+
 /* ------------------------------------- */
 .login-error-display {
   position: fixed;
   height: 60px;
   width: 400px;
-  background-color: rgba(196, 95, 209, 0.582);
+  background-color: rgba(146, 69, 156, 0.582);
   bottom: 20px;
   left: calc(50% - 200px);
   border-radius: 10px;
@@ -103,3 +123,5 @@ nav > a:hover {
   font-size: 19px;
   color: white;
 }
+
+/* ------------------------------------- */

@@ -27,7 +27,7 @@ $stmt = $connect->prepare($createUserSql);
 
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  if (isset ($_POST["sign-up-email"]) && isset ($_POST["sign-up-password"]) && isset ($_POST["sign-up-repeat-password"]) && isset ($_POST["sign-up-username"])) {
+  if (isset($_POST["sign-up-email"]) && isset($_POST["sign-up-password"]) && isset($_POST["sign-up-repeat-password"]) && isset($_POST["sign-up-username"])) {
     $repeatPassword = check($_POST["sign-up-repeat-password"]);
     $password = check($_POST["sign-up-password"]);
     $email = strtolower(check($_POST["sign-up-email"]));
@@ -59,7 +59,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   }
 }
 
-if (isset ($_SESSION["user"]) && isset ($_SESSION["permissionID"])) {
+if (isset($_SESSION["user"]) && isset($_SESSION["permissionID"])) {
   header("Location: home.php");
 }
 ?>
@@ -68,8 +68,14 @@ if (isset ($_SESSION["user"]) && isset ($_SESSION["permissionID"])) {
 
 <body>
   <nav>
-    <a href="login.php">Login</a>
-    <a href="home.php">Home</a>
+    <div>
+      <img src="assets/logo/logo.png" alt="logo">
+      <p>𝓜𝓾𝓼𝓲𝓬 𝓐𝓹𝓹</p>
+    </div>
+    <div>
+      <a href="login.php">Login</a>
+      <a href="home.php">Home</a>
+    </div>
   </nav>
   <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) ?>" id="sign-up-form" class="sign-up-form"
     method="post">

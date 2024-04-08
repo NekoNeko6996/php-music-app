@@ -39,10 +39,16 @@ if (!isset($userID['result'][0]['id'])) {
 
 <body>
   <nav class="admin-page-nav">
-    <a href="moreInfo.php?action=upload">
-      Upload New Music
-    </a>
-    <a href="home.php">Home</a>
+    <div>
+      <img src="assets/logo/logo.png" alt="logo">
+      <p>𝓜𝓾𝓼𝓲𝓬 𝓐𝓹𝓹</p>
+    </div>
+    <div>
+      <a href="moreInfo.php?action=upload">
+        Upload New Music
+      </a>
+      <a href="home.php">Home</a>
+    </div>
   </nav>
   <div class="music-edit-container">
     <div class="music-box">

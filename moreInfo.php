@@ -59,7 +59,14 @@ if (!isset($_GET['action'])) {
 
 <body>
     <nav>
-        <a href="admin.php">Back To Admin Page</a>
+        <div>
+            <img src="assets/logo/logo.png" alt="logo">
+            <p>𝓜𝓾𝓼𝓲𝓬 𝓐𝓹𝓹</p>
+        </div>
+        <div>
+            <a href="admin.php">Back To Admin Page</a>
+            <a href="home.php">Home</a>
+        </div>
     </nav>
     <section class="main-session">
         <section>
@@ -180,7 +187,24 @@ if (!isset($_GET['action'])) {
                 <button type="button" title="done" class="normal-btn width-100" onclick="uploadConfirm()">DONE</button>
             </section>
             <section class="note-info">
-
+                <div>
+                    <h3>Đối Với Thêm Bài Hát mới</h3>
+                    <p>- Bước 1: Nhập thông tin bài hát và nhấn Update Information.</p>
+                    <p>- Bước 2: THêm ảnh đại diện cho bài hát bằng cách upload một ảnh mới và nhấn UPLOAD IMAGE.</p>
+                    <p>- Bước 3: Thêm Bài hát bằng cách tải lên file .mp3 của bài hát đó và nhấn UPLOAD AUDIO.</p>
+                    <p>- Bước 4: Sau khi đã hoàn thành nhấn DONE.</p>
+                </div>
+                <div>
+                    <h3>Đối Với Chỉnh Sửa Bài Hát Hiện Có.</h3>
+                    <p>- Mỗi khung thông tin có nút save riêng nên bạn cần nhấn nó để lưu nhũng gì có trong khu đó.</p>
+                    <p>- Sau khi đã hoàn thành nhấn DONE.</p>
+                </div>
+                <div>
+                    <h3>Lưu Ý</h3>
+                    <p style="color: red">- Sau khi nhấn nút UPLOAD để tải tài nguyên cần chờ đến khi hoạt động trả về
+                        thông báo.</p>
+                    <p style="color: red">- Không tải lại hoặc tắt trang này khi quá trình tải lên chưa hoàn tất.</p>
+                </div>
             </section>
         </section>
 

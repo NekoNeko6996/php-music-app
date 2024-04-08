@@ -17,7 +17,7 @@ include 'library/library.php';
 
 session_start();
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  if (isset ($_POST["login-email"]) && isset ($_POST["login-password"])) {
+  if (isset($_POST["login-email"]) && isset($_POST["login-password"])) {
     $password = check($_POST["login-password"]);
     $email = strtolower(check($_POST["login-email"]));
 
@@ -52,15 +52,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   }
 }
 
-if (isset ($_SESSION["user"]) && isset ($_SESSION["permissionID"]) && isset ($_SESSION["token"])) {
+if (isset($_SESSION["user"]) && isset($_SESSION["permissionID"]) && isset($_SESSION["token"])) {
   header("Location: home.php");
 }
 ?>
 
 <body>
   <nav>
-    <a href="signup.php">Sign Up</a>
-    <a href="home.php">Home</a>
+    <div>
+      <img src="assets/logo/logo.png" alt="logo">
+      <p>𝓜𝓾𝓼𝓲𝓬 𝓐𝓹𝓹</p>
+    </div>
+    <div>
+      <a href="signup.php">Sign Up</a>
+      <a href="home.php">Home</a>
+    </div>
   </nav>
   <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) ?>" id="login-form" class="sign-up-form"
     method="post">
