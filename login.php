@@ -21,7 +21,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = check($_POST["login-password"]);
     $email = strtolower(check($_POST["login-email"]));
 
-    $result = $connect->query("SELECT userName, hash, permissionID, loginToken block FROM user WHERE email = '$email'");
+    $result = $connect->query("SELECT id, userName, hash, permissionID, loginToken block FROM user WHERE email = '$email'");
     if ($result)
       if ($result->rowCount() > 0) {
         $findUser = $result->fetchAll(PDO::FETCH_ASSOC);
@@ -29,16 +29,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $username = $findUser[0]["userName"];
         $permissionID = $findUser[0]["permissionID"];
         $blockStatus = $findUser[0]["block"];
+        $userID = $findUser[0]["id"];
 
         if ($blockStatus != 1) {
           $checkHash = password_verify($password, $hashPassword);
           if ($checkHash) {
             $token = createToken(64);
 
-            $_SESSION["user"] = $email;
             $_SESSION["username"] = $username;
             $_SESSION["permissionID"] = $permissionID;
             $_SESSION["token"] = $token;
+            $_SESSION["userID"] = $userID;
 
             $connect->query("UPDATE user SET loginToken = '$token' WHERE email = '$email'");
 
@@ -52,7 +53,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   }
 }
 
-if (isset($_SESSION["user"]) && isset($_SESSION["permissionID"]) && isset($_SESSION["token"])) {
+if (isset($_SESSION["permissionID"]) && isset($_SESSION["token"])) {
   header("Location: home.php");
 }
 ?>

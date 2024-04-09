@@ -8,6 +8,7 @@ body {
   padding: 0;
   box-sizing: border-box;
   overflow: hidden;
+  background-color: #a7a7a785;
 }
 
 .sign-up-form {
@@ -17,9 +18,8 @@ body {
   justify-content: center;
   margin-top: 50px;
   border-radius: 10px;
-  /* background-color: #3f295fb9; */
-  /* color: white; */
   border: 2px solid #a45db6;
+  background-color: white;
 }
 
 .login-text {
@@ -73,7 +73,8 @@ nav {
   align-items: center;
   justify-content: space-between;
   z-index: 10;
-  box-shadow: 0 3px 10px 3px rgb(167, 167, 167);
+  box-shadow: 0 3px 10px 3px rgb(138, 138, 138);
+  background-color: white;
 }
 
 nav div {
