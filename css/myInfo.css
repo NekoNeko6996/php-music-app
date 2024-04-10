@@ -135,3 +135,17 @@ button:disabled {
   cursor: no-drop;
   opacity: 0.5;
 }
+
+/* ----------------------------------------- */
+.message-container {
+  position: fixed;
+  right: 10px;
+  top: 70px;
+  height: 60px;
+  min-width: 300px;
+  background-color: rgba(148, 0, 168, 0.719);
+  border-radius: 10px;
+  color: white;
+  font-size: 17px;
+  display: none;
+}

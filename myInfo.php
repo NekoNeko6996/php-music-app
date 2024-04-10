@@ -23,10 +23,6 @@ if (isset($_GET["uid"]) && isset($_SESSION['token'])) {
         header("Location: home.php");
         exit();
     }
-
-    if (isset($_SERVER['REQUEST_METHOD']) == "GET" && isset($_POST['userName'])) {
-        echo $_POST['userName'];
-    }
 } else {
     header("Location: home.php");
     exit();
@@ -34,6 +30,7 @@ if (isset($_GET["uid"]) && isset($_SESSION['token'])) {
 ?>
 
 <body>
+    <div class="message-container"></div>
     <nav>
         <div>
             <img src="assets/logo/logo.png" alt="logo">
@@ -56,13 +53,13 @@ if (isset($_GET["uid"]) && isset($_SESSION['token'])) {
         </div>
 
 
-        <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']) ?>" method="get">
+        <form action="" method="post" onsubmit="sendRequestChangeName(event)">
             <input type="text" name="uid" value="<?php if (isset($_GET['uid']))
                 echo $_GET['uid'] ?>" class="hidden">
                 <span>
                     <p>User Name </p>
                     <input type="text" name="userName" id="userName" value="<?php echo $user[0]['userName'] ?>"
-                    oninput="disabledOff('change-name-btn')" required>
+                    oninput="disabledOff('change-name-btn')" required pattern="[A-Za-z0-9À-ỹ ]{1,}">
             </span>
             <button type="submit" id="change-name-btn" disabled>Change User Name</button>
         </form>
@@ -70,14 +67,15 @@ if (isset($_GET["uid"]) && isset($_SESSION['token'])) {
 
 
         <h2>Change Password</h2>
-        <form action="" method="post">
+        <form action="" method="post" onsubmit="requestChangePassword(event)">
             <span>
                 <p>Password</p>
-                <input type="password" name="password" id="password"> <br>
+                <input type="password" name="password" id="password" oninput="changePassBtn()"> <br>
             </span>
             <span>
                 <p>New Password</p>
-                <input type="password" name="new-password" id="new-password"> <br>
+                <input type="password" name="new-password" id="new-password" oninput="changePassBtn()">
+                <br>
             </span>
             <button type="submit" disabled id="change-pass-btn">Change Password</button>
         </form>
@@ -85,11 +83,81 @@ if (isset($_GET["uid"]) && isset($_SESSION['token'])) {
 
 
     <script>
+        var currentUserName = "<?php echo $user[0]['userName'] ?>";
+
+        function callMessageBox(message, timeLife) {
+            $(".message-container").css("display", "block");
+            $(".message-container").text(message);
+            setTimeout(() => {
+                $(".message-container").css("display", "none");
+            }, timeLife);
+        }
+
         function disabledOff(id) {
             $(`#change-name-btn`).removeAttr("disabled");
         }
 
+        function sendRequestChangeName(event) {
+            event.preventDefault();
+            var newUserName = event.target[1].value;
+            if (newUserName != currentUserName) {
+                $.ajax({
+                    url: "server/changeUserInfo.php",
+                    type: "post",
+                    data: {
+                        requestCode: 1,
+                        newUserName
+                    },
+                    success: (response) => {
+                        var objResponse = JSON.parse(response);
+                        if (objResponse.status) {
+                            callMessageBox("Change User Name Success!")
+                        }
+                        else {
+                            alert("[Change User Name ERROR]");
+                        }
+                    },
+                })
+            }
+        }
 
+        function changePassBtn() {
+            if ($("#password").val() != "" && $("#new-password").val() != "") {
+                $("#change-pass-btn").removeAttr("disabled");
+            }
+            else {
+                $("#change-pass-btn").attr("disabled", "disabled");
+            }
+        }
+        //pattern=".{8,}"
+        function requestChangePassword(event) {
+            event.preventDefault();
+
+            if (event.target[0].value && event.target[1].value) {
+                var password = event.target[0].value;
+                var newPassword = event.target[1].value;
+                $.ajax({
+                    url: "server/changeUserInfo.php",
+                    type: "post",
+                    data: {
+                        requestCode: 2,
+                        password,
+                        newPassword
+                    },
+                    success: (response) => {
+                        var objResponse = JSON.parse(response);
+                        if (objResponse.status) {
+                            // window.location.reload();
+
+                        }
+                        else {
+                            alert("[Change password ERROR]");
+                        }
+                    },
+                })
+            }
+
+        }
     </script>
 </body>
 
