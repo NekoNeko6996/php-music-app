@@ -63,6 +63,13 @@ nav p {
 
 section {
   height: calc(100% - 60px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+h2 {
+  align-self: flex-start;
 }
 
 .hidden {
@@ -76,17 +83,84 @@ section {
 
 /* ---------------------------------------------------- */
 .avatar-container {
-  width: 100%;
+  width: 200px;
   display: flex;
   justify-content: center;
   margin-top: 50px;
+  position: relative;
+  border-radius: 50%;
 }
+
 .avatar-container img {
   height: 200px;
   aspect-ratio: 1/1;
   border-radius: 50%;
   overflow: hidden;
   border: 3px dotted white;
+}
+
+.avatar-container:hover .img-label {
+  z-index: 5;
+  opacity: 1;
+}
+
+.img-label {
+  height: 200px;
+  aspect-ratio: 1/1;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.342);
+  position: absolute;
+  transition: 0.3s;
+  z-index: -1;
+  opacity: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.your-img-upload-layer {
+  position: fixed;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(68, 68, 68, 0.466);
+  z-index: -1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+}
+
+.content-box {
+  height: 400px;
+  width: 600px;
+  background-color: white;
+  border: 2px solid #a45db6;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.content-box img {
+  height: 200px;
+  aspect-ratio: 1/1;
+  margin-bottom: 20px;
+  border: 2px solid #a45db6;
+}
+
+#avatar-form {
+  margin-top: 20px;
+}
+
+.content-box h1 {
+  text-align: center;
+  width: 100%;
+  margin: 20px;
+  color: rgba(66, 66, 66, 0.651);
+}
+
+#new-avatar-input {
+  display: none;
 }
 
 /* ------------------- */
@@ -139,13 +213,39 @@ button:disabled {
 /* ----------------------------------------- */
 .message-container {
   position: fixed;
-  right: 10px;
   top: 70px;
   height: 60px;
-  min-width: 300px;
-  background-color: rgba(148, 0, 168, 0.719);
+  padding: 0 30px 0 30px;
   border-radius: 10px;
   color: white;
   font-size: 17px;
   display: none;
+  animation-duration: 0.3s;
+  animation-timing-function: ease-in;
+  animation-fill-mode: forwards;
+  right: -200px;
+  width: auto;
+  border: 3px solid rgb(56, 255, 56);
+  box-shadow: 1px 1px 10px 3px rgba(71, 71, 71, 0.507);
+}
+
+.message-box {
+  height: 100%;
+  width: auto !important;
+  color: black;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@keyframes show {
+  0% {
+    right: -200px;
+    opacity: 0;
+  }
+  100% {
+    right: 10px;
+    opacity: 1;
+  }
 }

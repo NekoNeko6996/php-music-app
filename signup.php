@@ -12,15 +12,7 @@
 
 <?php
 include 'database/connect.php';
-
-function check($string)
-{
-  $string = trim($string);
-  $string = stripcslashes($string);
-  $string = htmlspecialchars($string);
-
-  return $string;
-}
+include 'library/library.php';
 
 $createUserSql = "INSERT INTO user (email, userName, hash, permissionID) VALUES (?, ?, ?, ?)";
 $stmt = $connect->prepare($createUserSql);
@@ -42,12 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         $exeResult = $stmt->execute([$email, $username, $hash, $permission]);
         if ($exeResult == 1) {
-          session_start();
-          $_SESSION["user"] = $email;
-          $_SESSION["username"] = $username;
-          $_SESSION["permissionID"] = $permission;
-
-          header("Location: home.php");
+          header("Location: login.php");
           exit();
         }
       } else {
@@ -59,7 +46,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   }
 }
 
-if (isset($_SESSION["user"]) && isset($_SESSION["permissionID"])) {
+if (isset($_SESSION["token"])) {
   header("Location: home.php");
 }
 ?>

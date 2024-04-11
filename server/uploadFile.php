@@ -66,14 +66,20 @@ function deleteFile($type, $musicID)
 }
 
 // tải file lên 
-function uploadFile($name, $type)
+function uploadFile($name, $type, $folder)
 {
     $file = $_FILES[$name];
     $fileName = $file['name'];
     $fileTmpName = $file['tmp_name'];
     $fileError = $file['error'];
 
-    $path = realpath(dirname(getcwd())) . $GLOBALS['folder'];
+
+    // Tạo tên mới cho file
+    $fileExtension = pathinfo($fileName, PATHINFO_EXTENSION);
+    $newFileName = uniqid('file_') . '.' . $fileExtension;
+
+
+    $path = realpath(dirname(getcwd())) . $folder;
 
     if ($type == 'img') {
         $path = $path . "img\\";
@@ -81,11 +87,11 @@ function uploadFile($name, $type)
 
     if ($fileError === UPLOAD_ERR_OK) {
         $uploadDir = $path;
-        $uploadPath = $uploadDir . $fileName;
+        $uploadPath = $uploadDir . $newFileName;
         move_uploaded_file($fileTmpName, $uploadPath);
 
-        $target = strpos($path . $fileName, $GLOBALS['folder']);
-        $relativePath = str_replace('\\', '/', substr($path . $fileName, $target + 1));
+        $target = strpos($path . $fileName, $folder);
+        $relativePath = str_replace('\\', '/', substr($path . $newFileName, $target + 1));
 
         echo '<p style="color:green;">[FILE UPLOADED] successfully at: ' . $relativePath . '</p>';
         return $relativePath;
@@ -95,18 +101,46 @@ function uploadFile($name, $type)
     }
 }
 
+function deleteUserAvatar()
+{
+    $path = "\\userData\\img\\";
+    $token = $_SESSION['token'];
+
+    $oldAvatarPath = query("SELECT avatar FROM user WHERE loginToken = ?", [$token], $GLOBALS['connect'])['result'];
+    if (isset($oldAvatarPath[0])) {
+        $fileName = explode("/", $oldAvatarPath[0]['avatar'])[2];
+        if (file_exists(".." . $path . $fileName)) {
+            unlink(".." . $path . $fileName);
+        }
+        echo $path . $fileName;
+    }
+}
+
+function updateUserAvatar($src)
+{
+    $result = query("UPDATE user SET avatar = ? WHERE loginToken = ?", [$src, $_SESSION['token']], $GLOBALS['connect'])['stmt'];
+    if ($result)
+        rollBack();
+}
+
 
 //  route 
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
     if (isset($_FILES['imageFile']) && isset($_POST['musicID'])) {
         $status_0 = deleteFile('img', $_POST['musicID']);
-        $newSrc = uploadFile("imageFile", 'img');
+        $newSrc = uploadFile("imageFile", 'img', $folder);
         updateMusicSource($newSrc, 'img', [$newSrc, $_POST['musicID']]);
 
     } else if (isset($_FILES['audioFile']) && isset($_POST['musicID']) && isset($_POST['duration'])) {
         $status_0 = deleteFile('audio', $_POST['musicID']);
-        $newSrc = uploadFile("audioFile", "audio");
+        $newSrc = uploadFile("audioFile", "audio", $folder);
         updateMusicSource($newSrc, 'audio', [$newSrc, $_POST['duration'], $_POST['musicID']]);
+    } else if (isset($_FILES['new-avatar'])) {
+        $newSrc = uploadFile("new-avatar", 'img', "\\userData\\");
+        if ($newSrc) {
+            deleteUserAvatar();
+            updateUserAvatar($newSrc);
+        }
     }
 }
 ?>

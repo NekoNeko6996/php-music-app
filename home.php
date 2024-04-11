@@ -16,11 +16,22 @@
 
 
 <?php
+include 'library/library.php';
+include 'dataBase/connect.php';
+
 session_start();
-if (isset($_SESSION["token"]) && isset($_SESSION["username"])) {
+if (isset($_SESSION["token"])) {
   $user = $_SESSION["token"];
-  $username = $_SESSION["username"];
-  $permission = $_SESSION["permissionID"];
+  $UserInfo = query("SELECT userName, permissionID, avatar FROM user WHERE loginToken = ?", [$_SESSION["token"]], $connect)['result'];
+
+  if (isset($user[0])) {
+    $username = $UserInfo[0]['userName'];
+    $permission = $UserInfo[0]['permissionID'];
+    $avatar = $UserInfo[0]['avatar'];
+  } else {
+    $username = "Guest";
+    $permission = -1;
+  }
 } else {
   $username = "Guest";
   $permission = -1;
@@ -118,9 +129,12 @@ if (isset($_SESSION["token"]) && isset($_SESSION["username"])) {
               <?php
         echo $username ?>
           </p>
-          <img src="assets/img/default.jpg" alt="no-img" class="user-avatar">
-        </span>
-        <div class="nav-user-option" id="nav-userAvatar-close">
+          <img src="<?php if (isset($avatar) && !empty($avatar))
+            echo $avatar;
+          else
+            echo 'assets/img/default.jpg' ?>" alt="no-img" class="user-avatar">
+          </span>
+          <div class="nav-user-option" id="nav-userAvatar-close">
           <?php if (isset($_SESSION['token']))
             echo '<p onclick="window.location.href = \'myInfo.php?uid=' . $_SESSION["userID"] . '\'">My Info</p>' ?>
             <?php

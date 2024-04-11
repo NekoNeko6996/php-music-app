@@ -21,15 +21,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = check($_POST["login-password"]);
     $email = strtolower(check($_POST["login-email"]));
 
-    $result = $connect->query("SELECT id, userName, hash, permissionID, loginToken block FROM user WHERE email = '$email'");
+    $result = query("SELECT id, userName, hash, permissionID, loginToken, block FROM user WHERE email = ?", [$email], $connect);
     if ($result)
-      if ($result->rowCount() > 0) {
-        $findUser = $result->fetchAll(PDO::FETCH_ASSOC);
-        $hashPassword = $findUser[0]["hash"];
-        $username = $findUser[0]["userName"];
-        $permissionID = $findUser[0]["permissionID"];
-        $blockStatus = $findUser[0]["block"];
-        $userID = $findUser[0]["id"];
+      if ($result['numRow'] == 1) {
+        $findUser = $result['result'][0];
+        $hashPassword = $findUser["hash"];
+        $username = $findUser["userName"];
+        $permissionID = $findUser["permissionID"];
+        $blockStatus = $findUser["block"];
+        $userID = $findUser["id"];
 
         if ($blockStatus != 1) {
           $checkHash = password_verify($password, $hashPassword);
@@ -41,7 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION["token"] = $token;
             $_SESSION["userID"] = $userID;
 
-            $connect->query("UPDATE user SET loginToken = '$token' WHERE email = '$email'");
+            query("UPDATE user SET loginToken = ? WHERE email = ?", [$token, $email], $connect);
 
           } else {
             echo '<div class="login-error-display">Email or password is incorrect!</div>';
@@ -53,7 +53,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   }
 }
 
-if (isset($_SESSION["permissionID"]) && isset($_SESSION["token"])) {
+if (isset($_SESSION["token"]) && !empty($_SESSION["token"])) {
   header("Location: home.php");
 }
 ?>

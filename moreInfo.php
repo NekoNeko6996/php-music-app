@@ -150,8 +150,8 @@ if (!isset($_GET['action'])) {
                         <input type="text" name="musicID" class="dis-none" value="<?php if (!isset($_GET['action']))
                                 echo $id ?>">
                         <input type="file" name="imageFile" accept=".jpg, .jpeg, .png" id="imageFile">
-                        <input type="submit" value="UPLOAD IMAGE" class="upload-file-btn"
-                            onclick="return confirm('[Warning] Upload this Img? This action can\'t undo!')">
+                        <input type="submit" value="UPLOAD IMAGE" class="upload-file-btn" id="submit-upload-img-btn"
+                            onclick="return confirm('[Warning] Upload this Img? This action can\'t undo!')" disabled>
                     </form>
                 </div>
 
@@ -180,8 +180,8 @@ if (!isset($_GET['action'])) {
                         <input type="text" name="musicID" class="dis-none" value="<?php if (!isset($_GET['action']))
                         echo $id ?>">
                         <input type="file" name="audioFile" id="audioFile" class="dis-none" accept=".mp3" />
-                        <input type="submit" value="UPLOAD AUDIO" class="upload-file-btn"
-                            onclick="return confirm('[Warning] Upload this file .mp3? This action can\'t undo!')">
+                        <input type="submit" value="UPLOAD AUDIO" class="upload-file-btn" id="submit-upload-audio-btn"
+                            onclick="return confirm('[Warning] Upload this file .mp3? This action can\'t undo!')" disabled>
                     </form>
                 </div>
                 <button type="button" title="done" class="normal-btn width-100" onclick="uploadConfirm()">DONE</button>

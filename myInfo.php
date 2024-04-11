@@ -18,7 +18,7 @@ session_start();
 if (isset($_GET["uid"]) && isset($_SESSION['token'])) {
     $auth = Auth($_SESSION['token'], $connect);
     if ($auth) {
-        $user = query("SELECT userName, email FROM user WHERE loginToken = ?", [$_SESSION['token']], $connect)['result'];
+        $user = query("SELECT userName, email, avatar FROM user WHERE loginToken = ?", [$_SESSION['token']], $connect)['result'];
     } else {
         header("Location: home.php");
         exit();
@@ -30,7 +30,21 @@ if (isset($_GET["uid"]) && isset($_SESSION['token'])) {
 ?>
 
 <body>
-    <div class="message-container"></div>
+    <div class="message-container">
+        <p class="message-box"></p>
+    </div>
+
+    <div class="your-img-upload-layer">
+        <div class="content-box">
+            <h1>Preview New Avatar</h1>
+            <img src="assets/img/default.jpg" alt="" class="preview-new-avatar">
+            <form action="server/uploadFile.php" id="avatar-form" method="post" enctype="multipart/form-data">
+                <input type="file" name="new-avatar" id="new-avatar-input">
+                <button type="submit" title="upload avatar">Upload Avatar</button>
+            </form>
+        </div>
+    </div>
+
     <nav>
         <div>
             <img src="assets/logo/logo.png" alt="logo">
@@ -42,14 +56,26 @@ if (isset($_GET["uid"]) && isset($_SESSION['token'])) {
     </nav>
     <section>
         <div class="avatar-container">
-            <img src="assets/img/default.jpg" alt="avatar">
-        </div>
+            <label for="new-avatar-input" class="img-label">
+                <svg width="35px" height="35px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M15 21H9C6.17157 21 4.75736 21 3.87868 20.1213C3 19.2426 3 17.8284 3 15M21 15C21 17.8284 21 19.2426 20.1213 20.1213C19.8215 20.4211 19.4594 20.6186 19 20.7487"
+                        stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M12 16V3M12 3L16 7.375M12 3L8 7.375" stroke="white" stroke-width="1.5"
+                        stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </label>
+            <img src="<?php if (!empty($user[0]['avatar']))
+                echo $user[0]['avatar'];
+            else
+                echo "assets/img/default.jpg" ?>" alt="avatar">
+            </div>
 
-        <h2>User Information</h2>
+            <h2>User Information</h2>
 
-        <div>
-            <p>Email </p>
-            <input type="text" name="email" id="email" class="no-bor" value="<?php echo $user[0]['email'] ?>" readonly>
+            <div>
+                <p>Email </p>
+                <input type="text" name="email" id="email" class="no-bor" value="<?php echo $user[0]['email'] ?>" readonly>
         </div>
 
 
@@ -85,10 +111,18 @@ if (isset($_GET["uid"]) && isset($_SESSION['token'])) {
     <script>
         var currentUserName = "<?php echo $user[0]['userName'] ?>";
 
-        function callMessageBox(message, timeLife) {
+
+        function callMessageBox(message, status, timeLife, callBack) {
             $(".message-container").css("display", "block");
-            $(".message-container").text(message);
+            $(".message-container").css("animation-name", "show");
+
+            $(".message-container").css("border-color", "rgb(56, 255, 56)");
+            if (!status)
+                $(".message-container").css("border-color", "red");
+
+            $(".message-box").text(message);
             setTimeout(() => {
+                if (callBack) callBack();
                 $(".message-container").css("display", "none");
             }, timeLife);
         }
@@ -96,6 +130,19 @@ if (isset($_GET["uid"]) && isset($_SESSION['token'])) {
         function disabledOff(id) {
             $(`#change-name-btn`).removeAttr("disabled");
         }
+
+        $("#new-avatar-input").on("change", (event) => {
+            const newAvatarFile = event.target.files[0];
+            if (!newAvatarFile) {
+                callMessageBox("ERROR Load Avatar File!");
+                return;
+            }
+            const src = URL.createObjectURL(newAvatarFile);
+
+            $(".preview-new-avatar").attr("src", src);
+            $(".your-img-upload-layer").css("z-index", 12);
+            $(".your-img-upload-layer").css("opacity", "1")
+        })
 
         function sendRequestChangeName(event) {
             event.preventDefault();
@@ -111,10 +158,10 @@ if (isset($_GET["uid"]) && isset($_SESSION['token'])) {
                     success: (response) => {
                         var objResponse = JSON.parse(response);
                         if (objResponse.status) {
-                            callMessageBox("Change User Name Success!")
+                            callMessageBox("Change User Name Success!", true, 3000, () => window.location.reload());
                         }
                         else {
-                            alert("[Change User Name ERROR]");
+                            callMessageBox("Change User Name ERROR", false, 3000);
                         }
                     },
                 })
@@ -129,7 +176,7 @@ if (isset($_GET["uid"]) && isset($_SESSION['token'])) {
                 $("#change-pass-btn").attr("disabled", "disabled");
             }
         }
-        //pattern=".{8,}"
+
         function requestChangePassword(event) {
             event.preventDefault();
 
@@ -147,11 +194,10 @@ if (isset($_GET["uid"]) && isset($_SESSION['token'])) {
                     success: (response) => {
                         var objResponse = JSON.parse(response);
                         if (objResponse.status) {
-                            // window.location.reload();
-
+                            callMessageBox("Change Password Success!", true, 3000, () => window.location.reload());
                         }
                         else {
-                            alert("[Change password ERROR]");
+                            callMessageBox("Change Password ERROR!", false, 3000);
                         }
                     },
                 })

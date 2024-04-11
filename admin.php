@@ -16,22 +16,17 @@ include 'database/connect.php';
 include 'library/library.php';
 
 session_start();
-if (isset($_SESSION['token'])) {
-  if (isset($_SESSION["user"]) && isset($_SESSION["permissionID"]) && $_SESSION["permissionID"] != 3 && $_SESSION["permissionID"] != -1) {
-    $permission = $_SESSION["permissionID"];
+$token = $_SESSION['token'];
+
+if (isset($token)) {
+  $userInfo = query("SELECT permissionID FROM user WHERE loginToken = ?", [$token], $connect)['result'];
+
+  if (isset($userInfo[0]) && $userInfo[0]['permissionID'] != 3 && $userInfo[0]['permissionID'] != -1) {
+    $permission = $userInfo[0]['permissionID'];
   }
 } else {
   header("Location: home.php");
   exit();
-}
-
-
-$token = $_SESSION['token'];
-$userID = query("SELECT id FROM user WHERE loginToken = ?", [$token], $connect);
-if (!isset($userID['result'][0]['id'])) {
-  echo '[USER] NOT FOUND';
-} else {
-  $_SESSION['userID'] = $userID['result'][0]['id'];
 }
 ?>
 

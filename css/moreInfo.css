@@ -198,6 +198,12 @@ h3 {
   border-radius: 5px;
   margin-top: 10px;
   color: white;
+  cursor: pointer;
+}
+
+.upload-file-btn:disabled {
+  opacity: 0.6;
+  cursor: no-drop;
 }
 
 svg {

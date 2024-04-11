@@ -55,6 +55,8 @@ $("#audioFile").on("change", (event) => {
   }
   const src = URL.createObjectURL(file);
 
+  $("#submit-upload-audio-btn").removeAttr("disabled");
+
   getDuration(src, (duration) => {
     $("#duration").val(duration);
   });
@@ -80,6 +82,7 @@ $("#imageFile").on("change", (event) => {
   }
   const src = URL.createObjectURL(file);
 
+  $("#submit-upload-img-btn").removeAttr("disabled");
   $("#new-img-preview").html(
     `
     <h3>New</h3>
