@@ -124,11 +124,10 @@ h2 {
   height: 100%;
   width: 100%;
   background-color: rgba(68, 68, 68, 0.466);
-  z-index: -1;
-  display: flex;
+  z-index: 12;
+  display: none;
   justify-content: center;
   align-items: center;
-  opacity: 0;
 }
 
 .content-box {
@@ -205,6 +204,10 @@ button {
   cursor: pointer;
 }
 
+button:hover {
+  background-color: #de70fa;
+}
+
 button:disabled {
   cursor: no-drop;
   opacity: 0.5;
@@ -248,4 +251,55 @@ button:disabled {
     right: 10px;
     opacity: 1;
   }
+}
+
+/* --------------------------------------------------- */
+.confirm-layer {
+  position: fixed;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(68, 68, 68, 0.466);
+  z-index: 15;
+  display: none;
+  justify-content: center;
+  align-items: center;
+}
+
+.confirm-box {
+  height: 200px;
+  width: 500px;
+  background-color: white;
+  border: 1px solid #a45db6;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  position: relative;
+}
+.confirm-box h2 {
+  width: 100%;
+  text-align: center;
+  margin: 0;
+  font-size: 28px;
+}
+.confirm-box div {
+  width: calc(100% - 20px);
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  bottom: 10px;
+}
+
+.confirm-box button {
+  margin: 0;
+  width: auto;
+  padding: 10px 40px 10px 40px;
+  margin: 0 15px 0 15px;
+}
+
+.confirm-text {
+  width: 85% !important;
+  text-align: center;
+  align-self: center;
+  margin-top: 30px;
 }

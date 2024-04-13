@@ -27,7 +27,7 @@ if (isset($_SESSION['token'])) {
 
                     echo json_encode(['status' => $changePasswordResult]);
                 } else {
-                    echo json_encode(['status' => false]);
+                    echo json_encode(['status' => false, 'message' => 'Wrong password']);
                 }
             }
 

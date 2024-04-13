@@ -113,8 +113,6 @@ function loadMusicPage(page, limit, array_) {
     }
   }
 
-  console.log("count", musicPage);
-
   if (Array.length > limit) {
     var newDataArray = Array.slice((musicPage - 1) * limit, musicPage * limit);
     sortByTagRenderItem(newDataArray);

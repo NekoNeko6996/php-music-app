@@ -64,6 +64,9 @@ if (isset($token)) {
         </tbody>
       </table>
     </div>
+    <div class="pagination-container">
+      
+    </div>
   </div>
 
   <?php if ($permission == 1) {

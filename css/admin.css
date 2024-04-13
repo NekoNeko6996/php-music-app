@@ -38,7 +38,7 @@ h2 {
   width: 70%;
   margin: 70px 10px 10px 10px;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   position: relative;
   overflow: hidden;
 }
@@ -94,6 +94,7 @@ form {
 
 table {
   width: 100%;
+  border-collapse: collapse;
 }
 
 td {
@@ -102,9 +103,7 @@ td {
 
 td,
 th {
-  border: 1px solid #dddddd;
   text-align: left;
-  padding: 8px;
 }
 
 .user-table-tr:nth-child(even) {
@@ -256,4 +255,55 @@ th {
 
 .admin-page-nav p {
   font-size: 20px;
+}
+
+/* -------------------------------------- */
+.pagination-container {
+  height: 40px;
+  width: 100%;
+  align-self: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+.pagination-child-button {
+  border: none;
+  font-size: 17px;
+}
+
+.pagination-child-button,
+.pagination-child-button-control {
+  height: 100%;
+  aspect-ratio: 1/1;
+  margin: 0 3px 0 3px;
+  cursor: pointer;
+  background-color: white;
+}
+
+.pagination-child-button:hover {
+  background-color: #3990f3;
+  color: white;
+}
+.pagination-child-button-control:hover {
+  background-color: #3990f3;
+  color: white;
+}
+
+.btn-select {
+  background-color: #2b7cd8;
+  color: white;
+}
+
+.pagination-child-button-control {
+  padding: 5px 10px 5px 10px;
+  width: 80px !important;
+  border: 1px solid rgba(161, 161, 161, 0.548);
+}
+.previous {
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+}
+.next {
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
 }

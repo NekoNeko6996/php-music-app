@@ -59,8 +59,8 @@
       return `${Math.round(sec / 60)
         .toString()
         .padStart(2, "0")}:${Math.round(sec % 60)
-        .toString()
-        .padStart(2, "0")}`;
+          .toString()
+          .padStart(2, "0")}`;
     }
 
     function renderInfoAlbum(info) {
@@ -77,11 +77,9 @@
         list.forEach((row, index) => {
           htmlComponent += `
           <div class="al-sh-items-box">
-            <input type="checkbox" name="check-to-play-music-${
-              row.imgPath
-            }" id="check-to-play-music-${
-            row.id
-          }" onchange='addToAlbumsChecked(${JSON.stringify(row)})'>
+            <input type="checkbox" name="check-to-play-music-${row.imgPath
+            }" id="check-to-play-music-${row.id
+            }" onchange='addToAlbumsChecked(${JSON.stringify(row)})'>
             <label for="check-to-play-music-${row.id}"></label>
             <img src="${checkImg(row.imgPath)}" alt="no-img" />
             <span>
@@ -91,27 +89,28 @@
               </span>
 
               <button class="al-btn-svg" onclick='addToPlaylist(${JSON.stringify(
-                row
-              )})'>
+              row
+            )})'>
                 <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none">
                   <path opacity="0.5" d="M2 12C2 7.28595 2 4.92893 3.46447 3.46447C4.92893 2 7.28595 2 12 2C16.714 2 19.0711 2 20.5355 3.46447C22 4.92893 22 7.28595 22 12C22 16.714 22 19.0711 20.5355 20.5355C19.0711 22 16.714 22 12 22C7.28595 22 4.92893 22 3.46447 20.5355C2 19.0711 2 16.714 2 12Z" stroke="white" stroke-width="1.5"/>
                   <path d="M15 12L12 12M12 12L9 12M12 12L12 9M12 12L12 15" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
                 </svg>
               </button>
 
-              ${
-                myAlbum
-                  ? `
+              ${myAlbum
+              ? `
                   <button class="al-btn-svg al-btn-svg-delete" onclick='deleteFromMyAlbum(${row.id})'>
-                    <svg width="26px" height="26px" viewBox="0 0 1024 1024" fill="#000000">
-                        <path d="M512 897.6c-108 0-209.6-42.4-285.6-118.4-76-76-118.4-177.6-118.4-285.6 0-108 42.4-209.6 118.4-285.6 76-76 177.6-118.4 285.6-118.4 108 0 209.6 42.4 285.6 118.4 157.6 157.6 157.6 413.6 0 571.2-76 76-177.6 118.4-285.6 118.4z m0-760c-95.2 0-184.8 36.8-252 104-67.2 67.2-104 156.8-104 252s36.8 184.8 104 252c67.2 67.2 156.8 104 252 104 95.2 0 184.8-36.8 252-104 139.2-139.2 139.2-364.8 0-504-67.2-67.2-156.8-104-252-104z" fill="white" />
-                        <path d="M707.872 329.392L348.096 689.16l-31.68-31.68 359.776-359.768z" fill="white" />
-                        <path d="M328 340.8l32-31.2 348 348-32 32z" fill="white" />
+                    <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M10 12V17" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      <path d="M14 12V17" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      <path d="M4 7H20" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      <path d="M6 10V18C6 19.6569 7.34315 21 9 21H15C16.6569 21 18 19.6569 18 18V10" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      <path d="M9 5C9 3.89543 9.89543 3 11 3H13C14.1046 3 15 3.89543 15 5V7H9V5Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                   </button>
                   `
-                  : ""
-              }
+              : ""
+            }
 
               <p class="music-album-duration">${secToMinutes(row.duration)}</p>
             </span>

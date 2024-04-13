@@ -34,12 +34,23 @@ if (isset($_GET["uid"]) && isset($_SESSION['token'])) {
         <p class="message-box"></p>
     </div>
 
+    <div class="confirm-layer">
+        <div class="confirm-box">
+            <h2 class="confirm-title">Notification</h2>
+            <p class="confirm-text"></p>
+            <div>
+                <button id="confirm-btn-yes">Yes</button>
+                <button id="confirm-btn-no">No</button>
+            </div>
+        </div>
+    </div>
+
     <div class="your-img-upload-layer">
         <div class="content-box">
             <h1>Preview New Avatar</h1>
             <img src="assets/img/default.jpg" alt="" class="preview-new-avatar">
             <form action="server/uploadFile.php" id="avatar-form" method="post" enctype="multipart/form-data">
-                <input type="file" name="new-avatar" id="new-avatar-input">
+                <input type="file" name="new-avatar" id="new-avatar-input" accept=".jpg, .jpeg, .png">
                 <button type="submit" title="upload avatar">Upload Avatar</button>
             </form>
         </div>
@@ -96,11 +107,12 @@ if (isset($_GET["uid"]) && isset($_SESSION['token'])) {
         <form action="" method="post" onsubmit="requestChangePassword(event)">
             <span>
                 <p>Password</p>
-                <input type="password" name="password" id="password" oninput="changePassBtn()"> <br>
+                <input type="password" name="password" id="password" oninput="changePassBtn()" autocomplete="on"> <br>
             </span>
             <span>
                 <p>New Password</p>
-                <input type="password" name="new-password" id="new-password" oninput="changePassBtn()">
+                <input type="password" name="new-password" id="new-password" oninput="changePassBtn()"
+                    autocomplete="on">
                 <br>
             </span>
             <button type="submit" disabled id="change-pass-btn">Change Password</button>
@@ -131,6 +143,7 @@ if (isset($_GET["uid"]) && isset($_SESSION['token'])) {
             $(`#change-name-btn`).removeAttr("disabled");
         }
 
+        // ------------------------------------------------------------- //
         $("#new-avatar-input").on("change", (event) => {
             const newAvatarFile = event.target.files[0];
             if (!newAvatarFile) {
@@ -140,9 +153,16 @@ if (isset($_GET["uid"]) && isset($_SESSION['token'])) {
             const src = URL.createObjectURL(newAvatarFile);
 
             $(".preview-new-avatar").attr("src", src);
-            $(".your-img-upload-layer").css("z-index", 12);
-            $(".your-img-upload-layer").css("opacity", "1")
+            $(".your-img-upload-layer").css("display", "flex");
         })
+
+        $(".your-img-upload-layer").on("click", (event) => {
+            if (event.target.className == "your-img-upload-layer") {
+                $(".your-img-upload-layer").css("display", "none");
+            }
+        })
+
+        // ------------------------------------------------------------- //
 
         function sendRequestChangeName(event) {
             event.preventDefault();
@@ -177,32 +197,63 @@ if (isset($_GET["uid"]) && isset($_SESSION['token'])) {
             }
         }
 
+        // -------------------------------------------------------- //
+        function cleanup() {
+            $("#confirm-btn-yes").off("click");
+            $("#confirm-btn-no").off("click");
+        }
+
+        function confirmMessage(message, callBack) {
+            $(".confirm-layer").css("display", "flex");
+            $(".confirm-text").text(message);
+
+            $("#confirm-btn-yes").on("click", () => {
+                if (callBack) callBack(true);
+                $(".confirm-layer").css("display", "none");
+                cleanup();
+            })
+            $("#confirm-btn-no").on("click", () => {
+                if (callBack) callBack(false);
+                $(".confirm-layer").css("display", "none");
+                cleanup();
+            })
+        }
+
+        $(".confirm-layer").on("click", (event) => {
+            if (event.target.className == "confirm-layer") {
+                $(".confirm-layer").css("display", "none");
+            }
+        })
+
         function requestChangePassword(event) {
             event.preventDefault();
 
-            if (event.target[0].value && event.target[1].value) {
-                var password = event.target[0].value;
-                var newPassword = event.target[1].value;
-                $.ajax({
-                    url: "server/changeUserInfo.php",
-                    type: "post",
-                    data: {
-                        requestCode: 2,
-                        password,
-                        newPassword
-                    },
-                    success: (response) => {
-                        var objResponse = JSON.parse(response);
-                        if (objResponse.status) {
-                            callMessageBox("Change Password Success!", true, 3000, () => window.location.reload());
-                        }
-                        else {
-                            callMessageBox("Change Password ERROR!", false, 3000);
-                        }
-                    },
-                })
-            }
-
+            confirmMessage("Do you really want to change your password?", (confirm) => {
+                if (confirm) {
+                    if (event.target[0].value && event.target[1].value) {
+                        var password = event.target[0].value;
+                        var newPassword = event.target[1].value;
+                        $.ajax({
+                            url: "server/changeUserInfo.php",
+                            type: "post",
+                            data: {
+                                requestCode: 2,
+                                password,
+                                newPassword
+                            },
+                            success: (response) => {
+                                var objResponse = JSON.parse(response);
+                                if (objResponse.status) {
+                                    callMessageBox("Change Password Success!", true, 3000, () => window.location.reload());
+                                }
+                                else {
+                                    callMessageBox(objResponse.message, false, 3000);
+                                }
+                            },
+                        })
+                    }
+                }
+            });
         }
     </script>
 </body>

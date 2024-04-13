@@ -143,12 +143,15 @@ function addToMyAlbum($musicID, $albumID, $connect)
         $issetMusic = checkIssetMusic($musicID, $connect)['isset'];
         $issetMusicInAlbum = query("SELECT * FROM user_albums_music_list WHERE userAlbumID = ? AND musicID = ?", [$albumID, $musicID], $connect)['numRow'] == 0;
 
-        if ($issetAlbum && $issetMusic && $issetMusicInAlbum) {
+        if ($issetAlbum && $issetMusic) {
+            if (!$issetMusicInAlbum) {
+                return ['status' => false, 'message' => 'Music already exists in your album'];
+            }
             $sql = "INSERT INTO user_albums_music_list SET userAlbumID = ?, musicID = ?";
             $status = query($sql, [$albumID, $musicID], $connect)['stmt'];
             return ['status' => $status, 'newList' => loadAlbumsList($albumID, $connect, true)];
         } else
-            return ['status' => false, 'message' => 'music has not been added to your album'];
+            return ['status' => false, 'message' => 'Music has not been added to your album'];
     } else
         return false;
 }

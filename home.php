@@ -24,7 +24,7 @@ if (isset($_SESSION["token"])) {
   $user = $_SESSION["token"];
   $UserInfo = query("SELECT userName, permissionID, avatar FROM user WHERE loginToken = ?", [$_SESSION["token"]], $connect)['result'];
 
-  if (isset($user[0])) {
+  if (isset($UserInfo[0])) {
     $username = $UserInfo[0]['userName'];
     $permission = $UserInfo[0]['permissionID'];
     $avatar = $UserInfo[0]['avatar'];
@@ -229,7 +229,6 @@ if (isset($_SESSION["token"])) {
       const _ = "<?php echo isset($_SESSION['token']) ?>"
     function addLibraryClick(musicID, event) {
       if (event) event.stopPropagation();
-
       <?php
       if (isset($_SESSION['token'])) {
         echo '
@@ -250,6 +249,14 @@ if (isset($_SESSION["token"])) {
                 libraryIDList.splice(libraryIDList.indexOf(musicID.toString()), 1);
                 $(`#tag-i-loveHealth-${musicID}`).attr("fill", "white");
               }
+
+              if(libraryIDList.indexOf(currentPlaylist[currentID].id) != -1) {
+                $(".onPlayMusicHealthSvg").attr("fill", "#FF00CC");
+              }
+              else {
+                $(".onPlayMusicHealthSvg").attr("fill", "white");
+              }
+
               renderPlaylist();
             },
             error: (status, error) => {

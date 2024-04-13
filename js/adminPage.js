@@ -1,19 +1,3 @@
-// function api(requestCode, data, callback) {
-
-//   $.ajax({
-//     url: "server/adminPage.php",
-//     type: "POST",
-//     data: {
-//       requestCode,
-//       [data.name]: data
-//     },
-//     success: (response) => callback(response),
-//     error: (status, error) => {
-//       console.error(status, error);
-//     },
-//   });
-// }
-
 if ($("#user-display-table") != null) {
   function loadItemShowUser(userArray) {
     var htmlComponent = `
@@ -22,10 +6,10 @@ if ($("#user-display-table") != null) {
         <th class="user-table-th">USER EMAIL</th>
         <th class="user-table-th">USER NAME</th>
         <th class="user-table-th">USER PERMISSION</th>
-        <th class="user-table-th">USER OPTION</th>
+        <th class="user-table-th"></th>
       </tr>
     `;
-    userArray.forEach((row, index) => {
+    userArray.forEach((row, _) => {
       htmlComponent += `
       <tr class="user-table-tr">
         <td class="user-table-td">${row.id}</td>
@@ -34,7 +18,7 @@ if ($("#user-display-table") != null) {
         <td class="user-table-td">${row.permissionName}</td>
         <td class="user-table-td flex-right">
           ${
-            row[3] != "root"
+            row.permissionName != "root"
               ? `<button type="button" class="user-option-btn block-btn" onclick="userAction(${
                   row.id
                 }, 5)">${
@@ -51,6 +35,64 @@ if ($("#user-display-table") != null) {
     $("#user-display-table").html(htmlComponent);
   }
 
+  // ------------------------------------------- //
+  var currentMusicList = [];
+  var pageLimit = 12;
+  var currentPage = 1;
+
+  function uploaderLoadMusicItemToShow(data, page, limit) {
+    if (data) currentMusicList = [...data];
+
+    var html = "";
+    if (currentMusicList.length > 0) {
+      $(".pagination-child-button").removeClass("btn-select");
+      $(".pagination-child-button")
+        .eq(page - 1)
+        .addClass("btn-select");
+
+      for (
+        let count = (page - 1) * limit;
+        count < limit * page && count < currentMusicList.length;
+        count++
+      ) {
+        html += `
+        <tr>
+          <td>${count + 1}</td>
+          <td>
+            <p class="uploader-show-item-p">${
+              currentMusicList[count].musicName
+            }</p>
+          </td>  
+          <td>
+            <p class="uploader-show-item-p">${
+              currentMusicList[count].author
+            }</p>
+          </td> 
+          <td>
+            <p class="uploader-show-item-p">${currentMusicList[count].tag}</p>
+          </td> 
+          <td>
+            <button type="button" class="normal-btn more-info-btn" onclick="redirectToMusicInfo(${
+              currentMusicList[count].id
+            })">More Info</button>
+          </td>
+        </tr>
+        `;
+      }
+    }
+
+    $(".uploader-show-music-area").html(html);
+  }
+
+  function changePage(page) {
+    if (page > 0 && page <= Math.ceil(currentMusicList.length / pageLimit)) {
+      currentPage = page;
+      uploaderLoadMusicItemToShow(currentMusicList, page, pageLimit);
+    }
+    console.log(currentPage);
+  }
+  // -------------------------------------------------------------------- //
+
   // onload
   $("document").ready(() => {
     $.ajax({
@@ -61,11 +103,25 @@ if ($("#user-display-table") != null) {
         data: "",
       },
       success: (response) => {
-        console.log(response);
+        var html =
+          "<button class='pagination-child-button-control previous' onclick='changePage(currentPage - 1)'>Previous</button>";
         const onloadDataResponse = JSON.parse(response);
-        console.log(onloadDataResponse);
         loadItemShowUser(onloadDataResponse.userList);
-        uploaderLoadMusicItemToShow(onloadDataResponse.musicList);
+
+        // pagination
+        for (
+          let page = 1;
+          page <= Math.ceil(onloadDataResponse.musicList.length / pageLimit);
+          page++
+        ) {
+          html += `<button class="pagination-child-button" onclick="changePage(${page})">${page}</button>`;
+        }
+        html +=
+          "<button class='pagination-child-button-control next' onclick='changePage(currentPage + 1)'>Next</button>";
+        if (html) $(".pagination-container").html(html);
+        //
+
+        uploaderLoadMusicItemToShow(onloadDataResponse.musicList, 1, pageLimit);
       },
       error: (status, error) => {
         console.error(status, error);
@@ -75,93 +131,9 @@ if ($("#user-display-table") != null) {
 }
 
 // ------------------------------------------------------------------- //
-$(document).ready(() => {
-  $(".uploader-show-music-area").on(
-    "click",
-    ".uploader-update-btn",
-    (event) => {
-      var row = $(this).closest("tr");
-      var musicName = row.find(".uploader-td-music-name input").val();
-      var author = row.find("td:eq(1) input").val();
-      var tag = row.find("td:eq(2) input").val();
-
-      // Here, you can perform the update operation using the retrieved data
-      console.log("Music Name:", musicName);
-      console.log("Author:", author);
-      console.log("Tag:", tag);
-    }
-  );
-});
-
 function redirectToMusicInfo(id) {
   window.location.href = "moreInfo.php?id=" + encodeURIComponent(id);
 }
-
-function uploaderLoadMusicItemToShow(data) {
-  var html = "";
-  if (data.length > 0) {
-    data.forEach((row, idx) => {
-      html += `
-      <tr>
-        <td>${idx + 1}</td>
-        <td>
-          <p class="uploader-show-item-p">${row.musicName}</p>
-        </td>  
-        <td>
-          <p class="uploader-show-item-p">${row.author}</p>
-        </td> 
-        <td>
-          <p class="uploader-show-item-p">${row.tag}</p>
-        </td> 
-        <td>
-          <button type="button" class="normal-btn more-info-btn" onclick="redirectToMusicInfo(${
-            row.id
-          })">More Info</button>
-        </td>
-      </tr>
-      `;
-    });
-  }
-
-  $(".uploader-show-music-area").html(html);
-}
-
-function getDuration(path, callback) {
-  if (path) {
-    let audioDuration = new Audio(path);
-    audioDuration.oncanplay = () => {
-      callback(Math.floor(audioDuration.duration));
-    };
-  } else console.error("[getPath ERROR]");
-}
-
-// upload music
-function uploadMusic(event) {
-  event.preventDefault();
-
-  var formData = $("#uploadMusic-form").serializeArray();
-  getDuration(formData[1].value, (duration) => {
-    formData.push({ name: "duration", value: duration });
-    formData = $.param(formData);
-
-    $.ajax({
-      url: "server/adminPage.php",
-      type: "POST",
-      data: {
-        requestCode: 2,
-        formData,
-      },
-      success: (response) => {
-        console.log(JSON.parse(response));
-        window.location.reload();
-      },
-      error: (status, error) => {
-        console.error(status, error);
-      },
-    });
-  });
-}
-
 // -------------------------------------------------------- //
 function userAction(userID, code) {
   if (userID) {
