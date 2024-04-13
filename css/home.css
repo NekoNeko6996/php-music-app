@@ -410,6 +410,14 @@ input[type="range"]::-moz-range-track {
   position: relative;
 }
 
+.top-music-title {
+  font-size: 25px;
+  color: white;
+  font-weight: bold;
+  background-color: #231b2e;
+  margin: 20px 0 10px 20px;
+}
+
 .top-table {
   width: 60%;
   margin-right: 5%;
@@ -443,9 +451,6 @@ input[type="range"]::-moz-range-track {
 
   background-color: #4d296a;
   cursor: pointer;
-}
-.top-music-item:hover {
-  background-color: #66467c;
 }
 
 .top-music-item > img {
@@ -515,6 +520,7 @@ input[type="range"]::-moz-range-track {
   z-index: -1;
   rotate: 45deg;
   animation: top-music-box-animate 1.5s ease-in-out infinite;
+  opacity: 0.5;
 }
 
 @keyframes top-music-box-animate {

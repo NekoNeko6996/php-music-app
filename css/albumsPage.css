@@ -165,3 +165,17 @@ input[type="checkbox"]:checked + label::before {
 }
 
 /* -------------------------------------- */
+.total-duration {
+  width: 95%;
+  height: 40px;
+  margin-top: 20px;
+  text-align: right;
+  color: white;
+  font-size: 15px;
+  font-weight: bold;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 11px 10px 10px 10px  !important;
+  background-color: rgba(231, 179, 255, 0.11);
+}

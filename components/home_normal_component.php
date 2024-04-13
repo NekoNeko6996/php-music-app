@@ -7,6 +7,7 @@
   <h3 class="new-music-title" style="color: var(--text-color)">New Release</h3>
   <div class="new-music-box"></div>
 
+  <h3 class="top-music-title">Top Music</h3>
   <div class="top-music-box">
     <div class="top-table"></div>
     <div class="top-1-show"></div>

@@ -22,6 +22,7 @@
   <script>
     var albumsChecked = [];
     var onloadAlbumsList = [];
+    var defaultTotalDuration = 0;
 
     if (!myAlbum) {
       var albumsData = onloadData.albumsLoad;
@@ -31,19 +32,30 @@
       var albumID = albumsData[albumIndex].id;
     }
 
+    var selectTotalDuration = 0;
     function addToAlbumsChecked(music) {
+
       const exist = albumsChecked.some(
         (child) => JSON.stringify(child) === JSON.stringify(music)
       );
       if (!exist) {
         albumsChecked.push(music);
+        selectTotalDuration += Number(music.duration);
       } else {
         const index = albumsChecked.findIndex(
           (child) => JSON.stringify(child) === JSON.stringify(music)
         );
         if (index != -1) {
           albumsChecked.splice(index, 1);
+          selectTotalDuration -= Number(music.duration);
         }
+      }
+
+      if (selectTotalDuration > 0) {
+        $(".total-duration-show").text(secToMinutes(selectTotalDuration));
+      }
+      else {
+        $(".total-duration-show").text(secToMinutes(defaultTotalDuration));
       }
     }
 
@@ -56,11 +68,12 @@
     }
 
     function secToMinutes(sec) {
-      return `${Math.round(sec / 60)
-        .toString()
-        .padStart(2, "0")}:${Math.round(sec % 60)
+      return `${Math.floor(sec / 3600) > 0 ? Math.floor(sec / 3600).toString()
+        .padStart(2, "0") + ":" : ""}${Math.floor(sec % 3600 / 60)
           .toString()
-          .padStart(2, "0")}`;
+          .padStart(2, "0")}:${Math.floor(sec % 60)
+            .toString()
+            .padStart(2, "0")}`;
     }
 
     function renderInfoAlbum(info) {
@@ -73,7 +86,7 @@
     function loadAlbumItems(list) {
       var htmlComponent = "";
 
-      if (!list.length == 0)
+      if (!list.length == 0) {
         list.forEach((row, index) => {
           htmlComponent += `
           <div class="al-sh-items-box">
@@ -116,11 +129,18 @@
             </span>
           </div>
         `;
+          defaultTotalDuration += Number(row.duration);
         });
+        htmlComponent += `         
+          <div class="total-duration">
+            <div>Total Duration: </div>
+            <div class="total-duration-show">${secToMinutes(defaultTotalDuration)}</div>
+          </div>
+        `;
+      }
       else
         htmlComponent = `
         <h1 class="nothing-text">Hmm... Nothing to see here</h1>
-
       `;
 
       $("#al-child-contain").html(htmlComponent);
