@@ -1166,7 +1166,11 @@ input[type="range"]::-moz-range-track {
   position: relative;
 }
 .home-normal-footer div {
-  width: 30%;
+  width: 25%;
+}
+
+.home-normal-footer .about-us {
+  width: 40%;
 }
 
 .home-normal-footer h2 {
@@ -1185,6 +1189,10 @@ input[type="range"]::-moz-range-track {
   height: 40px;
   border-radius: 5px;
   margin-right: 10px;
+}
+
+.home-normal-footer a {
+  color: white;
 }
 
 .join-us-btn {

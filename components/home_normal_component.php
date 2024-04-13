@@ -48,11 +48,24 @@
   </div>
 
   <footer class="home-normal-footer">
-    <div>
+    <div class="about-us">
       <h2>About Us</h2>
-      <p>Address: Number 1 Ly Tu Trong Street - CanTho City</p>
+      <p>Website: <a target="_blank" href="https://cusc.ctu.edu.vn">https://cusc.ctu.edu.vn</a></p>
+      <p>Phone: 0912345678</p>
+      <p>Address:
+        <a target="_blank"
+          href="https://www.google.com/maps/place/CUSC+-+Cantho+University+Software+Center/@10.0335023,105.7795289,18.75z/data=!4m14!1m7!3m6!1s0x31a0881f9a732075:0xfa43fbeb2b00ca73!2sCUSC+-+Cantho+University+Software+Center!8m2!3d10.0336437!4d105.7795715!16s%2Fg%2F1w0qyd_6!3m5!1s0x31a0881f9a732075:0xfa43fbeb2b00ca73!8m2!3d10.0336437!4d105.7795715!16s%2Fg%2F1w0qyd_6?entry=ttu">
+          1 Đ. Lý Tự Trọng, An Phú, Ninh Kiều, Cần Thơ, Vietnam
+        </a>
+      </p>
       <p>Email Contact: nhnama23030@cusc.ctu.edu.vn</p>
-      <p>Phone Number: 0563938131</p>
+      <br>
+      <br>
+      <br>
+      <br>
+      <br>
+      <p>Powered By Nguyễn Hoàng Nam</p>
+      <p>Version: 1.0</p>
     </div>
     <div>
       <h2>Music Partner</h2>
@@ -62,7 +75,7 @@
       </span>
     </div>
     <div class="join-with-us-container">
-      
+
     </div>
   </footer>
   <script src="components/js/home_normal_component.js"></script>
