@@ -23,13 +23,19 @@ if (!isset($_SESSION['token'])) {
 if (!isset($_GET['action'])) {
     function getMusicById($connect, $id)
     {
-        $result = query("SELECT musicName, musicPath, author, imgPath, gifPath, tag FROM music_source_path WHERE id = ?", [$id], $connect);
+        $result = query("SELECT musicName, musicPath, author, imgPath, gifPath, tag, uploadBy FROM music_source_path WHERE id = ?", [$id], $connect);
         return $result;
     }
 
     if (isset($_GET['id'])) {
         $id = $_GET['id'];
         $musicResult = getMusicById($connect, $id);
+
+        if ($musicResult['result'][0]['uploadBy'] != $_SESSION['userID']) {
+            header("Location: admin.php");
+            exit();
+        }
+
         if ($musicResult['numRow'] == 0) {
             unset($_SESSION['newUploadMusicID']);
             header("Location: moreInfo.php?action=upload");

@@ -115,7 +115,7 @@ function addToMyAlbum(albumID) {
 // -------------------------------------------------------- //
 function clickToListen(id, playlists) {
   currentID = id ? id : 0;
-  currentPlaylist = playlists ? playlists : currentPlaylist;
+  currentPlaylist = playlists ? [...playlists] : currentPlaylist;
 
   audio.src = currentPlaylist[currentID].musicPath;
 
