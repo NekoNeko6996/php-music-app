@@ -8,4 +8,3 @@ try {
 } catch (PDOException $e) {
     die('[sql] Error connect' . $e->getMessage());
 }
-?>
