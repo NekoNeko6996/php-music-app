@@ -41,7 +41,7 @@ function sortByTag($tag, $connect)
             $result = [];
         }
     } else if ($tag == "all") {
-        $result = query("SELECT * FROM music_source_path", [], $connect)['result'];
+        $result = query("SELECT * FROM music_source_path ORDER BY timeUpload DESC", [], $connect)['result'];
     } else {
         $result = query("SELECT * FROM music_source_path WHERE tag LIKE ?", ["%$tag%"], $connect)['result'];
     }
